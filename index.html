@@ -1,400 +1,510 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Inventory Manager Pro</title>
+    <title>IT Asset Manager Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+        * {
+            font-family: 'Inter', sans-serif;
         }
 
-        .card, .stats, .navbar {
-            background-color: rgba(255, 255, 255, 0.85) !important;
+        body {
+            background: #0a0e1a;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-border {
+            border-image: linear-gradient(135deg, #818cf8, #c084fc) 1;
+        }
+
+        /* Animated gradient background */
+        .bg-animated {
+            background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glow effect */
+        .glow {
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            border-radius: 10px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .stat { background: transparent !important; }
-
-        @media print { 
-            .no-print { display: none !important; } 
-            body.printing-label .main-content { display: none !important; } 
-            body { background-image: none !important; background-color: white !important; }
-            canvas, img, svg {
-                image-rendering: pixelated !important;
-                image-rendering: crisp-edges !important;
-            }
+        .stat-card:hover {
+            transform: scale(1.02);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.1);
         }
 
-        .qr-code {
-            width: 110px;
-            height: 110px;
-            max-width: 110px;
-            max-height: 110px;
-            margin: 0 auto;
-            display: block;
-            background: white;
-            border: 1px solid #d1d5db;
+        .stat-icon {
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
 
-        .print-only-label { display: none; }
-        @media print { 
-            body.printing-label .print-only-label { 
-                display: flex !important; 
-                justify-content: center; 
-                align-items: center; 
-                height: 100vh; 
-            } 
-        }
-
-        body.role-viewer .btn-hapus, 
-        body.role-viewer .btn-tambah, 
-        body.role-viewer .btn-import,
-        body.role-viewer [onclick*="deleteAsset"],
-        body.role-viewer [onclick*="bukaModalTransfer"],
-        body.role-viewer .aksi-kolom-admin { 
-            display: none !important; 
-        }
-
-        .editable:focus {
-            background-color: rgba(100, 26, 230, 0.1);
-            outline: 2px solid #641ae6;
-            border-radius: 4px;
-            color: white;
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 24px;
         }
 
         .table-wrapper {
-            max-height: 60vh; 
+            max-height: 65vh;
             overflow-y: auto;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .table-wrapper table th,
-        .table-wrapper table td {
-            vertical-align: middle;
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .aksi-kolom {
-            display: flex !important;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .aksi-kolom .btn {
-            min-width: 5.5rem;
-            height: 2.3rem;
-            line-height: 1;
-            white-space: nowrap;
-        }
-
-        thead th {
+        .table-wrapper thead th {
             position: sticky;
             top: 0;
             z-index: 20;
-            background-color: #1e293b !important;
-            color: white !important;
-        }      
-
-        .stat-dept .stat-title {
-            color: #000000 !important;
-            font-weight: bold !important;
-            opacity: 1 !important;
-        }
-
-        .stat-dept .stat-value {
-            color: #2563eb !important;
-            font-weight: 800;
-        }
-
-        .stat-dept {
-            width: 100% !important;
-            background-color: #ffffff !important;
-            border: 1px solid #d1d5db;
-            transition: all 0.3s ease !important;
-            cursor: pointer;
-        }
-
-        .stat-dept:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-            border: 1px solid #00d1ff;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-dept:active {
-            transform: translateY(-2px);
-        }
-
-        .btn-custom-excel {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #00a96e;
-            color: white;
-            height: 3rem;
-            padding: 0 1.5rem;
-            border-radius: 0.5rem;
+            background: rgba(26, 16, 64, 0.95) !important;
+            backdrop-filter: blur(10px);
+            color: #c4b5fd !important;
             font-weight: 600;
+            padding: 14px 16px;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+        }
+
+        .table-wrapper tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #e5e7eb;
             font-size: 0.875rem;
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
-            gap: 0.5rem;
         }
 
-        .btn-custom-excel:hover {
-            background-color: #06b477;
-            transform: scale(1.05);
+        .table-wrapper tbody tr {
+            transition: all 0.2s ease;
         }
 
-        .badge-warning {
-            animation: pulse-yellow 2s infinite;
-            border: none;
+        .table-wrapper tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
         }
 
-        .badge-success {
-            animation: pulse-green 3s infinite;
-            border: none;
+        .badge-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.03em;
         }
 
-        @keyframes pulse-yellow {
-            0% { box-shadow: 0 0 0 0px rgba(251, 189, 35, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(251, 189, 35, 0); }
-            100% { box-shadow: 0 0 0 0px rgba(251, 189, 35, 0); }
+        .badge-status.active {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.2);
         }
 
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0px rgba(54, 211, 153, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(54, 211, 153, 0); }
-            100% { box-shadow: 0 0 0 0px rgba(54, 211, 153, 0); }
+        .badge-status.maintenance {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .badge-status.broken {
+            background: rgba(251, 113, 133, 0.2);
+            color: #fb7185;
+            border: 1px solid rgba(251, 113, 133, 0.2);
+        }
+
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: white;
+            padding: 4px;
+        }
+
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-glow:hover::before {
+            opacity: 1;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .login-box input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; }
+            .glass, .glass-card, .chart-container { background: white !important; border: 1px solid #ddd !important; }
+            .table-wrapper thead th { background: #f3f4f6 !important; color: #1f2937 !important; }
+            .table-wrapper tbody td { color: #1f2937 !important; }
         }
     </style>
 </head>
-<body class="bg-base-200 min-h-screen">
+<body class="bg-animated">
+
+    <!-- LOGIN SECTION -->
     <div id="loginSection" class="flex items-center justify-center min-h-screen no-print">
-        <div class="card w-96 bg-white shadow-xl p-8 border border-primary/20">
-            <h2 class="text-2xl font-bold text-center mb-6 text-primary">IT ASSET LOGIN</h2>
-            <div class="form-control gap-4">
-                <input type="email" id="loginEmail" placeholder="Email Admin" class="input input-bordered focus:input-primary" />
-                <input type="password" id="loginPassword" placeholder="Password" class="input input-bordered focus:input-primary" />
-                <button onclick="handleLogin()" id="btnLogin" class="btn btn-primary text-white">Masuk Sistem</button>
+        <div class="login-box">
+            <div class="text-center mb-8">
+                <div class="text-4xl mb-3">⚡</div>
+                <h1 class="text-3xl font-bold gradient-text">IT Asset Manager</h1>
+                <p class="text-gray-400 text-sm mt-2">Secure Enterprise Inventory System</p>
             </div>
-            <p id="loginError" class="text-error text-sm mt-4 text-center hidden font-semibold"></p>
+            <div class="space-y-4">
+                <input type="email" id="loginEmail" placeholder="Email Admin" class="w-full" />
+                <input type="password" id="loginPassword" placeholder="Password" class="w-full" />
+                <button onclick="handleLogin()" id="btnLogin" class="w-full btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:shadow-lg hover:shadow-indigo-500/25 transition-all">
+                    <span id="btnLoginText">Masuk Sistem</span>
+                </button>
+            </div>
+            <p id="loginError" class="text-red-400 text-sm mt-4 text-center hidden font-semibold"></p>
         </div>
     </div>
 
-    <div id="pilihPTModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[100] no-print">
-        <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm w-full border-4 border-primary">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800 uppercase tracking-widest">PILIH DATABASE</h2>
+    <!-- PILIH PT MODAL -->
+    <div id="pilihPTModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100] no-print">
+        <div class="glass-card p-10 text-center max-w-md w-full mx-4">
+            <div class="text-5xl mb-4">🏢</div>
+            <h2 class="text-2xl font-bold text-white mb-2">Pilih Database</h2>
+            <p class="text-gray-400 text-sm mb-8">Select company database to manage assets</p>
             <div class="grid gap-4">
-                <button onclick="setPT('inventaris_p1', 'history_aset')" class="btn btn-primary btn-lg shadow-lg">
-                    PT MAGICASE (P1)
+                <button onclick="setPT('inventaris_p1', 'history_aset')" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-4 rounded-xl hover:shadow-xl transition-all">
+                    PT Magicase (P1)
                 </button>
-                <button onclick="setPT('inventaris_p2', 'history_p2')" class="btn btn-secondary btn-lg shadow-lg">
-                    PT PANRAMA (P2)
+                <button onclick="setPT('inventaris_p2', 'history_p2')" class="btn btn-glow bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-xl hover:shadow-xl transition-all">
+                    PT Panrama (P2)
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- PRINT AREA -->
     <div id="print-label-area" class="print-only-label"></div>
 
+    <!-- MAIN CONTENT -->
     <div id="main-content" class="main-content hidden">
-        <div class="navbar bg-primary text-primary-content shadow-lg px-4 md:px-10 no-print">
-            <div class="flex-1">
-                <a class="text-xl font-bold tracking-tight uppercase text-white">IT-ASSET DASHBOARD</a>
+        <!-- NAVBAR -->
+        <nav class="glass px-6 py-3 flex items-center justify-between no-print sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="text-2xl">⚡</div>
+                <div>
+                    <span class="text-white font-bold text-lg">IT Asset</span>
+                    <span class="text-indigo-400 font-bold text-lg">Manager</span>
+                </div>
             </div>
-            <div class="flex-none flex items-center gap-3">
-                <div id="statusConnection" class="badge badge-outline text-white">Terhubung</div>
-                <button onclick="handleLogout()" class="btn btn-error btn-xs text-white font-bold px-4">LOGOUT</button>
+            <div class="flex items-center gap-4">
+                <div id="statusConnection" class="flex items-center gap-2 text-sm">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <span class="text-gray-300">Connected</span>
+                </div>
+                <button onclick="handleLogout()" class="text-sm text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5">
+                    Logout
+                </button>
             </div>
-        </div>
+        </nav>
 
-        <div class="max-w-6xl mx-auto p-4 md:p-10">
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 no-print">
-                <div class="stats shadow">
-                     <div class="stat p-3" onclick="resetFilter()" style="cursor:pointer"> 
-                        <div class="stat-title text-xs">Total Aset</div>
-                        <div id="totalAset" class="stat-value text-primary text-xl">0</div>
-                    </div>
-                </div>
-                
-                <div class="stats shadow">
-                    <div class="stat p-3">
-                        <div class="stat-title text-xs text-info">Laptop</div>
-                        <div id="totalLaptop" class="stat-value text-info text-xl">0</div>
-                    </div>
-                </div>
-
-                <div class="stats shadow">
-                    <div class="stat p-3">
-                        <div class="stat-title text-xs text-warning">Komputer</div>
-                        <div id="totalKomputer" class="stat-value text-warning text-xl">0</div>
-                    </div>
-                </div>
-
-                <div class="stats shadow">
-                    <div class="stat p-3">
-                        <div class="stat-title text-xs text-success font-bold">Aktif</div>
-                        <div id="unitAktif" class="stat-value text-success text-xl">0</div>
-                    </div>
-                </div>
-
-                <div class="stats shadow">
-                    <div class="stat p-3">
-                        <div class="stat-title text-xs text-error font-bold">Maintenance</div>
-                        <div id="unitRusak" class="stat-value text-error text-xl">0</div>
-                    </div>
-                </div>
-
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('HRD')" style="cursor:pointer"><div class="stat-title text-xs text-info">HRD</div><div id="totalHRD" class="stat-value text-primary text-xl">0</div></div></div>
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('PAJAK')" style="cursor:pointer"><div class="stat-title text-xs text-info">PAJAK</div><div id="totalPajak" class="stat-value text-primary text-xl">0</div></div></div>
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('PPIC')" style="cursor:pointer"><div class="stat-title text-xs text-info">PPIC</div><div id="totalPPIC" class="stat-value text-primary text-xl">0</div></div></div>     
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('EXIM')" style="cursor:pointer"><div class="stat-title text-xs text-info">EXIM</div><div id="totalEXIM" class="stat-value text-primary text-xl">0</div></div></div>   
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('FINANCE')" style="cursor:pointer"><div class="stat-title text-xs text-info">FINANCE</div><div id="totalFINANCE" class="stat-value text-primary text-xl">0</div></div></div>   
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('IT')" style="cursor:pointer"><div class="stat-title text-xs text-info">IT</div><div id="totalIT" class="stat-value text-primary text-xl">0</div></div></div>   
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('INVENTORY')" style="cursor:pointer"><div class="stat-title text-xs text-info">IT INV</div><div id="totalINVENTORY" class="stat-value text-primary text-xl">0</div></div></div>   
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('CAD')" style="cursor:pointer"><div class="stat-title text-xs text-info">CAD</div><div id="totalCAD" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('GUDANG ACC')" style="cursor:pointer"><div class="stat-title text-xs text-info">GUDANG ACC</div><div id="totalGUDANG_ACCESSORIES" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('GUDANG KAIN')" style="cursor:pointer"><div class="stat-title text-xs text-info">GUDANG KAIN</div><div id="totalGUDANG_KAIN" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('PACKING')" style="cursor:pointer"><div class="stat-title text-xs text-info">PACKING</div><div id="totalPACKING" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('SAMPLE PROD')" style="cursor:pointer"><div class="stat-title text-xs text-info">SAMPLE PROD</div><div id="totalSAMPLE_PRODUKSI" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('SAMPLE ROOM')" style="cursor:pointer"><div class="stat-title text-xs text-info">SAMPLE ROOM</div><div id="totalSAMPLE_ROOM" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('MD')" style="cursor:pointer"><div class="stat-title text-xs text-info">MD</div><div id="totalMD" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('BC')" style="cursor:pointer"><div class="stat-title text-xs text-info">BC</div><div id="totalBC" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('QA')" style="cursor:pointer"><div class="stat-title text-xs text-info">QA</div><div id="totalQA" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('FACTORY MANAGER')" style="cursor:pointer"><div class="stat-title text-xs text-info">FM</div><div id="totalFACTORY_MANAGER" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('GENERAL MANAGER')" style="cursor:pointer"><div class="stat-title text-xs text-info">GM</div><div id="totalGENERAL_MANAGER" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('IE')" style="cursor:pointer"><div class="stat-title text-xs text-info">IE</div><div id="totalIE" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('PRODUKSI')" style="cursor:pointer"><div class="stat-title text-xs text-info">PRODUKSI</div><div id="totalPRODUKSI" class="stat-value text-primary text-xl">0</div></div></div> 
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('CUTTING')" style="cursor:pointer"><div class="stat-title text-xs text-info">CUTTING</div><div id="totalCUTTING" class="stat-value text-primary text-xl">0</div></div></div>
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('DIGITAL')" style="cursor:pointer"><div class="stat-title text-xs text-info">DIGITAL</div><div id="totalDIGITAL" class="stat-value text-primary text-xl">0</div></div></div>
-                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('STAFF')" style="cursor:pointer"><div class="stat-title text-xs text-info">STAFF</div><div id="totalSTAFF" class="stat-value text-primary text-xl">0</div></div></div>
-            </div>
-
-            <div id="scannerSection" class="hidden no-print">
-                <div class="flex justify-center mb-4">
-                    <div class="bg-black p-1 rounded-lg shadow-lg" style="width: 100%; max-width: 280px;"> 
-                        <div id="reader" style="width: 100%; min-height: 150px;" class="overflow-hidden rounded-md"></div>
-                        <p class="text-center text-white text-[8px] mt-1 opacity-70">📷 READY TO SCAN</p>
+        <div class="max-w-7xl mx-auto p-6">
+            <!-- SCANNER -->
+            <div id="scannerSection" class="hidden no-print mb-6">
+                <div class="flex justify-center">
+                    <div class="glass-card p-4" style="width: 100%; max-width: 320px;">
+                        <div id="reader" style="width: 100%; min-height: 180px;" class="rounded-xl overflow-hidden"></div>
+                        <p class="text-center text-gray-400 text-xs mt-2">📷 Scan QR Code</p>
                     </div>
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-2 mb-6 no-print">
-                <button onclick="toggleForm()" class="btn btn-primary text-white btn-tambah">+ Tambah Aset</button>
-                <button onclick="window.print()" class="btn btn-outline btn-secondary">Cetak Laporan</button>
-                <button onclick="exportToExcel()" class="btn-custom-excel">⚡ Export Excel</button>
-            </div>
-
-            <div id="formContainer" class="card bg-base-100 shadow-xl mb-8 no-print hidden">
-                <div class="card-body">
-                    <h2 class="card-title text-primary">Input Aset Baru</h2>
-                    <form id="assetForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-bold">ID Aset</span></label>
-                            <input type="text" id="in_id" placeholder="PC-01" class="input input-bordered" required />
+            <!-- STATS GRID -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 no-print">
+                <div class="stat-card" onclick="resetFilter()">
+                    <div class="flex items-center gap-4">
+                        <div class="stat-icon bg-indigo-500/20 text-indigo-400">📦</div>
+                        <div>
+                            <p class="text-gray-400 text-xs uppercase tracking-wider">Total Aset</p>
+                            <p id="totalAset" class="text-white text-2xl font-bold">0</p>
                         </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-bold">User</span></label>
-                            <input type="text" id="in_user" placeholder="Nama User" class="input input-bordered" required />
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-4">
+                        <div class="stat-icon bg-emerald-500/20 text-emerald-400">💻</div>
+                        <div>
+                            <p class="text-gray-400 text-xs uppercase tracking-wider">Laptop</p>
+                            <p id="totalLaptop" class="text-white text-2xl font-bold">0</p>
                         </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-bold">Departemen</span></label>
-                            <select id="in_dept" class="select select-bordered">
-                                <option value="HRD">HRD</option>
-                                <option value="PAJAK">PAJAK</option>
-                                <option value="PPIC">PPIC</option>
-                                <option value="EXIM">EXIM</option>
-                                <option value="FINANCE">FINANCE</option>
-                                <option value="IT">IT</option>
-                                <option value="INVENTORY">INVENTORY</option>
-                                <option value="CAD">CAD</option>
-                                <option value="GUDANG ACC">GUDANG ACC</option>
-                                <option value="GUDANG KAIN">GUDANG KAIN</option>
-                                <option value="PACKING">PACKING</option>
-                                <option value="SAMPLE PROD">SAMPLE PROD</option>
-                                <option value="SAMPLE ROOM">SAMPLE ROOM</option>
-                                <option value="MD">MD</option>
-                                <option value="BC">BC</option>
-                                <option value="QA">QA</option>
-                                <option value="FACTORY MANAGER">FACTORY MANAGER</option>
-                                <option value="GENERAL MANAGER">GENERAL MANAGER</option>
-                                <option value="IE">IE</option>
-                                <option value="CUTTING">CUTTING</option>
-                                <option value="PRODUKSI">PRODUKSI</option>
-                                <option value="DIGITAL">DIGITAL</option>
-                                <option value="STAFF">STAFF</option>
-                            </select>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-4">
+                        <div class="stat-icon bg-amber-500/20 text-amber-400">🖥️</div>
+                        <div>
+                            <p class="text-gray-400 text-xs uppercase tracking-wider">Komputer</p>
+                            <p id="totalKomputer" class="text-white text-2xl font-bold">0</p>
                         </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-bold">Perangkat</span></label>
-                            <select id="in_device" class="select select-bordered">
-                                <option value="KOMPUTER">KOMPUTER</option>
-                                <option value="LAPTOP">LAPTOP</option>
-                            </select>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-4">
+                        <div class="stat-icon bg-rose-500/20 text-rose-400">⚠️</div>
+                        <div>
+                            <p class="text-gray-400 text-xs uppercase tracking-wider">Maintenance</p>
+                            <p id="unitRusak" class="text-white text-2xl font-bold">0</p>
                         </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-bold">Spesifikasi</span></label>
-                            <select id="in_specs" class="select select-bordered">
-                                <option value="I5,4 GB">I5,4 GB</option>
-                                <option value="I5,8 GB">I5,8 GB</option>
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-bold">Status</span></label>
-                            <select id="in_status" class="select select-bordered">
-                                <option value="Active">Active / Aktif</option>
-                                <option value="Maintenance">Maintenance</option>
-                                <option value="Broken">Broken / Rusak</option>
-                            </select>
-                        </div>
-                        <div class="form-control mt-9">
-                            <button type="submit" id="btnSimpan" class="btn btn-primary text-white w-full">Simpan ke Cloud</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
 
-            <div class="mb-6 no-print">
-                <input type="text" id="searchInput" placeholder="Cari nama, ID, atau departemen..." class="input input-bordered w-full max-w-xs focus:input-primary" />
+            <!-- CHARTS ROW -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 no-print">
+                <div class="chart-container">
+                    <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider text-gray-400">📍 Status Distribution</h3>
+                    <canvas id="statusChart" height="200"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider text-gray-400">🏢 Department Distribution</h3>
+                    <canvas id="deptChart" height="200"></canvas>
+                </div>
             </div>
 
-            <div class="card bg-base-100 shadow-xl"> 
-                <div class="table-wrapper"> 
-                    <table class="table table-zebra w-full"> 
+            <!-- DEPT STATS SCROLL -->
+            <div class="flex gap-3 overflow-x-auto pb-4 mb-6 no-print scrollbar-thin">
+                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('HRD')">
+                    <p class="text-gray-400 text-xs uppercase">HRD</p>
+                    <p id="totalHRD" class="text-white text-xl font-bold">0</p>
+                </div>
+                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('IT')">
+                    <p class="text-gray-400 text-xs uppercase">IT</p>
+                    <p id="totalIT" class="text-white text-xl font-bold">0</p>
+                </div>
+                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('FINANCE')">
+                    <p class="text-gray-400 text-xs uppercase">Finance</p>
+                    <p id="totalFINANCE" class="text-white text-xl font-bold">0</p>
+                </div>
+                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('PRODUKSI')">
+                    <p class="text-gray-400 text-xs uppercase">Produksi</p>
+                    <p id="totalPRODUKSI" class="text-white text-xl font-bold">0</p>
+                </div>
+                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('PPIC')">
+                    <p class="text-gray-400 text-xs uppercase">PPIC</p>
+                    <p id="totalPPIC" class="text-white text-xl font-bold">0</p>
+                </div>
+                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('EXIM')">
+                    <p class="text-gray-400 text-xs uppercase">EXIM</p>
+                    <p id="totalEXIM" class="text-white text-xl font-bold">0</p>
+                </div>
+                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('QA')">
+                    <p class="text-gray-400 text-xs uppercase">QA</p>
+                    <p id="totalQA" class="text-white text-xl font-bold">0</p>
+                </div>
+                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('INVENTORY')">
+                    <p class="text-gray-400 text-xs uppercase">Inventory</p>
+                    <p id="totalINVENTORY" class="text-white text-xl font-bold">0</p>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex flex-wrap gap-3 mb-6 no-print">
+                <button onclick="toggleForm()" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold px-6 py-3 rounded-xl hover:shadow-xl transition-all flex items-center gap-2 btn-tambah">
+                    <span>+</span> Tambah Aset
+                </button>
+                <button onclick="window.print()" class="btn btn-glow bg-white/5 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/10 transition-all border border-white/10 flex items-center gap-2">
+                    🖨️ Cetak
+                </button>
+                <button onclick="exportToExcel()" class="btn btn-glow bg-emerald-500/20 text-emerald-400 font-semibold px-6 py-3 rounded-xl hover:bg-emerald-500/30 transition-all border border-emerald-500/20 flex items-center gap-2">
+                    📊 Export Excel
+                </button>
+            </div>
+
+            <!-- FORM -->
+            <div id="formContainer" class="glass-card p-6 mb-6 no-print hidden">
+                <h2 class="text-xl font-bold text-white mb-4">Input Aset Baru</h2>
+                <form id="assetForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">ID Aset</span></label>
+                        <input type="text" id="in_id" placeholder="PC-01" class="input input-bordered bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl" required />
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">User</span></label>
+                        <input type="text" id="in_user" placeholder="Nama User" class="input input-bordered bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl" required />
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">Departemen</span></label>
+                        <select id="in_dept" class="select select-bordered bg-white/5 border-white/10 text-white focus:border-indigo-400 rounded-xl">
+                            <option value="HRD">HRD</option><option value="PAJAK">PAJAK</option><option value="PPIC">PPIC</option>
+                            <option value="EXIM">EXIM</option><option value="FINANCE">FINANCE</option><option value="IT">IT</option>
+                            <option value="INVENTORY">INVENTORY</option><option value="CAD">CAD</option><option value="GUDANG ACC">GUDANG ACC</option>
+                            <option value="GUDANG KAIN">GUDANG KAIN</option><option value="PACKING">PACKING</option><option value="SAMPLE PROD">SAMPLE PROD</option>
+                            <option value="SAMPLE ROOM">SAMPLE ROOM</option><option value="MD">MD</option><option value="BC">BC</option>
+                            <option value="QA">QA</option><option value="FACTORY MANAGER">FACTORY MANAGER</option><option value="GENERAL MANAGER">GENERAL MANAGER</option>
+                            <option value="IE">IE</option><option value="CUTTING">CUTTING</option><option value="PRODUKSI">PRODUKSI</option>
+                            <option value="DIGITAL">DIGITAL</option><option value="STAFF">STAFF</option>
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">Perangkat</span></label>
+                        <select id="in_device" class="select select-bordered bg-white/5 border-white/10 text-white focus:border-indigo-400 rounded-xl">
+                            <option value="KOMPUTER">KOMPUTER</option><option value="LAPTOP">LAPTOP</option>
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">Spesifikasi</span></label>
+                        <select id="in_specs" class="select select-bordered bg-white/5 border-white/10 text-white focus:border-indigo-400 rounded-xl">
+                            <option value="I5,4 GB">I5,4 GB</option><option value="I5,8 GB">I5,8 GB</option>
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">Status</span></label>
+                        <select id="in_status" class="select select-bordered bg-white/5 border-white/10 text-white focus:border-indigo-400 rounded-xl">
+                            <option value="Active">Active</option><option value="Maintenance">Maintenance</option><option value="Broken">Broken</option>
+                        </select>
+                    </div>
+                    <div class="form-control lg:col-span-3 mt-2">
+                        <button type="submit" id="btnSimpan" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:shadow-xl transition-all">
+                            Simpan ke Cloud
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="mb-4 no-print">
+                <input type="text" id="searchInput" placeholder="Cari aset, user, atau departemen..." class="input input-bordered w-full max-w-sm bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl" />
+            </div>
+
+            <!-- TABLE -->
+            <div class="glass-card overflow-hidden">
+                <div class="table-wrapper">
+                    <table>
                         <thead>
-                            <tr class="bg-base-300 text-center">
-                                <th>QR CODE</th>
-                                <th>USER</th>
-                                <th>DEPT</th>
-                                <th>DEVICE</th>
-                                <th>STATUS</th>
-                                <th class="no-print">AKSI</th>
+                            <tr class="text-center">
+                                <th>QR Code</th>
+                                <th>User</th>
+                                <th>Departemen</th>
+                                <th>Device</th>
+                                <th>Status</th>
+                                <th class="no-print">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody">
-                            <tr><td colspan="6" class="text-center py-10">Memuat data...</td></tr>
+                            <tr><td colspan="6" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -402,41 +512,39 @@
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="modalTransfer" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] no-print">
-        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center border border-gray-200">
-            <h2 class="text-xl font-bold mb-4 text-gray-800">Transfer Aset</h2>
-            <p id="infoAset" class="mb-6 text-gray-600 italic font-medium"></p>
-            <div class="grid gap-4">
-                <button id="btnKeP1" class="btn btn-primary w-full">PT PANRAMA (P1)</button>
-                <button id="btnKeP2" class="btn btn-secondary w-full">PT PANRAMA (P2)</button>
-                <button onclick="tutupModalTransfer()" class="btn btn-ghost mt-2 w-full border border-gray-300">Batal</button>
+    <!-- MODALS -->
+    <div id="modalTransfer" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
+        <div class="glass-card p-8 max-w-sm w-full mx-4 text-center">
+            <div class="text-3xl mb-3">🔄</div>
+            <h2 class="text-xl font-bold text-white mb-2">Transfer Aset</h2>
+            <p id="infoAset" class="text-gray-400 text-sm mb-6"></p>
+            <div class="grid gap-3">
+                <button id="btnKeP1" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl">PT Magicase (P1)</button>
+                <button id="btnKeP2" class="btn btn-glow bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 rounded-xl">PT Panrama (P2)</button>
+                <button onclick="tutupModalTransfer()" class="text-gray-400 hover:text-white transition-colors py-2">Batal</button>
             </div>
         </div>
     </div>
 
-    <div id="historyModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999] no-print">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+    <div id="historyModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
+        <div class="glass-card p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
                 <div>
-                    <h2 id="historyModalTitle" class="text-lg font-bold text-gray-900">Riwayat Aset</h2>
-                    <p id="historyModalSource" class="text-sm text-gray-500">Sumber:</p>
+                    <h2 id="historyModalTitle" class="text-lg font-bold text-white">Riwayat Aset</h2>
+                    <p id="historyModalSource" class="text-sm text-gray-400"></p>
                 </div>
-                <button onclick="closeHistoryModal()" class="btn btn-ghost btn-sm">Tutup</button>
+                <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-white transition-colors">✕</button>
             </div>
-            <div id="historyModalBody" class="p-6 max-h-[70vh] overflow-y-auto bg-slate-50"></div>
+            <div id="historyModalBody" class="space-y-3"></div>
         </div>
     </div>
 
     <script>
+        // Konfigurasi Supabase
         const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-           auth: {
-               persistSession: true,
-               autoRefreshToken: true,
-               detectSessionInUrl: true
-           }
+            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
         });
 
         let currentTable = '';
@@ -444,35 +552,97 @@
         let data = [];
         let asetIdSedangDiproses = null;
         let html5QrcodeScanner = null;
+        let statusChartInstance = null;
+        let deptChartInstance = null;
 
+        // Auth
         supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                checkUser();
-            }
+            if (session) checkUser();
         });
-
         checkUser();
 
-        function toggleForm() {
-            document.getElementById('formContainer').classList.toggle('hidden');
+        function checkUser() {
+            supabaseClient.auth.getUser().then(({ data: { user } }) => {
+                const loginSec = document.getElementById('loginSection');
+                const pilihModal = document.getElementById('pilihPTModal');
+                const mainContent = document.getElementById('main-content');
+
+                if (user) {
+                    if (loginSec) loginSec.classList.add('hidden');
+                    if (pilihModal) pilihModal.classList.remove('hidden');
+                    if (mainContent) mainContent.classList.add('hidden');
+                    updateAdminUI();
+                } else {
+                    if (loginSec) loginSec.classList.remove('hidden');
+                    if (pilihModal) pilihModal.classList.add('hidden');
+                    if (mainContent) mainContent.classList.add('hidden');
+                }
+            });
         }
 
+        async function updateAdminUI() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const user = session?.user;
+
+            if (user && user.email === 'andri@panrama.com') {
+                document.body.classList.remove('role-viewer');
+                const scannerSection = document.getElementById('scannerSection');
+                if (scannerSection) scannerSection.classList.remove('hidden');
+                initScanner();
+            } else {
+                document.body.classList.add('role-viewer');
+                const scannerSection = document.getElementById('scannerSection');
+                if (scannerSection) scannerSection.classList.add('hidden');
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('btnLogin');
+            const err = document.getElementById('loginError');
+            const btnText = document.getElementById('btnLoginText');
+
+            btnText.innerText = "Memverifikasi...";
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                err.innerText = "Email atau Password Salah!";
+                err.classList.remove('hidden');
+                btnText.innerText = "Masuk Sistem";
+            } else {
+                err.classList.add('hidden');
+                btnText.innerText = "Masuk Sistem";
+                checkUser();
+            }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.replace(window.location.pathname);
+        }
+
+        // Data Fetching
         async function fetchData() {
             try {
                 const { data: result, error } = await supabaseClient.from(currentTable).select('*').order('id_aset', { ascending: true });
                 if (error) throw error;
                 data = Array.isArray(result) ? result : [];
-                document.getElementById('statusConnection').innerText = "Terhubung";
-                document.getElementById('statusConnection').className = "badge badge-success text-white font-bold";
+                document.getElementById('statusConnection').innerHTML = `
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <span class="text-gray-300">Connected</span>
+                `;
                 renderTable(data);
                 updateStats(data);
+                updateCharts(data);
             } catch (err) {
                 console.error(err);
-                const statusEl = document.getElementById('statusConnection');
-                if (statusEl) {
-                    statusEl.innerText = "Terputus";
-                    statusEl.className = "badge badge-error text-white font-bold";
-                }
+                document.getElementById('statusConnection').innerHTML = `
+                    <span class="w-2 h-2 bg-red-400 rounded-full"></span>
+                    <span class="text-red-400">Disconnected</span>
+                `;
             }
         }
 
@@ -480,30 +650,31 @@
             const tbody = document.getElementById('inventoryBody');
             if (!tbody) return;
             if (!Array.isArray(data) || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10">Data tidak tersedia.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gray-400">Data tidak tersedia.</td></tr>`;
                 return;
             }
 
-            const { data: sessionData } = supabaseClient.auth.getSession();
-            const isUserAdmin = document.body.classList.contains('role-viewer') === false;
+            const isUserAdmin = !document.body.classList.contains('role-viewer');
 
             tbody.innerHTML = data.map(item => {
                 const deptVal = item.dept || item.dep || '-';
+                const statusClass = item.status?.toLowerCase() === 'active' ? 'active' : 
+                                   item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
                 return `
-                <tr class="hover text-center">
-                    <td class="p-2 bg-white">
-                        <canvas class="qr-code" data-value="${item.id_aset}" width="110" height="110"></canvas>
-                        <div class="text-xs text-slate-500 mt-1">${item.id_aset}</div>
+                <tr class="hover:bg-white/5 text-center">
+                    <td>
+                        <canvas class="qr-code" data-value="${item.id_aset}" width="80" height="80"></canvas>
+                        <div class="text-xs text-gray-500 mt-1">${item.id_aset}</div>
                     </td>
-                    <td class="editable uppercase font-bold" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'user', this.innerText.trim())">${item.user || '-'}</td>
-                    <td class="editable uppercase font-semibold" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${deptVal}</td>
+                    <td class="editable font-medium" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'user', this.innerText.trim())">${item.user || '-'}</td>
+                    <td class="editable" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${deptVal}</td>
                     <td>${item.device || '-'}</td>
-                    <td><div class="badge ${getStatusClass(item.status)} border-none text-white font-bold">${item.status || '-'}</div></td>
-                    <td class="no-print aksi-kolom flex gap-1 justify-center">
-                        <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="btn btn-xs btn-outline btn-info">Label</button>
-                        <button onclick="lihatHistory('${item.id_aset}')" class="btn btn-xs btn-outline btn-info">📜 History</button>
-                        <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="btn btn-xs btn-warning text-black font-bold aksi-kolom-admin">Transfer</button>
-                        <button onclick="deleteAsset('${item.id_aset}')" class="btn btn-xs btn-outline btn-error text-error btn-hapus aksi-kolom-admin">Hapus</button>
+                    <td><span class="badge-status ${statusClass}">${item.status || '-'}</span></td>
+                    <td class="no-print flex gap-2 justify-center flex-wrap">
+                        <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="text-xs bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg transition-all">Label</button>
+                        <button onclick="lihatHistory('${item.id_aset}')" class="text-xs bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg transition-all">📜</button>
+                        <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-3 py-1.5 rounded-lg transition-all aksi-kolom-admin">Transfer</button>
+                        <button onclick="deleteAsset('${item.id_aset}')" class="text-xs bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-3 py-1.5 rounded-lg transition-all btn-hapus aksi-kolom-admin">Hapus</button>
                     </td>
                 </tr>
             `}).join('');
@@ -517,7 +688,7 @@
                 new QRious({
                     element: canvas,
                     value,
-                    size: 110,
+                    size: 80,
                     background: 'white',
                     foreground: '#111827',
                     level: 'H'
@@ -525,6 +696,111 @@
             });
         }
 
+        // Stats
+        function updateStats(items) {
+            const rows = Array.isArray(items) ? items : [];
+            document.getElementById('totalAset').innerText = rows.length;
+            document.getElementById('totalLaptop').innerText = rows.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
+            document.getElementById('totalKomputer').innerText = rows.filter(i => {
+                const dev = String(i.device || '').toLowerCase();
+                return dev.includes('komputer') || dev.includes('pc');
+            }).length;
+            document.getElementById('unitRusak').innerText = rows.filter(i => {
+                const s = String(i.status || '').toLowerCase();
+                return s === 'maintenance' || s === 'broken' || s === 'rusak';
+            }).length;
+
+            const deptMap = {
+                totalHRD: 'HRD', totalIT: 'IT', totalFINANCE: 'FINANCE', totalPRODUKSI: 'PRODUKSI',
+                totalPPIC: 'PPIC', totalEXIM: 'EXIM', totalQA: 'QA', totalINVENTORY: 'INVENTORY'
+            };
+
+            Object.entries(deptMap).forEach(([id, name]) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerText = rows.filter(i => String(i.dept || i.dep || '').toUpperCase().includes(name)).length;
+                }
+            });
+        }
+
+        // Charts
+        function updateCharts(items) {
+            const rows = Array.isArray(items) ? items : [];
+
+            // Status Chart
+            const statusCounts = {
+                Active: rows.filter(i => String(i.status || '').toLowerCase() === 'active').length,
+                Maintenance: rows.filter(i => String(i.status || '').toLowerCase() === 'maintenance').length,
+                Broken: rows.filter(i => String(i.status || '').toLowerCase() === 'broken' || String(i.status || '').toLowerCase() === 'rusak').length
+            };
+
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            if (statusChartInstance) statusChartInstance.destroy();
+            statusChartInstance = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Maintenance', 'Broken'],
+                    datasets: [{
+                        data: [statusCounts.Active, statusCounts.Maintenance, statusCounts.Broken],
+                        backgroundColor: ['#34d399', '#fbbf24', '#fb7185'],
+                        borderColor: ['rgba(52,211,153,0.3)', 'rgba(251,191,36,0.3)', 'rgba(251,113,133,0.3)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#9ca3af', font: { size: 11 } }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            // Department Chart (top 6)
+            const deptCounts = {};
+            rows.forEach(i => {
+                const d = String(i.dept || i.dep || 'Other').toUpperCase();
+                deptCounts[d] = (deptCounts[d] || 0) + 1;
+            });
+            const sorted = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+            const colors = ['#818cf8', '#c084fc', '#f472b6', '#34d399', '#fbbf24', '#fb7185'];
+
+            const deptCtx = document.getElementById('deptChart').getContext('2d');
+            if (deptChartInstance) deptChartInstance.destroy();
+            deptChartInstance = new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(d => d[0]),
+                    datasets: [{
+                        label: 'Jumlah',
+                        data: sorted.map(d => d[1]),
+                        backgroundColor: sorted.map((_, i) => colors[i % colors.length] + '40'),
+                        borderColor: sorted.map((_, i) => colors[i % colors.length]),
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#6b7280', stepSize: 1 }
+                        },
+                        x: {
+                            ticks: { color: '#6b7280', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // CRUD
         async function updateField(idRaw, kolom, nilaiBaru) {
             const idAset = idRaw.trim();
             const nilaiClean = nilaiBaru.trim().toUpperCase();
@@ -532,156 +808,29 @@
             if (kolom === 'user' || kolom === 'dept') {
                 const dataLama = data.find(item => item.id_aset === idAset);
                 const nilaiLama = dataLama ? String(dataLama[kolom] || dataLama['dep'] || '-') : '-';
-
                 if (nilaiLama.trim().toUpperCase() !== nilaiClean) {
                     await catatHistory(idAset, kolom, nilaiLama, nilaiClean);
                 }
             }
 
-            const { data: updateResult, error } = await supabaseClient
+            const { error } = await supabaseClient
                 .from(currentTable)
                 .update({ [kolom]: nilaiClean })
-                .eq('id_aset', idAset)
-                .select();
+                .eq('id_aset', idAset);
 
             if (error) {
-                console.error("Gagal update:", error);
-                if (error.code === '42501') {
-                    alert("Akses ditolak: Hanya Admin yang diizinkan mengubah data!");
-                } else {
-                    alert("Gagal simpan: " + error.message);
-                }
+                alert("Gagal update: " + error.message);
                 fetchData();
             } else {
                 fetchData();
-            }        
+            }
         }
 
-        function updateStats(items) {
-            const rows = Array.isArray(items) ? items : [];
-            const normalize = (text) => String(text || '').toUpperCase().trim();
-
-            document.getElementById('totalAset').innerText = rows.length;
-
-            const laptopCount = rows.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
-            document.getElementById('totalLaptop').innerText = laptopCount;
-
-            const komputerCount = rows.filter(i => {
-                const dev = String(i.device || '').toLowerCase();
-                return dev.includes('komputer') || dev.includes('pc');
-            }).length;
-            document.getElementById('totalKomputer').innerText = komputerCount;
-
-            const aktifCount = rows.filter(i => {
-                const s = String(i.status || '').toLowerCase();
-                return s === 'active' || s === 'aktif';
-            }).length;
-            document.getElementById('unitAktif').innerText = aktifCount;
-
-            const rusakCount = rows.filter(i => {
-                const s = String(i.status || '').toLowerCase();
-                return s === 'maintenance' || s === 'broken' || s === 'rusak';
-            }).length;
-            document.getElementById('unitRusak').innerText = rusakCount;
-
-            const deptText = (item) => normalize(item.dept || item.dep);
-            const matchDept = (value, patterns) => patterns.some(pattern => pattern.test(value));
-
-            const deptCounters = {
-                totalHRD: [/ HRD /],
-                totalPajak: [/PAJAK/, /TAX/],
-                totalPPIC: [/PPIC/, / PIC /],
-                totalEXIM: [/EXIM/, /EXM/],
-                totalFINANCE: [/FINANCE/, /FINAN/],
-                totalIT: [/ IT /, /OFFICE\/IT/],
-                totalINVENTORY: [/INVENTORY/, / INV /],
-                totalCAD: [/ CAD /, /CAD ROOM/],
-                totalGUDANG_ACCESSORIES: [/GUDANG ACCESSORIES/, /GUDANG ACC/],
-                totalGUDANG_KAIN: [/GUDANG KAIN/],
-                totalPACKING: [/PACKING/],
-                totalSAMPLE_PRODUKSI: [/SAMPLE PRODUKSI/, /SAMPLE PROD/],
-                totalSAMPLE_ROOM: [/SAMPLE ROOM/],
-                totalMD: [/ MD /],
-                totalBC: [/ BC /],
-                totalQA: [/ QA /],
-                totalFACTORY_MANAGER: [/FACTORY MANAGER/],
-                totalGENERAL_MANAGER: [/GENERAL MANAGER/, /GENARAL MANAGER/],
-                totalIE: [/ IE /, /IE\/PRODUKSI/, /IE\/MANAGER/],
-                totalCUTTING: [/ CUTTING /],
-                totalDIGITAL: [/ DIGITAL /],
-                totalSTAFF: [/ STAFF /],
-            };
-
-            Object.entries(deptCounters).forEach(([id, patterns]) => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.innerText = rows.filter(item => matchDept(deptText(item), patterns)).length;
-                }
-            });
-
-            document.getElementById('totalPRODUKSI').innerText = rows.filter(i => {
-                const dept = deptText(i);
-                return /PRODUKSI/.test(dept) && !/SAMPLE/.test(dept) && !/ IE /.test(dept);
-            }).length;
-        }
-
-        function filterByDept(namaDept) {
-            const rows = document.querySelectorAll('#inventoryBody tr');
-            const deptPatterns = {
-                HRD: / HRD /i,
-                PAJAK: /PAJAK|TAX/i,
-                PPIC: /PPIC| PIC /i,
-                EXIM: /EXIM|EXM/i,
-                FINANCE: /FINANCE|FINAN/i,
-                IT: / IT |OFFICE\/IT/i,
-                INVENTORY: /INVENTORY| INV /i,
-                CAD: / CAD |CAD ROOM/i,
-                'GUDANG ACC': /GUDANG ACCESSORIES|GUDANG ACC/i,
-                'GUDANG KAIN': /GUDANG KAIN/i,
-                PACKING: /PACKING/i,
-                'SAMPLE PROD': /SAMPLE PRODUKSI|SAMPLE PROD/i,
-                'SAMPLE ROOM': /SAMPLE ROOM/i,
-                MD: / MD /i,
-                BC: / BC /i,
-                QA: / QA /i,
-                'FACTORY MANAGER': /FACTORY MANAGER/i,
-                'GENERAL MANAGER': /GENERAL MANAGER|GENARAL MANAGER/i,
-                IE: / IE |IE\/PRODUKSI|IE\/MANAGER/i,
-                PRODUKSI: / PRODUKSI |PRODUKSI\MANAGER/i,
-                CUTTING: / CUTTING /i,
-                DIGITAL: / DIGITAL /i,
-                STAFF: / STAFF /i,
-            };
-            const pattern = deptPatterns[namaDept] || new RegExp(namaDept, 'i');
-
-            rows.forEach(row => {
-                const deptCell = row.cells[2];
-                if (!deptCell) return;
-                const deptText = deptCell.innerText.trim();
-                row.style.display = pattern.test(deptText) ? '' : 'none';
-            });
-        }
-
-        function exportToExcel() {
-            const table = document.querySelector("table");
-            const wb = XLSX.utils.table_to_book(table, { sheet: "Data Inventaris" });
-            const date = new Date().toISOString().slice(0, 10);
-            const fileName = `Inventaris_IT_${date}.xlsx`;
-            XLSX.writeFile(wb, fileName);
-        }
-
-        function resetFilter() {
-            const rows = document.querySelectorAll('#inventoryBody tr');
-            rows.forEach(row => row.style.display = "");
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) searchInput.value = "";
-        }
-
-        function getStatusClass(s) {
-            const st = s?.toLowerCase();
-            if (st === 'active' || st === 'aktif') return 'bg-success';
-            if (st === 'maintenance') return 'bg-warning text-black';
-            return 'bg-error';
+        async function deleteAsset(id) {
+            if (confirm(`Hapus aset ${id}?`)) {
+                await supabaseClient.from(currentTable).delete().eq('id_aset', id);
+                fetchData();
+            }
         }
 
         document.getElementById('assetForm').addEventListener('submit', async (e) => {
@@ -694,13 +843,12 @@
                 id_aset: document.getElementById('in_id').value,
                 user: document.getElementById('in_user').value,
                 dept: document.getElementById('in_dept').value,
-                device: document.getElementById('in_device').value, 
+                device: document.getElementById('in_device').value,
                 specs: document.getElementById('in_specs').value,
                 status: document.getElementById('in_status').value
             };
 
             const { error } = await supabaseClient.from(currentTable).insert([newData]);
-            
             if (error) {
                 alert("Gagal: " + error.message);
             } else {
@@ -712,155 +860,120 @@
             btn.disabled = false;
         });
 
-        async function deleteAsset(id) {
-            if (confirm(`Hapus aset ${id}?`)) {
-                await supabaseClient.from(currentTable).delete().eq('id_aset', id);
-                fetchData();
+        // History
+        async function catatHistory(idAset, kolom, lama, baru) {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                const historyTable = currentHistory || 'history_aset';
+                await supabaseClient.from(historyTable).insert([{
+                    id_aset: idAset,
+                    user_lama: lama,
+                    user_baru: baru,
+                    aksi: kolom === 'dept' ? 'Ubah Departemen' : 'Ubah ' + kolom,
+                    keterangan: `${kolom.toUpperCase()} diubah dari "${lama}" menjadi "${baru}"`,
+                    tgl_perubahan: new Date().toISOString(),
+                    admin_eksekusi: user ? user.email : 'System'
+                }]);
+            } catch (err) {
+                console.error("Gagal simpan history:", err.message);
             }
         }
 
-        function printSingleLabel(id, user, device) {
-            const printArea = document.getElementById('print-label-area');
-            printArea.innerHTML = `
-                <div style="padding: 15px; border: 2px solid #000; text-align: center; background: white;">
-                    <div style="font-weight: bold; font-family: sans-serif; margin-bottom: 12px;">ASSET: ${device}</div>
-                    <canvas id="singleQRCode" width="220" height="220" style="margin: 0 auto; display: block; border: 1px solid #000; border-radius: 12px; background: white;"></canvas>
-                    <div style="font-family: sans-serif; margin-top: 12px;">User: ${user}</div>
-                </div>
-            `;
-            const qrCanvas = document.getElementById('singleQRCode');
-            if (qrCanvas) {
-                new QRious({
-                    element: qrCanvas,
-                    value: id,
-                    size: 220,
-                    background: 'white',
-                    foreground: '#111827',
-                    level: 'H'
-                });
+        async function lihatHistory(idAset) {
+            const historyTable = currentHistory || 'history_aset';
+            const { data: logs } = await supabaseClient
+                .from(historyTable)
+                .select('*')
+                .eq('id_aset', idAset)
+                .order('tgl_perubahan', { ascending: false });
+
+            if (!logs || logs.length === 0) {
+                alert("Belum ada riwayat untuk aset: " + idAset);
+                return;
             }
-            document.body.classList.add('printing-label');
-            setTimeout(() => { window.print(); document.body.classList.remove('printing-label'); }, 500);
+
+            renderHistoryModal(idAset, logs, historyTable);
         }
 
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const kw = e.target.value.toLowerCase();
-            const localData = Array.isArray(data) ? data : [];
-            const filtered = localData.filter(i => {
-                const user = String(i.user || '');
-                const idAset = String(i.id_aset || '');
-                const dept = String(i.dept || i.dep || '');
-                return user.toLowerCase().includes(kw) ||
-                    idAset.toLowerCase().includes(kw) ||
-                    dept.toLowerCase().includes(kw);
+        function renderHistoryModal(idAset, logs, sourceTable) {
+            const modal = document.getElementById('historyModal');
+            document.getElementById('historyModalTitle').innerText = `Riwayat: ${idAset}`;
+            document.getElementById('historyModalSource').innerText = `Sumber: ${sourceTable}`;
+            const body = document.getElementById('historyModalBody');
+            body.innerHTML = '';
+
+            logs.forEach(log => {
+                const tgl = new Date(log.tgl_perubahan).toLocaleString('id-ID');
+                body.innerHTML += `
+                    <div class="glass-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-white font-semibold text-sm">${log.aksi || 'Update'}</div>
+                                <div class="text-xs text-gray-400">${tgl}</div>
+                            </div>
+                            <span class="text-xs text-gray-400">${log.jenis_mutasi || 'Perubahan'}</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mt-2">${log.keterangan || '-'}</p>
+                        <div class="text-xs text-gray-400 mt-2">Admin: ${log.admin_eksekusi || '-'}</div>
+                    </div>
+                `;
             });
-            renderTable(filtered);
-            updateStats(filtered);
-        });
 
-        async function checkUser() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            
-            const loginSec = document.getElementById('loginSection');
-            const pilihModal = document.getElementById('pilihPTModal');
-            const mainContent = document.getElementById('main-content');
-
-            if (user) {
-                if (loginSec) loginSec.classList.add('hidden');
-                if (pilihModal) pilihModal.classList.remove('hidden');
-                if (mainContent) mainContent.classList.add('hidden');
-                updateAdminUI();
-            } else {
-                if (loginSec) loginSec.classList.remove('hidden');
-                if (pilihModal) pilihModal.classList.add('hidden');
-                if (mainContent) mainContent.classList.add('hidden');
-            }
+            modal.classList.remove('hidden');
         }
 
-        async function updateAdminUI() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            const user = session?.user;
-
-            if (user && user.email === 'andri@panrama.com') {
-                document.body.classList.remove('role-viewer');
-                
-                const scannerSection = document.getElementById('scannerSection');
-                if (scannerSection) scannerSection.classList.remove('hidden');
-                initScanner();
-            } else {
-                document.body.classList.add('role-viewer');
-                
-                const scannerSection = document.getElementById('scannerSection');
-                if (scannerSection) scannerSection.classList.add('hidden');
-            }
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
         }
 
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('btnLogin');
-            const err = document.getElementById('loginError');
+        // Transfer
+        function bukaModalTransfer(id, nama) {
+            asetIdSedangDiproses = id;
+            document.getElementById('infoAset').innerText = `Aset: ${nama}`;
+            document.getElementById('modalTransfer').classList.remove('hidden');
 
-            btn.innerText = "Memverifikasi...";
-            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-            if (error) {
-                err.innerText = "Email atau Password Salah!";
-                err.classList.remove('hidden');
-                btn.innerText = "Masuk Sistem";
-            } else {
-                err.classList.add('hidden');
-                btn.innerText = "Masuk Sistem";
-                checkUser();
-            }
+            const btnP1 = document.getElementById('btnKeP1');
+            const btnP2 = document.getElementById('btnKeP2');
+            btnP1.onclick = () => prosesMutasi('inventaris_p1');
+            btnP2.onclick = () => prosesMutasi('inventaris_p2');
+            btnP1.style.display = currentTable === 'inventaris_p1' ? 'none' : 'block';
+            btnP2.style.display = currentTable === 'inventaris_p2' ? 'none' : 'block';
         }
 
-        async function handleLogout() {
-            const { error } = await supabaseClient.auth.signOut();
-            if (error) {
-                alert("Gagal logout: " + error.message);
-            } else {
-                localStorage.clear();
-                sessionStorage.clear();
-                alert("Berhasil keluar! Sesi telah dibersihkan.");
-                window.location.replace(window.location.pathname);
-            }
+        function tutupModalTransfer() {
+            document.getElementById('modalTransfer').classList.add('hidden');
+            asetIdSedangDiproses = null;
         }
 
         async function prosesMutasi(tabelTujuan) {
-            if(!confirm(`Yakin pindahkan aset ini ke ${tabelTujuan}?`)) return;
+            if (!confirm(`Yakin pindahkan aset ini ke ${tabelTujuan}?`)) return;
 
             try {
-                const { data: aset, error: fetchErr } = await supabaseClient
+                const { data: aset } = await supabaseClient
                     .from(currentTable)
                     .select('*')
                     .eq('id_aset', asetIdSedangDiproses)
                     .single();
 
-                if (fetchErr || !aset) throw new Error("Data aset tidak ditemukan!");
+                if (!aset) throw new Error("Data aset tidak ditemukan!");
 
-                const namaPTAsal = currentTable === 'inventaris_p1' ? 'PT PANRAMA (P1)' : 'PT PANRAMA (P2)';
-                const namaPTTujuan = tabelTujuan === 'inventaris_p1' ? 'PT PANRAMA (P1)' : 'PT PANRAMA (P2)';
+                const namaPTAsal = currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)';
+                const namaPTTujuan = tabelTujuan === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)';
                 const tabelHistoryTujuan = tabelTujuan === 'inventaris_p1' ? 'history_aset' : 'history_p2';
 
                 await supabaseClient.from(tabelTujuan).delete().eq('id_aset', aset.id_aset);
-
-                const { error: insErr } = await supabaseClient
-                    .from(tabelTujuan)
-                    .insert([{
-                        id_aset: aset.id_aset,
-                        user: aset.user,
-                        dept: aset.dept || aset.dep || '-',
-                        device: aset.device,
-                        specs: aset.specs,
-                        status: 'Active', 
-                        created_at: new Date().toISOString()
-                    }]);
-
-                if (insErr) throw insErr;
+                await supabaseClient.from(tabelTujuan).insert([{
+                    id_aset: aset.id_aset,
+                    user: aset.user,
+                    dept: aset.dept || aset.dep || '-',
+                    device: aset.device,
+                    specs: aset.specs,
+                    status: 'Active',
+                    created_at: new Date().toISOString()
+                }]);
 
                 const { data: { user } } = await supabaseClient.auth.getUser();
-                const historyPayload = {
+                await supabaseClient.from(tabelHistoryTujuan).insert([{
                     id_aset: aset.id_aset,
                     user: aset.user,
                     user_lama: aset.user,
@@ -872,193 +985,103 @@
                     keterangan: `Pindahan dari ${namaPTAsal} ke ${namaPTTujuan}`,
                     tgl_perubahan: new Date().toISOString(),
                     admin_eksekusi: user ? user.email : 'System'
-                };
+                }]);
 
-                await supabaseClient.from(tabelHistoryTujuan).insert([historyPayload]);
-
-                const { error: delErr } = await supabaseClient
-                    .from(currentTable)
-                    .delete()
-                    .eq('id_aset', asetIdSedangDiproses);
-
-                if (delErr) throw delErr;
-
+                await supabaseClient.from(currentTable).delete().eq('id_aset', asetIdSedangDiproses);
                 alert("Mutasi Berhasil!");
                 tutupModalTransfer();
-                fetchData(); 
-
+                fetchData();
             } catch (err) {
-                console.error("Gagal Mutasi:", err.message);
                 alert("Error: " + err.message);
             }
         }
 
-        function tutupModalTransfer() {
-            const modal = document.getElementById('modalTransfer');
-            if (modal) modal.classList.add('hidden');
-            asetIdSedangDiproses = null; 
-        }
-
+        // Scanner
         function initScanner() {
             if (html5QrcodeScanner) return;
-            
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 250, aspectRatio: 1.0 });
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 200, aspectRatio: 1.0 });
             html5QrcodeScanner.render((decodedText) => {
                 const code = decodedText.trim().toUpperCase();
-                if (!data || data.length === 0) return;
-
                 const ditemukan = data.find(item => (item.id_aset || "").toString().toUpperCase() === code);
-
                 if (ditemukan) {
-                    alert(
-                        `✅ DATA DITEMUKAN!\n` +
-                        `--------------------------\n` +
-                        `ID Aset : ${ditemukan.id_aset}\n` +
-                        `User    : ${ditemukan.user || '-'}\n` +
-                        `Dept    : ${ditemukan.dept || ditemukan.dep || '-'}\n` +
-                        `Device  : ${ditemukan.device || '-'}`
-                    );
+                    alert(`✅ DITEMUKAN!\nID: ${ditemukan.id_aset}\nUser: ${ditemukan.user || '-'}\nDept: ${ditemukan.dept || ditemukan.dep || '-'}\nDevice: ${ditemukan.device || '-'}`);
                 } else {
-                    alert("❌ Data Aset [" + code + "] tidak ditemukan di database saat ini.");
+                    alert("❌ Data [" + code + "] tidak ditemukan.");
                 }
             });
         }
 
-        async function catatHistory(idAset, kolom, lama, baru) {
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                const historyTable = currentHistory || 'history_aset';
-                
-                const historyData = [{ 
-                    id_aset: idAset, 
-                    user_lama: lama, 
-                    user_baru: baru,
-                    aksi: kolom === 'dept' ? 'Ubah Departemen' : 'Ubah ' + kolom,
-                    keterangan: `${kolom.toUpperCase()} diubah dari "${lama}" menjadi "${baru}"`,
-                    tgl_perubahan: new Date().toISOString(),
-                    admin_eksekusi: user ? user.email : 'System' 
-                }];
-
-                let { error } = await supabaseClient.from(historyTable).insert(historyData);
-
-                if (error && historyTable === 'history_p2') {
-                    await supabaseClient.from('history_aset').insert(historyData);
-                }
-            } catch (err) {
-                console.error("Gagal simpan history:", err.message);
-            }
+        // Utility
+        function toggleForm() {
+            document.getElementById('formContainer').classList.toggle('hidden');
         }
 
-        async function lihatHistory(idAset) {
-            const historyTable = currentHistory || 'history_aset';
-            const fallbackTable = historyTable === 'history_p2' ? 'history_aset' : 'history_p2';
-
-            async function fetchLogs(tableName) {
-                return await supabaseClient
-                    .from(tableName)
-                    .select('*')
-                    .eq('id_aset', idAset)
-                    .order('tgl_perubahan', { ascending: false });
-            }
-
-            let { data: logs, error } = await fetchLogs(historyTable);
-            let sourceTable = historyTable;
-
-            if ((error || !logs || logs.length === 0) && historyTable === 'history_p2') {
-                const fallbackResult = await fetchLogs(fallbackTable);
-                if (fallbackResult.data && fallbackResult.data.length > 0) {
-                    logs = fallbackResult.data;
-                    sourceTable = fallbackTable;
+        function filterByDept(namaDept) {
+            const rows = document.querySelectorAll('#inventoryBody tr');
+            rows.forEach(row => {
+                const deptCell = row.cells[2];
+                if (deptCell) {
+                    const deptText = deptCell.innerText.trim().toUpperCase();
+                    row.style.display = deptText.includes(namaDept.toUpperCase()) ? '' : 'none';
                 }
-            }
-
-            if (!logs || logs.length === 0) {
-                alert("Belum ada riwayat perubahan untuk aset: " + idAset);
-                return;
-            }
-
-            renderHistoryModal(idAset, logs, sourceTable);
-        }
-
-        function renderHistoryModal(idAset, logs, sourceTable) {
-            const modal = document.getElementById('historyModal');
-            const title = document.getElementById('historyModalTitle');
-            const source = document.getElementById('historyModalSource');
-            const body = document.getElementById('historyModalBody');
-
-            if (!modal || !title || !source || !body) return;
-
-            title.innerText = `Riwayat Aset: ${idAset}`;
-            source.innerText = `Sumber: ${sourceTable}`;
-            body.innerHTML = '';
-
-            logs.forEach((log) => {
-                const tgl = new Date(log.tgl_perubahan).toLocaleString('id-ID');
-                const card = document.createElement('div');
-                card.className = 'bg-base-100 p-4 rounded-xl shadow-sm border border-gray-200 mb-4';
-                card.innerHTML = `
-                    <div class="flex justify-between gap-2 items-start">
-                        <div>
-                            <div class="font-semibold text-sm text-gray-800">${log.aksi || 'Update'}</div>
-                            <div class="text-xs text-gray-500">${tgl}</div>
-                        </div>
-                        <span class="badge badge-secondary">${log.jenis_mutasi || 'Perubahan'}</span>
-                    </div>
-                    <p class="mt-3 text-sm text-gray-600">${log.keterangan || '-'}</p>
-                    <div class="mt-3 grid gap-2 text-sm text-gray-700">
-                        <div><span class="font-semibold">User:</span> ${log.user_lama || '-'} ➔ ${log.user_baru || '-'}</div>
-                        ${log.asal_pt ? `<div><span class="font-semibold">Dari:</span> ${log.asal_pt}</div>` : ''}
-                        ${log.tujuan_pt ? `<div><span class="font-semibold">Ke:</span> ${log.tujuan_pt}</div>` : ''}
-                        <div><span class="font-semibold">Admin:</span> ${log.admin_eksekusi || '-'}</div>
-                    </div>
-                `;
-                body.appendChild(card);
             });
-
-            modal.classList.remove('hidden');
         }
 
-        function closeHistoryModal() {
-            const modal = document.getElementById('historyModal');
-            if (modal) modal.classList.add('hidden');
+        function resetFilter() {
+            document.querySelectorAll('#inventoryBody tr').forEach(row => row.style.display = '');
+            document.getElementById('searchInput').value = '';
+        }
+
+        function exportToExcel() {
+            const table = document.querySelector("table");
+            const wb = XLSX.utils.table_to_book(table, { sheet: "Data Inventaris" });
+            XLSX.writeFile(wb, `Inventaris_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        function printSingleLabel(id, user, device) {
+            const printArea = document.getElementById('print-label-area');
+            printArea.innerHTML = `
+                <div style="padding:20px;text-align:center;background:white;">
+                    <div style="font-weight:bold;font-size:18px;margin-bottom:12px;">ASSET: ${device}</div>
+                    <canvas id="singleQRCode" width="180" height="180" style="margin:0 auto;display:block;border:1px solid #000;border-radius:12px;background:white;"></canvas>
+                    <div style="margin-top:12px;font-size:14px;">User: ${user}</div>
+                </div>
+            `;
+            new QRious({
+                element: document.getElementById('singleQRCode'),
+                value: id,
+                size: 180,
+                background: 'white',
+                foreground: '#111827',
+                level: 'H'
+            });
+            document.body.classList.add('printing-label');
+            setTimeout(() => { window.print(); document.body.classList.remove('printing-label'); }, 500);
         }
 
         function setPT(tabel, history) {
             currentTable = tabel;
             currentHistory = history;
-
-            const modal = document.getElementById('pilihPTModal');
-            const main = document.getElementById('main-content');
-
-            if (modal) modal.classList.add('hidden');
-            if (main) main.classList.remove('hidden');
-
+            document.getElementById('pilihPTModal').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
             fetchData();
         }
 
-        function bukaModalTransfer(id, nama) {
-            asetIdSedangDiproses = id;
-            
-            const modal = document.getElementById('modalTransfer');
-            const infoText = document.getElementById('infoAset');
-            const btnP1 = document.getElementById('btnKeP1');
-            const btnP2 = document.getElementById('btnKeP2');
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const kw = e.target.value.toLowerCase();
+            const filtered = data.filter(i => {
+                const user = String(i.user || '');
+                const idAset = String(i.id_aset || '');
+                const dept = String(i.dept || i.dep || '');
+                return user.toLowerCase().includes(kw) || idAset.toLowerCase().includes(kw) || dept.toLowerCase().includes(kw);
+            });
+            renderTable(filtered);
+            updateStats(filtered);
+            updateCharts(filtered);
+        });
 
-            if (infoText) infoText.innerText = "Aset: " + nama;
-            if (modal) modal.classList.remove('hidden');
-
-            if (btnP1) {
-                btnP1.onclick = null;
-                btnP1.onclick = () => prosesMutasi('inventaris_p1');
-                currentTable === 'inventaris_p1' ? btnP1.classList.add('hidden') : btnP1.classList.remove('hidden');
-            }
-
-            if (btnP2) {
-                btnP2.onclick = null;
-                btnP2.onclick = () => prosesMutasi('inventaris_p2');
-                currentTable === 'inventaris_p2' ? btnP2.classList.add('hidden') : btnP2.classList.remove('hidden');
-            }
-        }
+        console.log('🚀 IT Asset Manager Pro v3.0');
     </script>
 </body>
 </html>
