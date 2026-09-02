@@ -230,6 +230,7 @@
 
         .login-box input::placeholder { color: rgba(255, 255, 255, 0.3); }
 
+        /* Form Grid */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -266,6 +267,41 @@
         .form-grid input::placeholder { color: rgba(255, 255, 255, 0.25); }
         .form-grid select option { background: #1a1040; color: white; }
 
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+        }
+
+        .drop-zone:hover {
+            border-color: rgba(99, 102, 241, 0.6);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .drop-zone.dragover {
+            border-color: #818cf8;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #818cf8, #c084fc);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
         @media (max-width: 1024px) {
             .form-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -278,7 +314,6 @@
             .qr-code { width: 40px; height: 40px; }
         }
 
-        /* Print Styles */
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; }
@@ -442,6 +477,9 @@
                 <button onclick="toggleForm()" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold px-4 py-2 rounded-xl hover:shadow-xl transition-all text-sm flex items-center gap-2 btn-tambah">
                     <span>+</span> Tambah Aset
                 </button>
+                <button onclick="openBulkImport()" class="btn btn-glow bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold px-4 py-2 rounded-xl hover:shadow-xl transition-all text-sm flex items-center gap-2">
+                    📤 Import Massal
+                </button>
                 <button onclick="printReport()" class="btn btn-glow bg-white/5 text-white font-semibold px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/10 text-sm flex items-center gap-2">
                     🖨️ Cetak
                 </button>
@@ -450,11 +488,73 @@
                 </button>
             </div>
 
-            <!-- FORM - Lengkap dengan semua field -->
+            <!-- BULK IMPORT MODAL -->
+            <div id="bulkImportModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
+                <div class="glass-card p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-white">📤 Import Massal Aset</h2>
+                        <button onclick="closeBulkImport()" class="text-gray-400 hover:text-white transition-colors">✕</button>
+                    </div>
+                    
+                    <!-- Template Download -->
+                    <div class="mb-4">
+                        <p class="text-gray-400 text-sm mb-2">Download template Excel, isi data, lalu upload kembali</p>
+                        <button onclick="downloadTemplate()" class="btn btn-glow bg-blue-500/20 text-blue-400 font-semibold px-4 py-2 rounded-xl text-sm border border-blue-500/20 hover:bg-blue-500/30 transition-all">
+                            📥 Download Template Excel
+                        </button>
+                    </div>
+
+                    <!-- Drop Zone -->
+                    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                        <div class="text-4xl mb-3">📁</div>
+                        <p class="text-gray-300 font-semibold">Drag & drop file Excel disini</p>
+                        <p class="text-gray-400 text-sm">atau klik untuk memilih file</p>
+                        <p class="text-gray-500 text-xs mt-2">Support: .xlsx, .xls</p>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" onchange="handleFileUpload(event)" />
+                    </div>
+
+                    <!-- Progress -->
+                    <div id="importProgress" class="hidden mt-4">
+                        <div class="flex justify-between text-sm text-gray-400 mb-1">
+                            <span>Mengimport data...</span>
+                            <span id="progressText">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="fill" id="progressFill"></div>
+                        </div>
+                        <p id="importStatus" class="text-sm text-gray-400 mt-2"></p>
+                    </div>
+
+                    <!-- Preview -->
+                    <div id="importPreview" class="hidden mt-4">
+                        <h3 class="text-white font-semibold text-sm mb-2">Preview Data</h3>
+                        <div class="overflow-auto max-h-48 rounded-xl border border-white/10">
+                            <table class="w-full text-xs" id="previewTable">
+                                <thead class="bg-white/5 sticky top-0">
+                                    <tr id="previewHeader"></tr>
+                                </thead>
+                                <tbody id="previewBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="flex gap-3 mt-4">
+                            <button onclick="confirmImport()" class="btn btn-glow bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold px-6 py-2 rounded-xl text-sm">
+                                ✅ Konfirmasi Import
+                            </button>
+                            <button onclick="closeBulkImport()" class="btn btn-glow bg-white/5 text-gray-300 font-semibold px-6 py-2 rounded-xl text-sm border border-white/10">
+                                Batal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM -->
             <div id="formContainer" class="glass-card p-4 mb-4 no-print hidden">
-                <h2 class="text-lg font-bold text-white mb-3">Input Aset Baru</h2>
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-bold text-white">Input Aset Baru</h2>
+                    <button onclick="toggleForm()" class="text-gray-400 hover:text-white">✕</button>
+                </div>
                 <form id="assetForm" class="form-grid">
-                    <!-- Baris 1: Identitas -->
                     <div class="form-control">
                         <label>ID Aset *</label>
                         <input type="text" id="in_id" placeholder="PC-001" required />
@@ -481,8 +581,6 @@
                             <option value="STAFF">STAFF</option>
                         </select>
                     </div>
-
-                    <!-- Baris 2: Device & Spesifikasi -->
                     <div class="form-control">
                         <label>Perangkat *</label>
                         <select id="in_device">
@@ -506,8 +604,6 @@
                             <option value="Broken">Broken</option>
                         </select>
                     </div>
-
-                    <!-- Baris 3: IP & Network -->
                     <div class="form-control">
                         <label>IP Address</label>
                         <input type="text" id="in_ip" placeholder="192.168.1.100" />
@@ -520,8 +616,6 @@
                         <label>Hostname</label>
                         <input type="text" id="in_hostname" placeholder="PC-IT-01" />
                     </div>
-
-                    <!-- Baris 4: License -->
                     <div class="form-control">
                         <label>License OS</label>
                         <input type="text" id="in_license_os" placeholder="Windows 11 Pro" />
@@ -534,8 +628,6 @@
                         <label>License Antivirus</label>
                         <input type="text" id="in_license_av" placeholder="McAfee / Bitdefender" />
                     </div>
-
-                    <!-- Baris 5: License Expiry & Purchase -->
                     <div class="form-control">
                         <label>License Expiry</label>
                         <input type="date" id="in_license_expiry" />
@@ -548,8 +640,6 @@
                         <label>Warranty Expiry</label>
                         <input type="date" id="in_warranty_expiry" />
                     </div>
-
-                    <!-- Baris 6: Monitor -->
                     <div class="form-control">
                         <label>Monitor Brand</label>
                         <input type="text" id="in_monitor_brand" placeholder="Dell / Samsung" />
@@ -562,8 +652,6 @@
                         <label>Monitor Serial</label>
                         <input type="text" id="in_monitor_serial" placeholder="SN123456" />
                     </div>
-
-                    <!-- Baris 7: Printer -->
                     <div class="form-control">
                         <label>Printer Brand</label>
                         <input type="text" id="in_printer_brand" placeholder="HP / Epson" />
@@ -576,8 +664,6 @@
                         <label>Printer Serial</label>
                         <input type="text" id="in_printer_serial" placeholder="SN789012" />
                     </div>
-
-                    <!-- Baris 8: Mouse & Keyboard -->
                     <div class="form-control">
                         <label>Mouse Brand</label>
                         <input type="text" id="in_mouse_brand" placeholder="Logitech / Rexus" />
@@ -595,8 +681,6 @@
                         <label>Keyboard Brand</label>
                         <input type="text" id="in_keyboard_brand" placeholder="Logitech / Rexus" />
                     </div>
-
-                    <!-- Baris 9: Keyboard Type & Notes -->
                     <div class="form-control">
                         <label>Keyboard Type</label>
                         <select id="in_keyboard_type">
@@ -624,7 +708,7 @@
                 <input type="text" id="searchInput" placeholder="Cari ID, User, Dept, IP, License..." class="input input-bordered w-full max-w-md bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl text-sm" />
             </div>
 
-            <!-- TABLE - Full columns -->
+            <!-- TABLE -->
             <div class="glass-card overflow-hidden">
                 <div class="table-wrapper" id="tableWrapper">
                     <table id="inventoryTable">
@@ -695,6 +779,7 @@
         let html5QrcodeScanner = null;
         let statusChartInstance = null;
         let deptChartInstance = null;
+        let importData = [];
 
         // Auth
         supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -801,7 +886,6 @@
                 const statusClass = item.status?.toLowerCase() === 'active' ? 'active' : 
                                    item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
                 
-                // Format data
                 const licenseDisplay = [item.license_os, item.license_office, item.license_av]
                     .filter(Boolean).join(' | ') || '-';
                 
@@ -839,6 +923,7 @@
                         <div class="flex gap-1 justify-center flex-wrap">
                             <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">Label</button>
                             <button onclick="lihatHistory('${item.id_aset}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">📜</button>
+                            <button onclick="duplicateAsset('${item.id_aset}')" class="text-[10px] bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-2 py-1 rounded transition-all">📋 Clone</button>
                             <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all aksi-kolom-admin">Transfer</button>
                             <button onclick="deleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all btn-hapus aksi-kolom-admin">Hapus</button>
                         </div>
@@ -961,7 +1046,279 @@
             });
         }
 
-        // CRUD
+        // ============================================
+        // BULK IMPORT FUNCTIONS
+        // ============================================
+        function openBulkImport() {
+            document.getElementById('bulkImportModal').classList.remove('hidden');
+            document.getElementById('importPreview').classList.add('hidden');
+            document.getElementById('importProgress').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+            importData = [];
+        }
+
+        function closeBulkImport() {
+            document.getElementById('bulkImportModal').classList.add('hidden');
+        }
+
+        function downloadTemplate() {
+            // Create template with all fields
+            const headers = [
+                'id_aset', 'user', 'dept', 'device', 'specs', 'status',
+                'ip_address', 'mac_address', 'hostname',
+                'license_os', 'license_office', 'license_av', 'license_expiry',
+                'purchase_date', 'warranty_expiry',
+                'monitor_brand', 'monitor_size', 'monitor_serial',
+                'printer_brand', 'printer_model', 'printer_serial',
+                'mouse_brand', 'mouse_type', 'keyboard_brand', 'keyboard_type',
+                'notes'
+            ];
+
+            const sampleData = {
+                id_aset: 'PC-001',
+                user: 'Budi Santoso',
+                dept: 'IT',
+                device: 'KOMPUTER',
+                specs: 'I5,8 GB',
+                status: 'Active',
+                ip_address: '192.168.1.100',
+                mac_address: 'AA:BB:CC:DD:EE:FF',
+                hostname: 'PC-IT-01',
+                license_os: 'Windows 11 Pro',
+                license_office: 'Microsoft 365',
+                license_av: 'McAfee',
+                license_expiry: '2026-12-31',
+                purchase_date: '2025-01-15',
+                warranty_expiry: '2027-01-15',
+                monitor_brand: 'Dell',
+                monitor_size: '24 inch',
+                monitor_serial: 'SN123456',
+                printer_brand: 'HP',
+                printer_model: 'LaserJet MFP',
+                printer_serial: 'SN789012',
+                mouse_brand: 'Logitech',
+                mouse_type: 'Wireless',
+                keyboard_brand: 'Logitech',
+                keyboard_type: 'Wireless',
+                notes: 'PC untuk staff IT'
+            };
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet([sampleData], { headers });
+            
+            // Set column widths
+            ws['!cols'] = headers.map(h => ({ wch: Math.max(h.length, 15) }));
+            
+            XLSX.utils.book_append_sheet(wb, ws, 'Template');
+            XLSX.writeFile(wb, 'Template_Import_Aset_IT.xlsx');
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    if (jsonData.length === 0) {
+                        alert('File kosong!');
+                        return;
+                    }
+
+                    importData = jsonData;
+                    showPreview(jsonData);
+                } catch (err) {
+                    alert('Error membaca file: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function showPreview(data) {
+            const previewDiv = document.getElementById('importPreview');
+            const headerRow = document.getElementById('previewHeader');
+            const bodyRow = document.getElementById('previewBody');
+
+            // Header
+            const headers = Object.keys(data[0]);
+            headerRow.innerHTML = headers.map(h => 
+                `<th class="px-3 py-2 text-left text-gray-400 font-semibold text-[10px]">${h}</th>`
+            ).join('');
+
+            // Body (max 5 rows preview)
+            const previewData = data.slice(0, 5);
+            bodyRow.innerHTML = previewData.map(row => 
+                `<tr>${headers.map(h => 
+                    `<td class="px-3 py-2 border-t border-white/5 text-gray-300 text-[10px]">${row[h] || '-'}</td>`
+                ).join('')}</tr>`
+            ).join('');
+
+            // Show total count
+            document.getElementById('importStatus').innerText = `📊 ${data.length} data siap diimport`;
+            previewDiv.classList.remove('hidden');
+        }
+
+        async function confirmImport() {
+            if (importData.length === 0) {
+                alert('Tidak ada data untuk diimport!');
+                return;
+            }
+
+            if (!confirm(`Yakin import ${importData.length} data ke database?`)) return;
+
+            const progressDiv = document.getElementById('importProgress');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const statusText = document.getElementById('importStatus');
+            
+            progressDiv.classList.remove('hidden');
+            progressFill.style.width = '0%';
+            progressText.innerText = '0%';
+
+            let success = 0;
+            let failed = 0;
+            const errors = [];
+
+            for (let i = 0; i < importData.length; i++) {
+                const row = importData[i];
+                
+                // Skip jika id_aset kosong
+                if (!row.id_aset) {
+                    failed++;
+                    errors.push(`Baris ${i+1}: ID Aset kosong`);
+                    continue;
+                }
+
+                try {
+                    // Mapping field
+                    const asset = {
+                        id_aset: String(row.id_aset).trim(),
+                        user: String(row.user || '').trim(),
+                        dept: String(row.dept || '').trim(),
+                        device: String(row.device || '').trim(),
+                        specs: String(row.specs || '').trim(),
+                        status: String(row.status || 'Active').trim(),
+                        ip_address: String(row.ip_address || '').trim(),
+                        mac_address: String(row.mac_address || '').trim(),
+                        hostname: String(row.hostname || '').trim(),
+                        license_os: String(row.license_os || '').trim(),
+                        license_office: String(row.license_office || '').trim(),
+                        license_av: String(row.license_av || '').trim(),
+                        license_expiry: row.license_expiry || null,
+                        purchase_date: row.purchase_date || null,
+                        warranty_expiry: row.warranty_expiry || null,
+                        monitor_brand: String(row.monitor_brand || '').trim(),
+                        monitor_size: String(row.monitor_size || '').trim(),
+                        monitor_serial: String(row.monitor_serial || '').trim(),
+                        printer_brand: String(row.printer_brand || '').trim(),
+                        printer_model: String(row.printer_model || '').trim(),
+                        printer_serial: String(row.printer_serial || '').trim(),
+                        mouse_brand: String(row.mouse_brand || '').trim(),
+                        mouse_type: String(row.mouse_type || '').trim(),
+                        keyboard_brand: String(row.keyboard_brand || '').trim(),
+                        keyboard_type: String(row.keyboard_type || '').trim(),
+                        notes: String(row.notes || '').trim()
+                    };
+
+                    // Cek duplikat
+                    const { data: existing } = await supabaseClient
+                        .from(currentTable)
+                        .select('id_aset')
+                        .eq('id_aset', asset.id_aset);
+
+                    if (existing && existing.length > 0) {
+                        failed++;
+                        errors.push(`Baris ${i+1}: ID '${asset.id_aset}' sudah ada`);
+                        continue;
+                    }
+
+                    const { error } = await supabaseClient
+                        .from(currentTable)
+                        .insert([asset]);
+
+                    if (error) {
+                        failed++;
+                        errors.push(`Baris ${i+1}: ${error.message}`);
+                    } else {
+                        success++;
+                    }
+                } catch (err) {
+                    failed++;
+                    errors.push(`Baris ${i+1}: ${err.message}`);
+                }
+
+                // Update progress
+                const progress = ((i + 1) / importData.length) * 100;
+                progressFill.style.width = progress + '%';
+                progressText.innerText = Math.round(progress) + '%';
+                statusText.innerText = `📊 ${success} berhasil, ${failed} gagal...`;
+            }
+
+            // Selesai
+            statusText.innerText = `✅ Selesai! ${success} data berhasil diimport, ${failed} gagal.`;
+            
+            if (errors.length > 0) {
+                console.log('Error details:', errors);
+                if (failed > 0) {
+                    alert(`⚠️ ${failed} data gagal diimport.\nCek console untuk detail error.`);
+                }
+            }
+
+            fetchData();
+            
+            // Tutup modal setelah 3 detik
+            setTimeout(() => {
+                closeBulkImport();
+            }, 3000);
+        }
+
+        // ============================================
+        // DUPLICATE / CLONE ASSET
+        // ============================================
+        async function duplicateAsset(id) {
+            const original = data.find(item => item.id_aset === id);
+            if (!original) {
+                alert('Data tidak ditemukan!');
+                return;
+            }
+
+            // Generate new ID
+            const newId = prompt('Masukkan ID baru untuk clone:', original.id_aset + '-copy');
+            if (!newId) return;
+
+            // Cek duplikat
+            const existing = data.find(item => item.id_aset === newId);
+            if (existing) {
+                alert(`ID '${newId}' sudah ada!`);
+                return;
+            }
+
+            // Clone data
+            const cloneData = { ...original };
+            cloneData.id_aset = newId;
+            delete cloneData.created_at;
+            delete cloneData.updated_at;
+
+            const { error } = await supabaseClient
+                .from(currentTable)
+                .insert([cloneData]);
+
+            if (error) {
+                alert('Gagal clone: ' + error.message);
+            } else {
+                alert(`✅ Berhasil clone aset ${id} -> ${newId}`);
+                fetchData();
+            }
+        }
+
+        // ============================================
+        // CRUD OPERATIONS
+        // ============================================
         async function updateField(idRaw, kolom, nilaiBaru) {
             const idAset = idRaw.trim();
             const nilaiClean = nilaiBaru.trim();
@@ -1234,7 +1591,6 @@
         }
 
         function exportToExcel() {
-            // Ambil data dari state
             const exportData = data.map(item => ({
                 'ID Aset': item.id_aset,
                 'User': item.user || '-',
@@ -1378,6 +1734,33 @@
             fetchData();
         }
 
+        // Drag & Drop untuk import
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const fileInput = document.getElementById('fileInput');
+                    fileInput.files = files;
+                    handleFileUpload({ target: fileInput });
+                }
+            });
+        });
+
         // Search
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const kw = e.target.value.toLowerCase();
@@ -1395,8 +1778,9 @@
             updateCharts(filtered);
         });
 
-        console.log('🚀 IT Asset Manager Pro v4.0 - Complete Edition');
-        console.log('📋 Fitur: IP, License, Monitor, Printer, Mouse, Keyboard');
+        console.log('🚀 IT Asset Manager Pro v5.0 - Bulk Import + Clone');
+        console.log('📋 Fitur: Import Massal Excel, Clone/Duplicate Aset');
+        console.log('📦 Total field: 26 field lengkap!');
     </script>
 </body>
 </html>
