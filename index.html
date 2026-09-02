@@ -9,455 +9,302 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-body { 
-    font-family: 'Inter', sans-serif; 
-    /* GANTI URL DI BAWAH INI DENGAN FOTO PILIHANMU */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
 
-/* Biar kartu statistik & tabel kelihatan transparan mewah (Glassmorphism) */
-.card, .stats, .navbar {
-    background-color: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
+        .card, .stats, .navbar {
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
 
-.stat { background: transparent !important; }
+        .stat { background: transparent !important; }
 
-@media print { 
-    .no-print { display: none !important; } 
-    body.printing-label .main-content { display: none !important; } 
-    body { background-image: none !important; background-color: white !important; }
-    canvas, img, svg {
-        image-rendering: pixelated !important;
-        image-rendering: crisp-edges !important;
-    }
-}
+        @media print { 
+            .no-print { display: none !important; } 
+            body.printing-label .main-content { display: none !important; } 
+            body { background-image: none !important; background-color: white !important; }
+            canvas, img, svg {
+                image-rendering: pixelated !important;
+                image-rendering: crisp-edges !important;
+            }
+        }
 
-.qr-code {
-    width: 110px;
-    height: 110px;
-    max-width: 110px;
-    max-height: 110px;
-    margin: 0 auto;
-    display: block;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-}
+        .qr-code {
+            width: 110px;
+            height: 110px;
+            max-width: 110px;
+            max-height: 110px;
+            margin: 0 auto;
+            display: block;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+        }
 
-.print-only-label { display: none; }
-@media print { 
-    body.printing-label .print-only-label { 
-        display: flex !important; 
-        justify-content: center; 
-        align-items: center; 
-        height: 100vh; 
-    } 
-}
-        /* Sembunyikan tombol-tombol admin untuk role-viewer */
-body.role-viewer .btn-hapus, 
-body.role-viewer .btn-tambah, 
-body.role-viewer .btn-import,
-body.role-viewer [onclick*="deleteAsset"],
-body.role-viewer .aksi-kolom { 
-    display: none !important; 
-}
-.editable:focus {
-    background-color: rgba(100, 26, 230, 0.1); /* Warna highlight ungu tipis pas diklik */
-    outline: 2px solid #641ae6;
-    border-radius: 4px;
-    color: white;
-}
-  .table-wrapper {
-    max-height: 60vh; 
-    overflow-y: auto;
-    background: rgba(255, 255, 255, 0.05); /* Biar tetap transparan mewah */
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
+        .print-only-label { display: none; }
+        @media print { 
+            body.printing-label .print-only-label { 
+                display: flex !important; 
+                justify-content: center; 
+                align-items: center; 
+                height: 100vh; 
+            } 
+        }
 
-.table-wrapper table th,
-.table-wrapper table td {
-    vertical-align: middle;
-}
+        body.role-viewer .btn-hapus, 
+        body.role-viewer .btn-tambah, 
+        body.role-viewer .btn-import,
+        body.role-viewer [onclick*="deleteAsset"],
+        body.role-viewer [onclick*="bukaModalTransfer"],
+        body.role-viewer .aksi-kolom-admin { 
+            display: none !important; 
+        }
 
-.aksi-kolom {
-    display: flex !important;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .editable:focus {
+            background-color: rgba(100, 26, 230, 0.1);
+            outline: 2px solid #641ae6;
+            border-radius: 4px;
+            color: white;
+        }
 
-.aksi-kolom .btn {
-    min-width: 5.5rem;
-    height: 2.3rem;
-    line-height: 1;
-    white-space: nowrap;
-}
+        .table-wrapper {
+            max-height: 60vh; 
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-.td-aksi-center {
-    text-align: center;
-}
+        .table-wrapper table th,
+        .table-wrapper table td {
+            vertical-align: middle;
+        }
 
-thead th {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background-color: #1e293b !important; /* Warna gelap biar kontras */
-    color: white !important;
-}      
+        .aksi-kolom {
+            display: flex !important;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    /* Khusus untuk kotak Departemen */
-.stat-dept .stat-title {
-    color: #000000 !important;
-    font-weight: bold !important;
-    opacity: 1 !important;
-}
+        .aksi-kolom .btn {
+            min-width: 5.5rem;
+            height: 2.3rem;
+            line-height: 1;
+            white-space: nowrap;
+        }
 
-.stat-dept .stat-value {
-    color: #2563eb !important; /* Warna Biru terang */
-    font-weight: 800;
-}
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background-color: #1e293b !important;
+            color: white !important;
+        }      
 
-.stat-dept {
-    width: 100% !important;
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db;
-}
+        .stat-dept .stat-title {
+            color: #000000 !important;
+            font-weight: bold !important;
+            opacity: 1 !important;
+        }
 
-.stat-dept {
-    transition: all 0.3s ease !important;
-    cursor: pointer;
-}
+        .stat-dept .stat-value {
+            color: #2563eb !important;
+            font-weight: 800;
+        }
 
-.stat-dept:hover {
-    transform: translateY(-8px) scale(1.02); /* Naik & sedikit membesar */
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); /* Bayangan lebih tebal */
-    border: 1px solid #00d1ff; /* Garis tepi biru neon */
-    background-color: rgba(255, 255, 255, 0.1); /* Agak terang dikit */
-}
+        .stat-dept {
+            width: 100% !important;
+            background-color: #ffffff !important;
+            border: 1px solid #d1d5db;
+            transition: all 0.3s ease !important;
+            cursor: pointer;
+        }
 
-.stat-dept:active {
-    transform: translateY(-2px); /* Efek membal pas ditekan */
-}
+        .stat-dept:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid #00d1ff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
 
-		/* Samakan ukuran tombol Excel dengan tombol lainnya */
-.btn-custom-excel {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #00a96e; /* Warna hijau sukses */
-    color: white;
-    height: 3rem; /* Samakan dengan tinggi tombol Tambah Aset */
-    padding: 0 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-    gap: 0.5rem;
-}
+        .stat-dept:active {
+            transform: translateY(-2px);
+        }
 
-.btn-custom-excel:hover {
-    background-color: #06b477;
-    transform: scale(1.05);
-}
+        .btn-custom-excel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #00a96e;
+            color: white;
+            height: 3rem;
+            padding: 0 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            gap: 0.5rem;
+        }
 
-		/* Efek denyut buat badge Maintenance */
-.badge-warning {
-    animation: pulse-yellow 2s infinite;
-    border: none;
-}
+        .btn-custom-excel:hover {
+            background-color: #06b477;
+            transform: scale(1.05);
+        }
 
-/* Efek denyut buat badge Aktif biar kelihatan 'Live' */
-.badge-success {
-    animation: pulse-green 3s infinite;
-    border: none;
-}
+        .badge-warning {
+            animation: pulse-yellow 2s infinite;
+            border: none;
+        }
 
-@keyframes pulse-yellow {
-    0% { box-shadow: 0 0 0 0px rgba(251, 189, 35, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(251, 189, 35, 0); }
-    100% { box-shadow: 0 0 0 0px rgba(251, 189, 35, 0); }
-}
+        .badge-success {
+            animation: pulse-green 3s infinite;
+            border: none;
+        }
 
-@keyframes pulse-green {
-    0% { box-shadow: 0 0 0 0px rgba(54, 211, 153, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(54, 211, 153, 0); }
-    100% { box-shadow: 0 0 0 0px rgba(54, 211, 153, 0); }
-}
-        
+        @keyframes pulse-yellow {
+            0% { box-shadow: 0 0 0 0px rgba(251, 189, 35, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(251, 189, 35, 0); }
+            100% { box-shadow: 0 0 0 0px rgba(251, 189, 35, 0); }
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0px rgba(54, 211, 153, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(54, 211, 153, 0); }
+            100% { box-shadow: 0 0 0 0px rgba(54, 211, 153, 0); }
+        }
     </style>
 </head>
 <body class="bg-base-200 min-h-screen">
     <div id="loginSection" class="flex items-center justify-center min-h-screen no-print">
-    <div class="card w-96 bg-white shadow-xl p-8 border border-primary/20">
-        <h2 class="text-2xl font-bold text-center mb-6 text-primary">IT ASSET LOGIN</h2>
-        <div class="form-control gap-4">
-            <input type="email" id="loginEmail" placeholder="Email Admin" class="input input-bordered focus:input-primary" />
-            <input type="password" id="loginPassword" placeholder="Password" class="input input-bordered focus:input-primary" />
-            <button onclick="handleLogin()" id="btnLogin" class="btn btn-primary text-white">Masuk Sistem</button>
+        <div class="card w-96 bg-white shadow-xl p-8 border border-primary/20">
+            <h2 class="text-2xl font-bold text-center mb-6 text-primary">IT ASSET LOGIN</h2>
+            <div class="form-control gap-4">
+                <input type="email" id="loginEmail" placeholder="Email Admin" class="input input-bordered focus:input-primary" />
+                <input type="password" id="loginPassword" placeholder="Password" class="input input-bordered focus:input-primary" />
+                <button onclick="handleLogin()" id="btnLogin" class="btn btn-primary text-white">Masuk Sistem</button>
+            </div>
+            <p id="loginError" class="text-error text-sm mt-4 text-center hidden font-semibold"></p>
         </div>
-        <p id="loginError" class="text-error text-sm mt-4 text-center hidden font-semibold"></p>
-    </div>
     </div>
 
     <div id="pilihPTModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[100] no-print">
-    <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm w-full border-4 border-primary">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800 uppercase tracking-widest">PILIH DATABASE</h2>
-        <div class="grid gap-4">
-            <button onclick="setPT('inventaris_p1', 'history_aset')" class="btn btn-primary btn-lg shadow-lg">
-                PT MAGICASE (P1)
-            </button>
-            <button onclick="setPT('inventaris_p2', 'history_p2')" class="btn btn-secondary btn-lg shadow-lg">
-                PT PANRAMA (P2)
-            </button>
+        <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm w-full border-4 border-primary">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 uppercase tracking-widest">PILIH DATABASE</h2>
+            <div class="grid gap-4">
+                <button onclick="setPT('inventaris_p1', 'history_aset')" class="btn btn-primary btn-lg shadow-lg">
+                    PT MAGICASE (P1)
+                </button>
+                <button onclick="setPT('inventaris_p2', 'history_p2')" class="btn btn-secondary btn-lg shadow-lg">
+                    PT PANRAMA (P2)
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
     <div id="print-label-area" class="print-only-label"></div>
 
-	<div id="main-content" class="main-content hidden">
-    <div class="navbar bg-primary text-primary-content shadow-lg px-4 md:px-10 no-print">
-        <div class="flex-1">
-            <a class="text-xl font-bold tracking-tight uppercase text-white">IT-ASSET DASHBOARD</a>
+    <div id="main-content" class="main-content hidden">
+        <div class="navbar bg-primary text-primary-content shadow-lg px-4 md:px-10 no-print">
+            <div class="flex-1">
+                <a class="text-xl font-bold tracking-tight uppercase text-white">IT-ASSET DASHBOARD</a>
+            </div>
+            <div class="flex-none flex items-center gap-3">
+                <div id="statusConnection" class="badge badge-outline text-white">Terhubung</div>
+                <button onclick="handleLogout()" class="btn btn-error btn-xs text-white font-bold px-4">LOGOUT</button>
+            </div>
         </div>
-        <div class="flex-none flex items-center gap-3">
-            <div id="statusConnection" class="badge badge-outline text-white">Terhubung</div>
-            <button onclick="handleLogout()" class="btn btn-error btn-xs text-white font-bold px-4">LOGOUT</button>
-        </div>
-    </div>
 
         <div class="max-w-6xl mx-auto p-4 md:p-10">
-            
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 no-print">
-    <div class="stats shadow">
-         <div class="stat p-3" onclick="resetFilter()" style="cursor:pointer"> 
-            <div class="stat-title text-xs">Total Aset</div>
-            <div id="totalAset" class="stat-value text-primary text-xl">0</div>
-        </div>
-    </div>
-    
-    <div class="stats shadow">
-        <div class="stat p-3">
-            <div class="stat-title text-xs text-info">Laptop</div>
-            <div id="totalLaptop" class="stat-value text-info text-xl">0</div>
-        </div>
-    </div>
-
-    <div class="stats shadow">
-        <div class="stat p-3">
-            <div class="stat-title text-xs text-warning">Komputer</div>
-            <div id="totalKomputer" class="stat-value text-warning text-xl">0</div>
-        </div>
-    </div>
-
-    <div class="stats shadow">
-        <div class="stat p-3">
-            <div class="stat-title text-xs text-success font-bold">Aktif</div>
-            <div id="unitAktif" class="stat-value text-success text-xl">0</div>
-        </div>
-    </div>
-
-    <div class="stats shadow">
-        <div class="stat p-3">
-            <div class="stat-title text-xs text-error font-bold">Maintenance</div>
-            <div id="unitRusak" class="stat-value text-error text-xl">0</div>
-        </div>
-    </div>
-
-     <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('HRD')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">HRD</div>
-    <div id="totalHRD" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>
-
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('PAJAK')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">PAJAK</div>
-    <div id="totalPajak" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>
-
-     <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('PPIC')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">PPIC</div>
-    <div id="totalPPIC" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>     
-
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('EXIM')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">EXIM</div>
-    <div id="totalEXIM" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>   
-            
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('FINANCE')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">FINANCE</div>
-    <div id="totalFINANCE" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>   
-
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('IT')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">IT</div>
-    <div id="totalIT" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>   
+                <div class="stats shadow">
+                     <div class="stat p-3" onclick="resetFilter()" style="cursor:pointer"> 
+                        <div class="stat-title text-xs">Total Aset</div>
+                        <div id="totalAset" class="stat-value text-primary text-xl">0</div>
+                    </div>
+                </div>
                 
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('INVENTORY')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">IT INV</div>
-    <div id="totalINVENTORY" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>   
+                <div class="stats shadow">
+                    <div class="stat p-3">
+                        <div class="stat-title text-xs text-info">Laptop</div>
+                        <div id="totalLaptop" class="stat-value text-info text-xl">0</div>
+                    </div>
+                </div>
 
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('CAD')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">CAD</div>
-    <div id="totalCAD" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
+                <div class="stats shadow">
+                    <div class="stat p-3">
+                        <div class="stat-title text-xs text-warning">Komputer</div>
+                        <div id="totalKomputer" class="stat-value text-warning text-xl">0</div>
+                    </div>
+                </div>
 
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('GUDANG ACCESSORIES')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">GUDANG ACC</div>
-    <div id="totalGUDANG_ACCESSORIES" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-    
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('GUDANG KAIN')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">GUDANG KAIN</div>
-    <div id="totalGUDANG_KAIN" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
+                <div class="stats shadow">
+                    <div class="stat p-3">
+                        <div class="stat-title text-xs text-success font-bold">Aktif</div>
+                        <div id="unitAktif" class="stat-value text-success text-xl">0</div>
+                    </div>
+                </div>
 
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('PACKING')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">PACKING</div>
-    <div id="totalPACKING" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
+                <div class="stats shadow">
+                    <div class="stat p-3">
+                        <div class="stat-title text-xs text-error font-bold">Maintenance</div>
+                        <div id="unitRusak" class="stat-value text-error text-xl">0</div>
+                    </div>
+                </div>
 
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('SAMPLE PRODUKSI')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">SAMPLE PROD</div>
-    <div id="totalSAMPLE_PRODUKSI" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('SAMPLE ROOM')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">SAMPLE ROOM</div>
-    <div id="totalSAMPLE_ROOM" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-
-     <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('MD')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">MD</div>
-    <div id="totalMD" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('BC')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">BC</div>
-    <div id="totalBC" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('QA')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">QA</div>
-    <div id="totalQA" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('FACTORY MANAGER')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">FM</div>
-<div id="totalFACTORY_MANAGER" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-    
-       <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('GENERAL MANAGER')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">GM</div>
-    <div id="totalGENERAL_MANAGER" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-
-     <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('IE')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">IE</div>
-    <div id="totalIE" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-
-    <div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('PRODUKSI')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">PRODUKSI</div>
-    <div id="totalPRODUKSI" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div> 
-				
-	<div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('CUTTING')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">CUTTING</div>
-    <div id="totalCUTTING" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>
-
-	<div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('DIGITAL')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">DIGITAL</div>
-    <div id="totalDIGITAL" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>
-
-				<div class="stats shadow stat-dept">
-  <div class="stat p-3" onclick="filterByDept('STAFF')" style="cursor:pointer">
-    <div class="stat-title text-xs text-info">STAFF</div>
-    <div id="totalSTAFF" class="stat-value text-primary text-xl">0</div>
-  </div>
-</div>
-    
-</div>
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('HRD')" style="cursor:pointer"><div class="stat-title text-xs text-info">HRD</div><div id="totalHRD" class="stat-value text-primary text-xl">0</div></div></div>
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('PAJAK')" style="cursor:pointer"><div class="stat-title text-xs text-info">PAJAK</div><div id="totalPajak" class="stat-value text-primary text-xl">0</div></div></div>
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('PPIC')" style="cursor:pointer"><div class="stat-title text-xs text-info">PPIC</div><div id="totalPPIC" class="stat-value text-primary text-xl">0</div></div></div>     
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('EXIM')" style="cursor:pointer"><div class="stat-title text-xs text-info">EXIM</div><div id="totalEXIM" class="stat-value text-primary text-xl">0</div></div></div>   
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('FINANCE')" style="cursor:pointer"><div class="stat-title text-xs text-info">FINANCE</div><div id="totalFINANCE" class="stat-value text-primary text-xl">0</div></div></div>   
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('IT')" style="cursor:pointer"><div class="stat-title text-xs text-info">IT</div><div id="totalIT" class="stat-value text-primary text-xl">0</div></div></div>   
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('INVENTORY')" style="cursor:pointer"><div class="stat-title text-xs text-info">IT INV</div><div id="totalINVENTORY" class="stat-value text-primary text-xl">0</div></div></div>   
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('CAD')" style="cursor:pointer"><div class="stat-title text-xs text-info">CAD</div><div id="totalCAD" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('GUDANG ACC')" style="cursor:pointer"><div class="stat-title text-xs text-info">GUDANG ACC</div><div id="totalGUDANG_ACCESSORIES" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('GUDANG KAIN')" style="cursor:pointer"><div class="stat-title text-xs text-info">GUDANG KAIN</div><div id="totalGUDANG_KAIN" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('PACKING')" style="cursor:pointer"><div class="stat-title text-xs text-info">PACKING</div><div id="totalPACKING" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('SAMPLE PROD')" style="cursor:pointer"><div class="stat-title text-xs text-info">SAMPLE PROD</div><div id="totalSAMPLE_PRODUKSI" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('SAMPLE ROOM')" style="cursor:pointer"><div class="stat-title text-xs text-info">SAMPLE ROOM</div><div id="totalSAMPLE_ROOM" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('MD')" style="cursor:pointer"><div class="stat-title text-xs text-info">MD</div><div id="totalMD" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('BC')" style="cursor:pointer"><div class="stat-title text-xs text-info">BC</div><div id="totalBC" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('QA')" style="cursor:pointer"><div class="stat-title text-xs text-info">QA</div><div id="totalQA" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('FACTORY MANAGER')" style="cursor:pointer"><div class="stat-title text-xs text-info">FM</div><div id="totalFACTORY_MANAGER" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('GENERAL MANAGER')" style="cursor:pointer"><div class="stat-title text-xs text-info">GM</div><div id="totalGENERAL_MANAGER" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('IE')" style="cursor:pointer"><div class="stat-title text-xs text-info">IE</div><div id="totalIE" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('PRODUKSI')" style="cursor:pointer"><div class="stat-title text-xs text-info">PRODUKSI</div><div id="totalPRODUKSI" class="stat-value text-primary text-xl">0</div></div></div> 
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('CUTTING')" style="cursor:pointer"><div class="stat-title text-xs text-info">CUTTING</div><div id="totalCUTTING" class="stat-value text-primary text-xl">0</div></div></div>
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('DIGITAL')" style="cursor:pointer"><div class="stat-title text-xs text-info">DIGITAL</div><div id="totalDIGITAL" class="stat-value text-primary text-xl">0</div></div></div>
+                <div class="stats shadow stat-dept"><div class="stat p-3" onclick="filterByDept('STAFF')" style="cursor:pointer"><div class="stat-title text-xs text-info">STAFF</div><div id="totalSTAFF" class="stat-value text-primary text-xl">0</div></div></div>
+            </div>
 
             <div id="scannerSection" class="hidden no-print">
-    <div class="flex justify-center mb-4">
-        <div class="bg-black p-1 rounded-lg shadow-lg" style="width: 100%; max-width: 280px;"> 
-            <div id="reader" style="width: 100%; min-height: 150px;" class="overflow-hidden rounded-md"></div>
-            <p class="text-center text-white text-[8px] mt-1 opacity-70">📷 READY TO SCAN</p>
-        </div>
-    </div>
-</div>
+                <div class="flex justify-center mb-4">
+                    <div class="bg-black p-1 rounded-lg shadow-lg" style="width: 100%; max-width: 280px;"> 
+                        <div id="reader" style="width: 100%; min-height: 150px;" class="overflow-hidden rounded-md"></div>
+                        <p class="text-center text-white text-[8px] mt-1 opacity-70">📷 READY TO SCAN</p>
+                    </div>
+                </div>
+            </div>
 
             <div class="flex flex-wrap gap-2 mb-6 no-print">
-                <button onclick="toggleForm()" class="btn btn-primary text-white">+ Tambah Aset</button>
+                <button onclick="toggleForm()" class="btn btn-primary text-white btn-tambah">+ Tambah Aset</button>
                 <button onclick="window.print()" class="btn btn-outline btn-secondary">Cetak Laporan</button>
-				<button onclick="exportToExcel()" class="btn-custom-excel">
-                <i class="fas fa-file-excel"></i> Export Excel
-                </button>
-</button>
+                <button onclick="exportToExcel()" class="btn-custom-excel">⚡ Export Excel</button>
             </div>
 
             <div id="formContainer" class="card bg-base-100 shadow-xl mb-8 no-print hidden">
@@ -492,14 +339,12 @@ thead th {
                                 <option value="BC">BC</option>
                                 <option value="QA">QA</option>
                                 <option value="FACTORY MANAGER">FACTORY MANAGER</option>
-                                <option value="MANAGER">MANAGER</option>
+                                <option value="GENERAL MANAGER">GENERAL MANAGER</option>
                                 <option value="IE">IE</option>
-                                <option value="GENARAL MANAGER">GENARAL MANAGER</option>
-								<option value="CUTTING">CUTTING</option>
-								<option value="PRODUKSI">PRODUKSI</option>
-								<option value="DIGITAL">DIGITAL</option>
-								<option value="DIGITAL">STAFF</option>
-	
+                                <option value="CUTTING">CUTTING</option>
+                                <option value="PRODUKSI">PRODUKSI</option>
+                                <option value="DIGITAL">DIGITAL</option>
+                                <option value="STAFF">STAFF</option>
                             </select>
                         </div>
                         <div class="form-control">
@@ -537,15 +382,16 @@ thead th {
 
             <div class="card bg-base-100 shadow-xl"> 
                 <div class="table-wrapper"> 
-                    <table class="table table-zebra w-full"> <thead>
-                <tr class="bg-base-300 text-center">
-                    <th>QR CODE</th>
-                    <th>USER</th>
-                    <th>DEPT</th>
-                    <th>DEVICE</th>
-                    <th>STATUS</th>
-                    <th class="no-print">AKSI</th>
-                </tr>
+                    <table class="table table-zebra w-full"> 
+                        <thead>
+                            <tr class="bg-base-300 text-center">
+                                <th>QR CODE</th>
+                                <th>USER</th>
+                                <th>DEPT</th>
+                                <th>DEVICE</th>
+                                <th>STATUS</th>
+                                <th class="no-print">AKSI</th>
+                            </tr>
                         </thead>
                         <tbody id="inventoryBody">
                             <tr><td colspan="6" class="text-center py-10">Memuat data...</td></tr>
@@ -554,31 +400,60 @@ thead th {
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modalTransfer" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] no-print">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center border border-gray-200">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Transfer Aset</h2>
+            <p id="infoAset" class="mb-6 text-gray-600 italic font-medium"></p>
+            <div class="grid gap-4">
+                <button id="btnKeP1" class="btn btn-primary w-full">PT PANRAMA (P1)</button>
+                <button id="btnKeP2" class="btn btn-secondary w-full">PT PANRAMA (P2)</button>
+                <button onclick="tutupModalTransfer()" class="btn btn-ghost mt-2 w-full border border-gray-300">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999] no-print">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <div>
+                    <h2 id="historyModalTitle" class="text-lg font-bold text-gray-900">Riwayat Aset</h2>
+                    <p id="historyModalSource" class="text-sm text-gray-500">Sumber:</p>
+                </div>
+                <button onclick="closeHistoryModal()" class="btn btn-ghost btn-sm">Tutup</button>
+            </div>
+            <div id="historyModalBody" class="p-6 max-h-[70vh] overflow-y-auto bg-slate-50"></div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
            auth: {
-           persistSession: true,
-           autoRefreshToken: true,
-           detectSessionInUrl: true
-             }
+               persistSession: true,
+               autoRefreshToken: true,
+               detectSessionInUrl: true
+           }
         });
-		let currentTable = '';
-        let currentHistory = '';
-		let data = [];
-        let asetIdSedangDiproses = null;
-		
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (session) {
-        console.log("Sesi aktif ditemukan:", event);
-        checkUser();
-    }
-});
 
-checkUser();
-        
-      function toggleForm() {
+        let currentTable = '';
+        let currentHistory = '';
+        let data = [];
+        let asetIdSedangDiproses = null;
+        let html5QrcodeScanner = null;
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                checkUser();
+            }
+        });
+
+        checkUser();
+
+        function toggleForm() {
             document.getElementById('formContainer').classList.toggle('hidden');
         }
 
@@ -586,7 +461,7 @@ checkUser();
             try {
                 const { data: result, error } = await supabaseClient.from(currentTable).select('*').order('id_aset', { ascending: true });
                 if (error) throw error;
-	                data = Array.isArray(result) ? result : [];
+                data = Array.isArray(result) ? result : [];
                 document.getElementById('statusConnection').innerText = "Terhubung";
                 document.getElementById('statusConnection').className = "badge badge-success text-white font-bold";
                 renderTable(data);
@@ -605,33 +480,33 @@ checkUser();
             const tbody = document.getElementById('inventoryBody');
             if (!tbody) return;
             if (!Array.isArray(data) || data.length === 0) {
-                tbody.innerHTML = `
-                    <tr><td colspan="6" class="text-center py-10">Data tidak tersedia.</td></tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10">Data tidak tersedia.</td></tr>`;
                 return;
             }
-            tbody.innerHTML = data.map(item => `
+
+            const { data: sessionData } = supabaseClient.auth.getSession();
+            const isUserAdmin = document.body.classList.contains('role-viewer') === false;
+
+            tbody.innerHTML = data.map(item => {
+                const deptVal = item.dept || item.dep || '-';
+                return `
                 <tr class="hover text-center">
                     <td class="p-2 bg-white">
                         <canvas class="qr-code" data-value="${item.id_aset}" width="110" height="110"></canvas>
                         <div class="text-xs text-slate-500 mt-1">${item.id_aset}</div>
                     </td>
-                    <td class="editable uppercase font-bold" contenteditable="true" onblur="updateField('${item.id_aset}', 'user', this.innerText.trim())">${item.user || '-'}</td>
-                    <td class="editable uppercase font-semibold" contenteditable="true" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${item.dept || '-'}</td>
+                    <td class="editable uppercase font-bold" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'user', this.innerText.trim())">${item.user || '-'}</td>
+                    <td class="editable uppercase font-semibold" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${deptVal}</td>
                     <td>${item.device || '-'}</td>
                     <td><div class="badge ${getStatusClass(item.status)} border-none text-white font-bold">${item.status || '-'}</div></td>
                     <td class="no-print aksi-kolom flex gap-1 justify-center">
                         <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="btn btn-xs btn-outline btn-info">Label</button>
-                        <button onclick="lihatHistory('${item.id_aset}')" class="btn btn-xs btn-outline btn-info">
-                         📜 History
-                         </button>
-                        <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="btn btn-xs btn-warning text-black font-bold">
-                          Transfer
-                         </button>
-                        <button onclick="deleteAsset('${item.id_aset}')" class="btn btn-xs btn-outline btn-error text-error btn-hapus">Hapus</button>
+                        <button onclick="lihatHistory('${item.id_aset}')" class="btn btn-xs btn-outline btn-info">📜 History</button>
+                        <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="btn btn-xs btn-warning text-black font-bold aksi-kolom-admin">Transfer</button>
+                        <button onclick="deleteAsset('${item.id_aset}')" class="btn btn-xs btn-outline btn-error text-error btn-hapus aksi-kolom-admin">Hapus</button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
             generateQRCodes();
         }
 
@@ -650,110 +525,91 @@ checkUser();
             });
         }
 
-       async function updateField(idRaw, kolom, nilaiBaru) {
-    const idAset = idRaw.trim();
-    const nilaiClean = nilaiBaru.trim().toUpperCase();
+        async function updateField(idRaw, kolom, nilaiBaru) {
+            const idAset = idRaw.trim();
+            const nilaiClean = nilaiBaru.trim().toUpperCase();
 
-    // --- LOGIKA HISTORY MULAI DI SINI ---
-    if (kolom === 'user' || kolom === 'dept') {
-        const dataLama = data.find(item => item.id_aset === idAset);
-        const nilaiLama = dataLama ? String(dataLama[kolom] || '-') : '-';
+            if (kolom === 'user' || kolom === 'dept') {
+                const dataLama = data.find(item => item.id_aset === idAset);
+                const nilaiLama = dataLama ? String(dataLama[kolom] || dataLama['dep'] || '-') : '-';
 
-        if (nilaiLama.trim().toUpperCase() !== nilaiClean) {
-            await catatHistory(idAset, kolom, nilaiLama, nilaiClean);
-        }
-    }
-    // 2. Kirim ke Supabase menggunakan supabaseClient (sesuai baris 208 kamu)
-    const { data: updateResult, error } = await supabaseClient
-        .from(currentTable)
-        .update({ [kolom]: nilaiClean })
-        .eq('id_aset', idAset) // Pastikan kolom di Supabase namanya 'id_aset'
-        .select();
-
-    if (error) {
-            console.error("Gagal update:", error);
-            // Cek apakah error karena RLS (Forbidden)
-            if (error.code === '42501') {
-                alert("Maaf bro, cuma Super Admin (Andri) yang bisa ngubah data!");
-            } else {
-                alert("Gagal simpan: " + error.message);
+                if (nilaiLama.trim().toUpperCase() !== nilaiClean) {
+                    await catatHistory(idAset, kolom, nilaiLama, nilaiClean);
+                }
             }
-            fetchData(); // Refresh tampilan biar teks balik ke semula
-    } else if (data && data.length > 0) {
-        console.log("Berhasil! Data di database sudah berubah.");
-        fetchData(); // Ambil data terbaru agar tampilan stats & tabel sinkron
-    } else {
-        alert("Gagal: ID Aset [" + idAset + "] tidak ditemukan. Pastikan nama kolom di Supabase adalah 'id_aset' (huruf kecil semua).");
-        fetchData(); // Reset tampilan ke data asli
-    }        
-}
+
+            const { data: updateResult, error } = await supabaseClient
+                .from(currentTable)
+                .update({ [kolom]: nilaiClean })
+                .eq('id_aset', idAset)
+                .select();
+
+            if (error) {
+                console.error("Gagal update:", error);
+                if (error.code === '42501') {
+                    alert("Akses ditolak: Hanya Admin yang diizinkan mengubah data!");
+                } else {
+                    alert("Gagal simpan: " + error.message);
+                }
+                fetchData();
+            } else {
+                fetchData();
+            }        
+        }
+
         function updateStats(items) {
             const rows = Array.isArray(items) ? items : [];
             const normalize = (text) => String(text || '').toUpperCase().trim();
 
-            // Debug
-            console.log("updateStats - Total rows:", rows.length);
-            if (rows.length > 0) {
-                console.log("Contoh data:", rows[0]);
-            }
-
             document.getElementById('totalAset').innerText = rows.length;
 
-            // Count Laptop
-            const laptopCount = rows.filter(i => {
-                const dev = String(i.device || '').toLowerCase();
-                return dev.includes('laptop');
-            }).length;
+            const laptopCount = rows.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
             document.getElementById('totalLaptop').innerText = laptopCount;
 
-            // Count Komputer/PC
             const komputerCount = rows.filter(i => {
                 const dev = String(i.device || '').toLowerCase();
                 return dev.includes('komputer') || dev.includes('pc');
             }).length;
             document.getElementById('totalKomputer').innerText = komputerCount;
 
-            // Count Status Aktif
             const aktifCount = rows.filter(i => {
                 const s = String(i.status || '').toLowerCase();
                 return s === 'active' || s === 'aktif';
             }).length;
             document.getElementById('unitAktif').innerText = aktifCount;
 
-            // Count Status Maintenance/Rusak
             const rusakCount = rows.filter(i => {
                 const s = String(i.status || '').toLowerCase();
                 return s === 'maintenance' || s === 'broken' || s === 'rusak';
             }).length;
             document.getElementById('unitRusak').innerText = rusakCount;
 
-            // Department counting
             const deptText = (item) => normalize(item.dept || item.dep);
             const matchDept = (value, patterns) => patterns.some(pattern => pattern.test(value));
 
             const deptCounters = {
-                totalHRD: [/\bHRD\b/],
+                totalHRD: [/ HRD /],
                 totalPajak: [/PAJAK/, /TAX/],
-                totalPPIC: [/PPIC/, /\bPIC\b/],
+                totalPPIC: [/PPIC/, / PIC /],
                 totalEXIM: [/EXIM/, /EXM/],
                 totalFINANCE: [/FINANCE/, /FINAN/],
-                totalIT: [/\bIT\b/, /OFFICE\/IT/],
-                totalINVENTORY: [/INVENTORY/, /\bINV\b/],
-                totalCAD: [/\bCAD\b/, /CAD ROOM/],
+                totalIT: [/ IT /, /OFFICE\/IT/],
+                totalINVENTORY: [/INVENTORY/, / INV /],
+                totalCAD: [/ CAD /, /CAD ROOM/],
                 totalGUDANG_ACCESSORIES: [/GUDANG ACCESSORIES/, /GUDANG ACC/],
                 totalGUDANG_KAIN: [/GUDANG KAIN/],
                 totalPACKING: [/PACKING/],
                 totalSAMPLE_PRODUKSI: [/SAMPLE PRODUKSI/, /SAMPLE PROD/],
                 totalSAMPLE_ROOM: [/SAMPLE ROOM/],
-                totalMD: [/\bMD\b/],
-                totalBC: [/\bBC\b/],
-                totalQA: [/\bQA\b/],
+                totalMD: [/ MD /],
+                totalBC: [/ BC /],
+                totalQA: [/ QA /],
                 totalFACTORY_MANAGER: [/FACTORY MANAGER/],
                 totalGENERAL_MANAGER: [/GENERAL MANAGER/, /GENARAL MANAGER/],
-                totalIE: [/\bIE\b/, /IE\/PRODUKSI/, /IE\/MANAGER/],
-				totalCUTTING: [/\bCUTTING\b/],
-				totalDIGITAL: [/\bDIGITAL\b/],
-				totalPRODUKSI: [/\bPRODUKSI\b/, /PRODUKSI/,/PRODUKSI\MANAGER/],
+                totalIE: [/ IE /, /IE\/PRODUKSI/, /IE\/MANAGER/],
+                totalCUTTING: [/ CUTTING /],
+                totalDIGITAL: [/ DIGITAL /],
+                totalSTAFF: [/ STAFF /],
             };
 
             Object.entries(deptCounters).forEach(([id, patterns]) => {
@@ -765,36 +621,36 @@ checkUser();
 
             document.getElementById('totalPRODUKSI').innerText = rows.filter(i => {
                 const dept = deptText(i);
-                return /PRODUKSI/.test(dept) && !/SAMPLE/.test(dept) && !/\bIE\b/.test(dept);
+                return /PRODUKSI/.test(dept) && !/SAMPLE/.test(dept) && !/ IE /.test(dept);
             }).length;
         }
 
         function filterByDept(namaDept) {
-            console.log("Filter departemen:", namaDept);
             const rows = document.querySelectorAll('#inventoryBody tr');
             const deptPatterns = {
-                HRD: /\bHRD\b/i,
+                HRD: / HRD /i,
                 PAJAK: /PAJAK|TAX/i,
-                PPIC: /PPIC|\bPIC\b/i,
+                PPIC: /PPIC| PIC /i,
                 EXIM: /EXIM|EXM/i,
                 FINANCE: /FINANCE|FINAN/i,
-                IT: /\bIT\b|OFFICE\/IT/i,
-                INVENTORY: /INVENTORY|\bINV\b/i,
-                CAD: /\bCAD\b|CAD ROOM/i,
-                'GUDANG ACCESSORIES': /GUDANG ACCESSORIES|GUDANG ACC/i,
+                IT: / IT |OFFICE\/IT/i,
+                INVENTORY: /INVENTORY| INV /i,
+                CAD: / CAD |CAD ROOM/i,
+                'GUDANG ACC': /GUDANG ACCESSORIES|GUDANG ACC/i,
                 'GUDANG KAIN': /GUDANG KAIN/i,
                 PACKING: /PACKING/i,
-                'SAMPLE PRODUKSI': /SAMPLE PRODUKSI|SAMPLE PROD/i,
+                'SAMPLE PROD': /SAMPLE PRODUKSI|SAMPLE PROD/i,
                 'SAMPLE ROOM': /SAMPLE ROOM/i,
-                MD: /\bMD\b/i,
-                BC: /\bBC\b/i,
-                QA: /\bQA\b/i,
+                MD: / MD /i,
+                BC: / BC /i,
+                QA: / QA /i,
                 'FACTORY MANAGER': /FACTORY MANAGER/i,
                 'GENERAL MANAGER': /GENERAL MANAGER|GENARAL MANAGER/i,
-                IE: /\bIE\b|IE\/PRODUKSI|IE\/MANAGER/i,
-                PRODUKSI: /\bPRODUKSI\b|PRODUKSI\MANAGER/i,
-				CUTTING: /\bCUTTING\b/i,
-				DIGITAL: /\bDIGITAL\b/i,
+                IE: / IE |IE\/PRODUKSI|IE\/MANAGER/i,
+                PRODUKSI: / PRODUKSI |PRODUKSI\MANAGER/i,
+                CUTTING: / CUTTING /i,
+                DIGITAL: / DIGITAL /i,
+                STAFF: / STAFF /i,
             };
             const pattern = deptPatterns[namaDept] || new RegExp(namaDept, 'i');
 
@@ -806,43 +662,20 @@ checkUser();
             });
         }
 
-		function exportToExcel() {
-    // 1. Ambil data dari tabel yang saat ini tampil (termasuk yang sudah di-filter)
-    const table = document.querySelector("table");
-    
-    // 2. Buat workbook baru
-    const wb = XLSX.utils.table_to_book(table, { sheet: "Data Inventaris" });
-    
-    // 3. Ambil tanggal hari ini buat nama file
-    const date = new Date().toISOString().slice(0, 10);
-    const fileName = `Inventaris_IT_${date}.xlsx`;
-    
-    // 4. Download filenya
-    XLSX.writeFile(wb, fileName);
-    
-    console.log("File Excel berhasil didownload!");
-}
+        function exportToExcel() {
+            const table = document.querySelector("table");
+            const wb = XLSX.utils.table_to_book(table, { sheet: "Data Inventaris" });
+            const date = new Date().toISOString().slice(0, 10);
+            const fileName = `Inventaris_IT_${date}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
 
-		function resetFilter() {
-    console.log("Tombol Total Aset diklik, meriset filter...");
-    
-    // Kita pakai ID 'inventoryBody' sesuai screenshot kamu baris 420
-    const rows = document.querySelectorAll('#inventoryBody tr');
-    
-    if (rows.length === 0) {
-        console.error("Tabel tidak ditemukan!");
-        return;
-    }
-
-    rows.forEach(row => {
-        row.style.display = ""; // Tampilkan kembali semua baris
-    });
-    
-    // Kalau ada kolom pencarian manual, kosongkan juga
-    const searchInput = document.querySelector('input[type="text"]');
-    if (searchInput) searchInput.value = "";
-		}
-		
+        function resetFilter() {
+            const rows = document.querySelectorAll('#inventoryBody tr');
+            rows.forEach(row => row.style.display = "");
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = "";
+        }
 
         function getStatusClass(s) {
             const st = s?.toLowerCase();
@@ -860,7 +693,7 @@ checkUser();
             const newData = {
                 id_aset: document.getElementById('in_id').value,
                 user: document.getElementById('in_user').value,
-                dept: document.getElementById('in_dept').value, // KIRIM DATA DEPT
+                dept: document.getElementById('in_dept').value,
                 device: document.getElementById('in_device').value, 
                 specs: document.getElementById('in_specs').value,
                 status: document.getElementById('in_status').value
@@ -925,449 +758,312 @@ checkUser();
             updateStats(filtered);
         });
 
-        // 1. Fungsi untuk cek status login setiap kali web dibuka
-async function checkUser() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    
-    // Ambil elemen-elemennya
-    const loginSec = document.getElementById('loginSection');
-    const pilihModal = document.getElementById('pilihPTModal');
-    const mainContent = document.querySelector('.main-content');
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            const loginSec = document.getElementById('loginSection');
+            const pilihModal = document.getElementById('pilihPTModal');
+            const mainContent = document.getElementById('main-content');
 
-    if (user) {
-        // Jika sudah login: Sembunyikan Login, Munculkan Pilihan PT
-        if (loginSec) loginSec.classList.add('hidden');
-        if (pilihModal) pilihModal.classList.remove('hidden');
-        if (mainContent) mainContent.classList.add('hidden');
-
-        updateAdminUI();
-
-    } else {
-        // Jika belum login: Munculkan Login, Sembunyikan yang lain
-        if (loginSec) loginSec.classList.remove('hidden');
-        if (pilihModal) pilihModal.classList.add('hidden');
-        if (mainContent) mainContent.classList.add('hidden');
-    }
-}
-
-    // 3. Logika Hak Akses Super Admin
-async function updateAdminUI() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    const user = session?.user; // Sekarang 'user' sudah didefinisikan aman
-
-    if (user && user.email === 'andri@panrama.com') {
-        // JIKA ADMIN: Hapus pembatas
-        document.body.classList.remove('role-viewer');
-        
-        // MUNCULKAN SCANNER
-        const scannerSection = document.getElementById('scannerSection');
-        if (scannerSection) scannerSection.classList.remove('hidden');
-        
-        console.log("Welcome Super Admin:", user.email);
-    } else {
-        // JIKA TAMU: Pasang pembatas
-        document.body.classList.add('role-viewer');
-        
-        // SEMBUNYIKAN SCANNER
-        const scannerSection = document.getElementById('scannerSection');
-        if (scannerSection) scannerSection.classList.add('hidden');
-        
-        console.log("Status: Viewer Mode (Read-Only)");
-    }
-}
-
-// 2. Fungsi untuk menangani tombol "Masuk Sistem"
-async function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const btn = document.getElementById('btnLogin');
-    const err = document.getElementById('loginError');
-
-    btn.innerText = "Memverifikasi...";
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-    if (error) {
-        err.innerText = "Email atau Password Salah!";
-        err.classList.remove('hidden');
-        btn.innerText = "Masuk Sistem";
-    } else {
-        err.classList.add('hidden');
-        btn.innerText = "Masuk Sistem";
-        // Jika sukses, panggil checkUser untuk buka modal pilih PT
-        checkUser();
-    }
-} // <--- Tutup handleLogin
-
-// 3. Fungsi untuk tombol Logout
-async function handleLogout() {
-    // 1. Perintahkan Supabase untuk mengakhiri sesi secara global
-    const { error } = await supabaseClient.auth.signOut();
-    
-    if (error) {
-        console.error('Error logging out:', error.message);
-        alert("Gagal logout: " + error.message);
-    } else {
-        // 2. BERSIHKAN TOTAL penyimpanan browser
-        // Ini kunci utamanya biar pas refresh nggak login otomatis
-        localStorage.clear();
-        sessionStorage.clear();
-
-        // 3. Hapus semua cookie Supabase (opsional tapi bagus buat jaga-jaga)
-        const cookies = document.cookie.split(";");
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i];
-            const eqPos = cookie.indexOf("=");
-            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            if (user) {
+                if (loginSec) loginSec.classList.add('hidden');
+                if (pilihModal) pilihModal.classList.remove('hidden');
+                if (mainContent) mainContent.classList.add('hidden');
+                updateAdminUI();
+            } else {
+                if (loginSec) loginSec.classList.remove('hidden');
+                if (pilihModal) pilihModal.classList.add('hidden');
+                if (mainContent) mainContent.classList.add('hidden');
+            }
         }
 
-        alert("Berhasil keluar! Sesi telah dibersihkan.");
+        async function updateAdminUI() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const user = session?.user;
 
-        // 4. Paksa reload ke halaman awal (bukan dashboard)
-        // Gunakan replace agar user tidak bisa kembali ke halaman sebelumnya
-        window.location.replace(window.location.pathname);
-    }
-}
-
-async function prosesMutasi(tabelTujuan) {
-    if(!confirm(`Yakin pindahkan aset ini ke ${tabelTujuan}?`)) return;
-
-    try {
-        // 1. Ambil data asli dari tabel asal
-        const { data: aset, error: fetchErr } = await supabaseClient
-            .from(currentTable)
-            .select('*')
-            .eq('id_aset', asetIdSedangDiproses)
-            .single();
-
-        if (fetchErr || !aset) throw new Error("Data aset tidak ditemukan!");
-
-        const namaPTAsal = currentTable === 'inventaris_p1' ? 'PT PANRAMA (P1)' : 'PT PANRAMA (P2)';
-        const namaPTTujuan = tabelTujuan === 'inventaris_p1' ? 'PT PANRAMA (P1)' : 'PT PANRAMA (P2)';
-        const tabelHistoryTujuan = tabelTujuan === 'inventaris_p1' ? 'history_aset' : 'history_p2';
-
-        // 2. Hapus dulu di tabel TUJUAN untuk cegah duplicate key
-        await supabaseClient.from(tabelTujuan).delete().eq('id_aset', aset.id_aset);
-
-        // 3. Masukkan ke tabel Inventaris Tujuan dengan status "Active"
-        const { error: insErr } = await supabaseClient
-            .from(tabelTujuan)
-            .insert([{
-                id_aset: aset.id_aset,
-                user: aset.user,
-                dept: aset.dept,
-                device: aset.device,
-                specs: aset.specs,
-                status: 'Active', 
-                created_at: new Date().toISOString()
-            }]);
-
-        if (insErr) throw insErr;
-
-        // 4. Masukkan Log ke tabel History (Pakai ISO Format agar tidak null/error)
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        const historyPayload = {
-            id_aset: aset.id_aset,
-            user: aset.user,
-            user_lama: aset.user,
-            user_baru: aset.user,
-            aksi: 'Mutasi',
-            jenis_mutasi: 'Transfer',
-            asal_pt: namaPTAsal,
-            tujuan_pt: namaPTTujuan,
-            keterangan: `Pindahan dari ${namaPTAsal} ke ${namaPTTujuan}`,
-            tgl_perubahan: new Date().toISOString(),
-            admin_eksekusi: user ? user.email : 'System'
-        };
-
-        await supabaseClient
-             .from(tabelHistoryTujuan)
-             .insert([historyPayload]);
-
-        // 5. Hapus dari tabel asal
-        const { error: delErr } = await supabaseClient
-            .from(currentTable)
-            .delete()
-            .eq('id_aset', asetIdSedangDiproses);
-
-        if (delErr) throw delErr;
-
-        alert("Mutasi Berhasil!");
-        tutupModalTransfer(); // Memanggil fungsi di bawah
-        fetchData(); 
-
-    } catch (err) {
-        console.error("Gagal Mutasi:", err.message);
-        alert("Error: " + err.message);
-    }
-}
-
-// TARUH FUNGSI INI DI LUAR (GLOBAL SCOPE)
-function tutupModalTransfer() {
-    console.log("Menutup modal...");
-    const modal = document.getElementById('modalTransfer');
-    if (modal) {
-        modal.classList.add('hidden');
-    } else {
-        console.error("Elemen modalTransfer tidak ditemukan!");
-    }
-    asetIdSedangDiproses = null; 
-}
-       // Fungsi Scanner Kamera HP
-function onScanSuccess(decodedText, decodedResult) {
-    // decodedText adalah hasil isi barcodenya
-    const code = decodedText.trim().toUpperCase();
-	if (typeof data === 'undefined' || !data) {console.error("data belum dimuat dari supabase bro");
-	 return;
-	}
-    
-    const ditemukan = data.find(item => 
-      (item.id_aset || "").toString().toUpperCase() === code
-    );
-
-    if (ditemukan) {
-        // Berhenti scan sebentar biar gak bunyi terus
-        html5QrcodeScanner.clear();
-        
-        alert(
-          "✅ DATA DITEMUKAN!\n" +
-          "--------------------------\n" +
-          "ID Aset : " + ditemukan.id_aset + "\n" +
-          "User    : " + ditemukan.user + "\n" +
-          "Dept    : " + ditemukan.dept + "\n" +
-          "Device  : " + ditemukan.device
-        );
-        
-        // Mulai scan lagi setelah alert ditutup
-        location.reload(); 
-    }
-}
-
-// Jalankan Scanner
-let html5QrcodeScanner = new Html5QrcodeScanner(
-	"reader", { fps: 20, qrbox: 300, aspectRatio: 1.0});
-html5QrcodeScanner.render(onScanSuccess);
-
-		// --- FUNGSI OTOMATIS CATAT HISTORY KE SUPABASE ---
-    async function catatHistory(idAset, kolom, lama, baru) {
-    try {
-        // Ambil data admin yang sedang login
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        const historyTable = currentHistory || 'history_aset';
-        
-        const historyData = [{ 
-                id_aset: idAset, 
-                user_lama: lama, 
-                user_baru: baru,
-                aksi: kolom === 'dept' ? 'Ubah Departemen' : 'Ubah ' + kolom,
-                keterangan: `${kolom.toUpperCase()} diubah dari "${lama}" menjadi "${baru}"`,
-                tgl_perubahan: new Date().toISOString(),
-                admin_eksekusi: user ? user.email : 'System' 
-            }];
-
-        let { error } = await supabaseClient
-            .from(historyTable)
-            .insert(historyData);
-
-        if (error && historyTable === 'history_p2') {
-            console.warn("Gagal simpan history ke history_p2, coba fallback ke history_aset:", error.message);
-            const fallback = await supabaseClient
-                .from('history_aset')
-                .insert(historyData);
-            if (fallback.error) throw fallback.error;
-            console.log("History berhasil dicatat ke history_aset sebagai fallback untuk:", idAset);
-            return;
+            if (user && user.email === 'andri@panrama.com') {
+                document.body.classList.remove('role-viewer');
+                
+                const scannerSection = document.getElementById('scannerSection');
+                if (scannerSection) scannerSection.classList.remove('hidden');
+                initScanner();
+            } else {
+                document.body.classList.add('role-viewer');
+                
+                const scannerSection = document.getElementById('scannerSection');
+                if (scannerSection) scannerSection.classList.add('hidden');
+            }
         }
 
-        if (error) throw error;
-        console.log("History berhasil dicatat untuk:", idAset);
-    } catch (err) {
-        console.error("Gagal simpan history:", err.message);
-    }
-}
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('btnLogin');
+            const err = document.getElementById('loginError');
 
-	async function lihatHistory(idAset) {
-    const historyTable = currentHistory || 'history_aset';
-    const fallbackTable = historyTable === 'history_p2' ? 'history_aset' : 'history_p2';
+            btn.innerText = "Memverifikasi...";
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-    async function fetchLogs(tableName) {
-        return await supabaseClient
-            .from(tableName)
-            .select('*')
-            .eq('id_aset', idAset)
-            .order('tgl_perubahan', { ascending: false });
-    }
-
-    let { data: logs, error } = await fetchLogs(historyTable);
-    let sourceTable = historyTable;
-
-    if (error && historyTable === 'history_p2') {
-        const fallbackResult = await fetchLogs(fallbackTable);
-        if (fallbackResult.error) {
-            alert("Gagal ambil history dari " + historyTable + ": " + error.message + "\nFallback gagal: " + fallbackResult.error.message);
-            return;
+            if (error) {
+                err.innerText = "Email atau Password Salah!";
+                err.classList.remove('hidden');
+                btn.innerText = "Masuk Sistem";
+            } else {
+                err.classList.add('hidden');
+                btn.innerText = "Masuk Sistem";
+                checkUser();
+            }
         }
-        if (fallbackResult.data && fallbackResult.data.length > 0) {
-            logs = fallbackResult.data;
-            sourceTable = fallbackTable;
+
+        async function handleLogout() {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                alert("Gagal logout: " + error.message);
+            } else {
+                localStorage.clear();
+                sessionStorage.clear();
+                alert("Berhasil keluar! Sesi telah dibersihkan.");
+                window.location.replace(window.location.pathname);
+            }
         }
-    } else if (error) {
-        alert("Gagal ambil history dari " + historyTable + ": " + error.message);
-        return;
-    }
 
-    if (!logs || logs.length === 0) {
-        const fallbackResult = await fetchLogs(fallbackTable);
-        if (fallbackResult.error) {
-            alert("Gagal ambil history fallback: " + fallbackResult.error.message);
-            return;
+        async function prosesMutasi(tabelTujuan) {
+            if(!confirm(`Yakin pindahkan aset ini ke ${tabelTujuan}?`)) return;
+
+            try {
+                const { data: aset, error: fetchErr } = await supabaseClient
+                    .from(currentTable)
+                    .select('*')
+                    .eq('id_aset', asetIdSedangDiproses)
+                    .single();
+
+                if (fetchErr || !aset) throw new Error("Data aset tidak ditemukan!");
+
+                const namaPTAsal = currentTable === 'inventaris_p1' ? 'PT PANRAMA (P1)' : 'PT PANRAMA (P2)';
+                const namaPTTujuan = tabelTujuan === 'inventaris_p1' ? 'PT PANRAMA (P1)' : 'PT PANRAMA (P2)';
+                const tabelHistoryTujuan = tabelTujuan === 'inventaris_p1' ? 'history_aset' : 'history_p2';
+
+                await supabaseClient.from(tabelTujuan).delete().eq('id_aset', aset.id_aset);
+
+                const { error: insErr } = await supabaseClient
+                    .from(tabelTujuan)
+                    .insert([{
+                        id_aset: aset.id_aset,
+                        user: aset.user,
+                        dept: aset.dept || aset.dep || '-',
+                        device: aset.device,
+                        specs: aset.specs,
+                        status: 'Active', 
+                        created_at: new Date().toISOString()
+                    }]);
+
+                if (insErr) throw insErr;
+
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                const historyPayload = {
+                    id_aset: aset.id_aset,
+                    user: aset.user,
+                    user_lama: aset.user,
+                    user_baru: aset.user,
+                    aksi: 'Mutasi',
+                    jenis_mutasi: 'Transfer',
+                    asal_pt: namaPTAsal,
+                    tujuan_pt: namaPTTujuan,
+                    keterangan: `Pindahan dari ${namaPTAsal} ke ${namaPTTujuan}`,
+                    tgl_perubahan: new Date().toISOString(),
+                    admin_eksekusi: user ? user.email : 'System'
+                };
+
+                await supabaseClient.from(tabelHistoryTujuan).insert([historyPayload]);
+
+                const { error: delErr } = await supabaseClient
+                    .from(currentTable)
+                    .delete()
+                    .eq('id_aset', asetIdSedangDiproses);
+
+                if (delErr) throw delErr;
+
+                alert("Mutasi Berhasil!");
+                tutupModalTransfer();
+                fetchData(); 
+
+            } catch (err) {
+                console.error("Gagal Mutasi:", err.message);
+                alert("Error: " + err.message);
+            }
         }
-        if (fallbackResult.data && fallbackResult.data.length > 0) {
-            logs = fallbackResult.data;
-            sourceTable = fallbackTable;
+
+        function tutupModalTransfer() {
+            const modal = document.getElementById('modalTransfer');
+            if (modal) modal.classList.add('hidden');
+            asetIdSedangDiproses = null; 
         }
-    }
 
-    if (!logs || logs.length === 0) {
-        alert("Belum ada riwayat perubahan untuk aset: " + idAset);
-        return;
-    }
+        function initScanner() {
+            if (html5QrcodeScanner) return;
+            
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 250, aspectRatio: 1.0 });
+            html5QrcodeScanner.render((decodedText) => {
+                const code = decodedText.trim().toUpperCase();
+                if (!data || data.length === 0) return;
 
-    renderHistoryModal(idAset, logs, sourceTable);
-}
+                const ditemukan = data.find(item => (item.id_aset || "").toString().toUpperCase() === code);
 
-function renderHistoryModal(idAset, logs, sourceTable) {
-    const modal = document.getElementById('historyModal');
-    const title = document.getElementById('historyModalTitle');
-    const source = document.getElementById('historyModalSource');
-    const body = document.getElementById('historyModalBody');
+                if (ditemukan) {
+                    alert(
+                      "✅ DATA DITEMUKAN!
+" +
+                      "--------------------------
+" +
+                      "ID Aset : " + ditemukan.id_aset + "
+" +
+                      "User    : " + (ditemukan.user || '-') + "
+" +
+                      "Dept    : " + (ditemukan.dept || ditemukan.dep || '-') + "
+" +
+                      "Device  : " + (ditemukan.device || '-')
+                    );
+                } else {
+                    alert("❌ Data Aset [" + code + "] tidak ditemukan di database saat ini.");
+                }
+            });
+        }
 
-    if (!modal || !title || !source || !body) {
-        alert('History modal tidak tersedia.');
-        return;
-    }
+        async function catatHistory(idAset, kolom, lama, baru) {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                const historyTable = currentHistory || 'history_aset';
+                
+                const historyData = [{ 
+                    id_aset: idAset, 
+                    user_lama: lama, 
+                    user_baru: baru,
+                    aksi: kolom === 'dept' ? 'Ubah Departemen' : 'Ubah ' + kolom,
+                    keterangan: `${kolom.toUpperCase()} diubah dari "${lama}" menjadi "${baru}"`,
+                    tgl_perubahan: new Date().toISOString(),
+                    admin_eksekusi: user ? user.email : 'System' 
+                }];
 
-    title.innerText = `Riwayat Aset: ${idAset}`;
-    source.innerText = `Sumber: ${sourceTable}`;
-    body.innerHTML = '';
+                let { error } = await supabaseClient.from(historyTable).insert(historyData);
 
-    logs.forEach((log) => {
-        const tgl = new Date(log.tgl_perubahan).toLocaleString('id-ID');
-        const card = document.createElement('div');
-        card.className = 'bg-base-100 p-4 rounded-xl shadow-sm border border-gray-200 mb-4';
-        card.innerHTML = `
-            <div class="flex justify-between gap-2 items-start">
-                <div>
-                    <div class="font-semibold text-sm text-gray-800">${log.aksi || 'Update'}</div>
-                    <div class="text-xs text-gray-500">${tgl}</div>
-                </div>
-                <span class="badge badge-secondary">${log.jenis_mutasi || 'Perubahan'}</span>
-            </div>
-            <p class="mt-3 text-sm text-gray-600">${log.keterangan || '-'}</p>
-            <div class="mt-3 grid gap-2 text-sm text-gray-700">
-                <div><span class="font-semibold">User:</span> ${log.user_lama || '-'} ➔ ${log.user_baru || '-'}</div>
-                ${log.asal_pt ? `<div><span class="font-semibold">Dari:</span> ${log.asal_pt}</div>` : ''}
-                ${log.tujuan_pt ? `<div><span class="font-semibold">Ke:</span> ${log.tujuan_pt}</div>` : ''}
-                <div><span class="font-semibold">Admin:</span> ${log.admin_eksekusi || '-'}</div>
-            </div>
-        `;
-        body.appendChild(card);
-    });
+                if (error && historyTable === 'history_p2') {
+                    await supabaseClient.from('history_aset').insert(historyData);
+                }
+            } catch (err) {
+                console.error("Gagal simpan history:", err.message);
+            }
+        }
 
-    modal.classList.remove('hidden');
-}
+        async function lihatHistory(idAset) {
+            const historyTable = currentHistory || 'history_aset';
+            const fallbackTable = historyTable === 'history_p2' ? 'history_aset' : 'history_p2';
 
-function closeHistoryModal() {
-    const modal = document.getElementById('historyModal');
-    if (modal) modal.classList.add('hidden');
-}
+            async function fetchLogs(tableName) {
+                return await supabaseClient
+                    .from(tableName)
+                    .select('*')
+                    .eq('id_aset', idAset)
+                    .order('tgl_perubahan', { ascending: false });
+            }
 
-// FUNGSI INI YANG MENJALANKAN TOMBOL PILIH PT
-function setPT(tabel, history) {
-    currentTable = tabel;
-    currentHistory = history;
+            let { data: logs, error } = await fetchLogs(historyTable);
+            let sourceTable = historyTable;
 
-    // Sembunyikan modal, buka dashboard
-    const modal = document.getElementById('pilihPTModal');
-    const main = document.getElementById('main-content');
+            if ((error || !logs || logs.length === 0) && historyTable === 'history_p2') {
+                const fallbackResult = await fetchLogs(fallbackTable);
+                if (fallbackResult.data && fallbackResult.data.length > 0) {
+                    logs = fallbackResult.data;
+                    sourceTable = fallbackTable;
+                }
+            }
 
-    if (modal) modal.classList.add('hidden');
-    if (main) main.classList.remove('hidden');
+            if (!logs || logs.length === 0) {
+                alert("Belum ada riwayat perubahan untuk aset: " + idAset);
+                return;
+            }
 
-    // Ambil data
-    fetchData();
-} // <--- Tutup setPT
+            renderHistoryModal(idAset, logs, sourceTable);
+        }
 
-function bukaModalTransfer(id, nama) {
-    console.log("Memproses transfer untuk ID:", id); // Cek di console (F12)
-    asetIdSedangDiproses = id;
-    
-    const modal = document.getElementById('modalTransfer');
-    const infoText = document.getElementById('infoAset');
-    const btnP1 = document.getElementById('btnKeP1');
-    const btnP2 = document.getElementById('btnKeP2');
+        function renderHistoryModal(idAset, logs, sourceTable) {
+            const modal = document.getElementById('historyModal');
+            const title = document.getElementById('historyModalTitle');
+            const source = document.getElementById('historyModalSource');
+            const body = document.getElementById('historyModalBody');
 
-    if (infoText) infoText.innerText = "Aset: " + nama;
-    if (modal) modal.classList.remove('hidden');
+            if (!modal || !title || !source || !body) return;
 
-    // BERSIHKAN & TEMPEL ULANG PERINTAH KLIK
-    if (btnP1) {
-        btnP1.onclick = null; // Reset dulu biar gak double
-        btnP1.onclick = () => prosesMutasi('inventaris_p1');
-        // Sembunyikan kalau kita sudah di P1
-        currentTable === 'inventaris_p1' ? btnP1.classList.add('hidden') : btnP1.classList.remove('hidden');
-    }
+            title.innerText = `Riwayat Aset: ${idAset}`;
+            source.innerText = `Sumber: ${sourceTable}`;
+            body.innerHTML = '';
 
-    if (btnP2) {
-        btnP2.onclick = null; // Reset
-        btnP2.onclick = () => prosesMutasi('inventaris_p2');
-        // Sembunyikan kalau kita sudah di P2
-        currentTable === 'inventaris_p2' ? btnP2.classList.add('hidden') : btnP2.classList.remove('hidden');
-    }
-}
-		
-            // Mencegah Klik Kanan
-document.addEventListener('contextmenu', event => event.preventDefault());
+            logs.forEach((log) => {
+                const tgl = new Date(log.tgl_perubahan).toLocaleString('id-ID');
+                const card = document.createElement('div');
+                card.className = 'bg-base-100 p-4 rounded-xl shadow-sm border border-gray-200 mb-4';
+                card.innerHTML = `
+                    <div class="flex justify-between gap-2 items-start">
+                        <div>
+                            <div class="font-semibold text-sm text-gray-800">${log.aksi || 'Update'}</div>
+                            <div class="text-xs text-gray-500">${tgl}</div>
+                        </div>
+                        <span class="badge badge-secondary">${log.jenis_mutasi || 'Perubahan'}</span>
+                    </div>
+                    <p class="mt-3 text-sm text-gray-600">${log.keterangan || '-'}</p>
+                    <div class="mt-3 grid gap-2 text-sm text-gray-700">
+                        <div><span class="font-semibold">User:</span> ${log.user_lama || '-'} ➔ ${log.user_baru || '-'}</div>
+                        ${log.asal_pt ? `<div><span class="font-semibold">Dari:</span> ${log.asal_pt}</div>` : ''}
+                        ${log.tujuan_pt ? `<div><span class="font-semibold">Ke:</span> ${log.tujuan_pt}</div>` : ''}
+                        <div><span class="font-semibold">Admin:</span> ${log.admin_eksekusi || '-'}</div>
+                    </div>
+                `;
+                body.appendChild(card);
+            });
 
-// Mencegah Shortcut Keyboard (seperti Ctrl+U, Ctrl+S, Ctrl+Shift+I)
-document.onkeydown = function(e) {
-    if (e.ctrlKey && 
-        (e.keyCode === 67 || // Ctrl+C
-         e.keyCode === 86 || // Ctrl+V
-         e.keyCode === 85 || // Ctrl+U (View Source)
-         e.keyCode === 83 || // Ctrl+S (Save Page)
-         e.keyCode === 117)) {
-        return false;
-    }
-};
-		
+            modal.classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            const modal = document.getElementById('historyModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function setPT(tabel, history) {
+            currentTable = tabel;
+            currentHistory = history;
+
+            const modal = document.getElementById('pilihPTModal');
+            const main = document.getElementById('main-content');
+
+            if (modal) modal.classList.add('hidden');
+            if (main) main.classList.remove('hidden');
+
+            fetchData();
+        }
+
+        function bukaModalTransfer(id, nama) {
+            asetIdSedangDiproses = id;
+            
+            const modal = document.getElementById('modalTransfer');
+            const infoText = document.getElementById('infoAset');
+            const btnP1 = document.getElementById('btnKeP1');
+            const btnP2 = document.getElementById('btnKeP2');
+
+            if (infoText) infoText.innerText = "Aset: " + nama;
+            if (modal) modal.classList.remove('hidden');
+
+            if (btnP1) {
+                btnP1.onclick = null;
+                btnP1.onclick = () => prosesMutasi('inventaris_p1');
+                currentTable === 'inventaris_p1' ? btnP1.classList.add('hidden') : btnP1.classList.remove('hidden');
+            }
+
+            if (btnP2) {
+                btnP2.onclick = null;
+                btnP2.onclick = () => prosesMutasi('inventaris_p2');
+                currentTable === 'inventaris_p2' ? btnP2.classList.add('hidden') : btnP2.classList.remove('hidden');
+            }
+        }
     </script>
-
-    <div id="modalTransfer" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] no-print">
-    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center border border-gray-200">
-        <h2 class="text-xl font-bold mb-4 text-gray-800">Transfer Aset</h2>
-        <p id="infoAset" class="mb-6 text-gray-600 italic font-medium"></p>
-        
-        <div class="grid gap-4">
-            <button id="btnKeP1" class="btn btn-primary w-full">PT PANRAMA (P1)</button>
-            <button id="btnKeP2" class="btn btn-secondary w-full">PT PANRAMA (P2)</button>
-            <button onclick="tutupModalTransfer()" class="btn btn-ghost mt-2 w-full border border-gray-300">Batal</button>
-        </div>
-    </div>
-</div>
-
-<div id="historyModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999] no-print">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden">
-        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-            <div>
-                <h2 id="historyModalTitle" class="text-lg font-bold text-gray-900">Riwayat Aset</h2>
-                <p id="historyModalSource" class="text-sm text-gray-500">Sumber:</p>
-            </div>
-            <button onclick="closeHistoryModal()" class="btn btn-ghost btn-sm">Tutup</button>
-        </div>
-        <div id="historyModalBody" class="p-6 max-h-[70vh] overflow-y-auto bg-slate-50"></div>
-    </div>
-</div>
-
 </body>
 </html>
