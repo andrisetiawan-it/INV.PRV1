@@ -14,14 +14,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
 
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background: #0a0e1a;
-            min-height: 100vh;
-        }
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #0a0e1a; min-height: 100vh; }
 
         .glass {
             background: rgba(255, 255, 255, 0.05);
@@ -68,7 +62,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 16px;
-            padding: 20px;
+            padding: 16px;
             transition: all 0.3s ease;
             cursor: pointer;
         }
@@ -80,13 +74,13 @@
         }
 
         .stat-icon {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
         }
 
         .chart-container {
@@ -94,12 +88,12 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 20px;
-            padding: 24px;
+            padding: 20px;
         }
 
         .table-wrapper {
-            max-height: 65vh;
-            overflow-y: auto;
+            max-height: 70vh;
+            overflow: auto;
             border-radius: 16px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -108,6 +102,7 @@
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.75rem;
         }
 
         .table-wrapper thead th {
@@ -118,17 +113,19 @@
             backdrop-filter: blur(10px);
             color: #c4b5fd !important;
             font-weight: 600;
-            padding: 14px 16px;
+            padding: 10px 8px;
             text-transform: uppercase;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             letter-spacing: 0.05em;
+            white-space: nowrap;
         }
 
         .table-wrapper tbody td {
-            padding: 12px 16px;
+            padding: 8px 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             color: #e5e7eb;
-            font-size: 0.875rem;
+            font-size: 0.7rem;
+            vertical-align: middle;
         }
 
         .table-wrapper tbody tr {
@@ -140,11 +137,12 @@
         }
 
         .badge-status {
-            padding: 4px 12px;
+            padding: 2px 10px;
             border-radius: 20px;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             letter-spacing: 0.03em;
+            white-space: nowrap;
         }
 
         .badge-status.active {
@@ -165,12 +163,23 @@
             border: 1px solid rgba(251, 113, 133, 0.2);
         }
 
-        .qr-code {
-            width: 80px;
-            height: 80px;
+        .badge-license {
+            padding: 2px 8px;
             border-radius: 12px;
+            font-size: 0.6rem;
+            font-weight: 500;
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.15);
+            white-space: nowrap;
+        }
+
+        .qr-code {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
             background: white;
-            padding: 4px;
+            padding: 3px;
         }
 
         .btn-glow {
@@ -191,16 +200,14 @@
             transition: opacity 0.3s ease;
         }
 
-        .btn-glow:hover::before {
-            opacity: 1;
-        }
+        .btn-glow:hover::before { opacity: 1; }
 
         .login-box {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
-            padding: 48px;
+            padding: 40px;
             width: 100%;
             max-width: 400px;
         }
@@ -212,6 +219,7 @@
             border-radius: 12px;
             padding: 12px 16px;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
         .login-box input:focus {
@@ -220,216 +228,68 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
-        .login-box input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+        .login-box input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
         }
 
-        /* ===================== */
-        /* PRINT STYLES - FIXED */
-        /* ===================== */
-        @media print {
-            /* Sembunyikan elemen yang tidak perlu */
-            .no-print {
-                display: none !important;
-            }
+        .form-grid .form-control { min-width: 0; }
 
-            body {
-                background: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color: #1f2937 !important;
-            }
-
-            /* Container utama cetak */
-            .print-container {
-                padding: 20px !important;
-                max-width: 100% !important;
-            }
-
-            /* Header cetak */
-            .print-header {
-                text-align: center !important;
-                padding: 20px 0 !important;
-                border-bottom: 3px solid #1f2937 !important;
-                margin-bottom: 20px !important;
-            }
-
-            .print-header h1 {
-                font-size: 24px !important;
-                font-weight: 800 !important;
-                color: #1f2937 !important;
-                letter-spacing: 2px !important;
-            }
-
-            .print-header .subtitle {
-                font-size: 12px !important;
-                color: #6b7280 !important;
-                margin-top: 4px !important;
-            }
-
-            .print-header .date {
-                font-size: 11px !important;
-                color: #9ca3af !important;
-                margin-top: 2px !important;
-            }
-
-            /* Tabel cetak */
-            .print-table {
-                width: 100% !important;
-                border-collapse: collapse !important;
-                font-size: 11px !important;
-            }
-
-            .print-table thead th {
-                background: #1f2937 !important;
-                color: white !important;
-                padding: 10px 12px !important;
-                text-align: left !important;
-                font-weight: 700 !important;
-                text-transform: uppercase !important;
-                font-size: 10px !important;
-                letter-spacing: 0.5px !important;
-                border: 1px solid #374151 !important;
-            }
-
-            .print-table tbody td {
-                padding: 8px 12px !important;
-                border: 1px solid #d1d5db !important;
-                color: #1f2937 !important;
-                vertical-align: middle !important;
-            }
-
-            .print-table tbody tr:nth-child(even) {
-                background: #f9fafb !important;
-            }
-
-            .print-table tbody tr:nth-child(odd) {
-                background: white !important;
-            }
-
-            .print-table .qr-cell {
-                text-align: center !important;
-                width: 80px !important;
-            }
-
-            .print-table .qr-cell canvas {
-                width: 60px !important;
-                height: 60px !important;
-                display: inline-block !important;
-                border: 1px solid #d1d5db !important;
-                border-radius: 4px !important;
-                padding: 2px !important;
-                background: white !important;
-            }
-
-            .print-table .qr-cell .id-label {
-                font-size: 8px !important;
-                color: #6b7280 !important;
-                margin-top: 2px !important;
-                display: block !important;
-            }
-
-            .print-table .status-badge {
-                padding: 3px 10px !important;
-                border-radius: 12px !important;
-                font-weight: 600 !important;
-                font-size: 10px !important;
-                display: inline-block !important;
-            }
-
-            .print-table .status-badge.active {
-                background: #34d399 !important;
-                color: white !important;
-            }
-
-            .print-table .status-badge.maintenance {
-                background: #fbbf24 !important;
-                color: #1f2937 !important;
-            }
-
-            .print-table .status-badge.broken {
-                background: #fb7185 !important;
-                color: white !important;
-            }
-
-            /* Footer cetak */
-            .print-footer {
-                margin-top: 20px !important;
-                padding-top: 15px !important;
-                border-top: 2px solid #e5e7eb !important;
-                text-align: center !important;
-                font-size: 10px !important;
-                color: #9ca3af !important;
-            }
-
-            /* Page break */
-            .page-break {
-                page-break-after: always !important;
-            }
-
-            /* Statistik ringkasan */
-            .print-summary {
-                display: grid !important;
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 12px !important;
-                margin-bottom: 20px !important;
-            }
-
-            .print-summary-item {
-                background: #f3f4f6 !important;
-                padding: 10px !important;
-                border-radius: 8px !important;
-                text-align: center !important;
-                border: 1px solid #e5e7eb !important;
-            }
-
-            .print-summary-item .label {
-                font-size: 9px !important;
-                text-transform: uppercase !important;
-                color: #6b7280 !important;
-                font-weight: 600 !important;
-            }
-
-            .print-summary-item .value {
-                font-size: 20px !important;
-                font-weight: 800 !important;
-                color: #1f2937 !important;
-                margin-top: 2px !important;
-            }
-
-            /* QR Code label print */
-            body.printing-label .print-container {
-                display: none !important;
-            }
-
-            .print-only-label {
-                display: none !important;
-            }
-
-            body.printing-label .print-only-label {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                height: 100vh !important;
-                background: white !important;
-            }
+        .form-grid label {
+            color: #9ca3af;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
-        /* ===================== */
-        /* SCROLLBAR CUSTOM */
-        /* ===================== */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
+        .form-grid input, .form-grid select {
             background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: white;
             border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            width: 100%;
+            transition: all 0.3s ease;
         }
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            border-radius: 10px;
+
+        .form-grid input:focus, .form-grid select:focus {
+            outline: none;
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
+
+        .form-grid input::placeholder { color: rgba(255, 255, 255, 0.25); }
+        .form-grid select option { background: #1a1040; color: white; }
+
+        @media (max-width: 1024px) {
+            .form-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .table-wrapper { font-size: 0.6rem; }
+            .table-wrapper thead th { font-size: 0.5rem; padding: 6px 4px; }
+            .table-wrapper tbody td { padding: 4px 4px; font-size: 0.6rem; }
+            .qr-code { width: 40px; height: 40px; }
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; }
+            .glass, .glass-card, .chart-container { background: white !important; border: 1px solid #ddd !important; }
+            .table-wrapper thead th { background: #f3f4f6 !important; color: #1f2937 !important; }
+            .table-wrapper tbody td { color: #1f2937 !important; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #818cf8, #c084fc); border-radius: 10px; }
     </style>
 </head>
 <body class="bg-animated">
@@ -443,8 +303,8 @@
                 <p class="text-gray-400 text-sm mt-2">Secure Enterprise Inventory System</p>
             </div>
             <div class="space-y-4">
-                <input type="email" id="loginEmail" placeholder="Email Admin" class="w-full" />
-                <input type="password" id="loginPassword" placeholder="Password" class="w-full" />
+                <input type="email" id="loginEmail" placeholder="Email Admin" />
+                <input type="password" id="loginPassword" placeholder="Password" />
                 <button onclick="handleLogin()" id="btnLogin" class="w-full btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:shadow-lg hover:shadow-indigo-500/25 transition-all">
                     <span id="btnLoginText">Masuk Sistem</span>
                 </button>
@@ -476,7 +336,7 @@
     <!-- MAIN CONTENT -->
     <div id="main-content" class="main-content hidden">
         <!-- NAVBAR -->
-        <nav class="glass px-6 py-3 flex items-center justify-between no-print sticky top-0 z-50">
+        <nav class="glass px-4 py-3 flex items-center justify-between no-print sticky top-0 z-50">
             <div class="flex items-center gap-3">
                 <div class="text-2xl">⚡</div>
                 <div>
@@ -495,170 +355,264 @@
             </div>
         </nav>
 
-        <div class="max-w-7xl mx-auto p-6 print-container">
-            <!-- PRINT HEADER - Muncul saat cetak -->
-            <div class="print-header no-print" style="display:none;">
-                <h1>IT ASSET INVENTORY REPORT</h1>
-                <div class="subtitle">PT Magicase / PT Panrama</div>
-                <div class="date" id="printDate"></div>
-            </div>
+        <div class="max-w-full mx-auto p-4 print-container">
 
             <!-- SCANNER -->
             <div id="scannerSection" class="hidden no-print mb-6">
                 <div class="flex justify-center">
-                    <div class="glass-card p-4" style="width: 100%; max-width: 320px;">
-                        <div id="reader" style="width: 100%; min-height: 180px;" class="rounded-xl overflow-hidden"></div>
+                    <div class="glass-card p-4" style="width:100%;max-width:320px;">
+                        <div id="reader" style="width:100%;min-height:180px;" class="rounded-xl overflow-hidden"></div>
                         <p class="text-center text-gray-400 text-xs mt-2">📷 Scan QR Code</p>
                     </div>
                 </div>
             </div>
 
             <!-- STATS GRID -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 no-print">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6 no-print">
                 <div class="stat-card" onclick="resetFilter()">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
                         <div class="stat-icon bg-indigo-500/20 text-indigo-400">📦</div>
                         <div>
-                            <p class="text-gray-400 text-xs uppercase tracking-wider">Total Aset</p>
-                            <p id="totalAset" class="text-white text-2xl font-bold">0</p>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Total Aset</p>
+                            <p id="totalAset" class="text-white text-xl font-bold">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
                         <div class="stat-icon bg-emerald-500/20 text-emerald-400">💻</div>
                         <div>
-                            <p class="text-gray-400 text-xs uppercase tracking-wider">Laptop</p>
-                            <p id="totalLaptop" class="text-white text-2xl font-bold">0</p>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Laptop</p>
+                            <p id="totalLaptop" class="text-white text-xl font-bold">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
                         <div class="stat-icon bg-amber-500/20 text-amber-400">🖥️</div>
                         <div>
-                            <p class="text-gray-400 text-xs uppercase tracking-wider">Komputer</p>
-                            <p id="totalKomputer" class="text-white text-2xl font-bold">0</p>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Komputer</p>
+                            <p id="totalKomputer" class="text-white text-xl font-bold">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
                         <div class="stat-icon bg-rose-500/20 text-rose-400">⚠️</div>
                         <div>
-                            <p class="text-gray-400 text-xs uppercase tracking-wider">Maintenance</p>
-                            <p id="unitRusak" class="text-white text-2xl font-bold">0</p>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Maintenance</p>
+                            <p id="unitRusak" class="text-white text-xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-3">
+                        <div class="stat-icon bg-blue-500/20 text-blue-400">⌨️</div>
+                        <div>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Mouse/KB</p>
+                            <p id="totalPeripheral" class="text-white text-xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-3">
+                        <div class="stat-icon bg-purple-500/20 text-purple-400">🖨️</div>
+                        <div>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Printer</p>
+                            <p id="totalPrinter" class="text-white text-xl font-bold">0</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- CHARTS ROW -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 no-print">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 no-print">
                 <div class="chart-container">
-                    <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider text-gray-400">📍 Status Distribution</h3>
-                    <canvas id="statusChart" height="200"></canvas>
+                    <h3 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider text-gray-400">📍 Status Distribution</h3>
+                    <canvas id="statusChart" height="180"></canvas>
                 </div>
                 <div class="chart-container">
-                    <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider text-gray-400">🏢 Department Distribution</h3>
-                    <canvas id="deptChart" height="200"></canvas>
-                </div>
-            </div>
-
-            <!-- DEPT STATS SCROLL -->
-            <div class="flex gap-3 overflow-x-auto pb-4 mb-6 no-print scrollbar-thin">
-                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('HRD')">
-                    <p class="text-gray-400 text-xs uppercase">HRD</p>
-                    <p id="totalHRD" class="text-white text-xl font-bold">0</p>
-                </div>
-                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('IT')">
-                    <p class="text-gray-400 text-xs uppercase">IT</p>
-                    <p id="totalIT" class="text-white text-xl font-bold">0</p>
-                </div>
-                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('FINANCE')">
-                    <p class="text-gray-400 text-xs uppercase">Finance</p>
-                    <p id="totalFINANCE" class="text-white text-xl font-bold">0</p>
-                </div>
-                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('PRODUKSI')">
-                    <p class="text-gray-400 text-xs uppercase">Produksi</p>
-                    <p id="totalPRODUKSI" class="text-white text-xl font-bold">0</p>
-                </div>
-                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('PPIC')">
-                    <p class="text-gray-400 text-xs uppercase">PPIC</p>
-                    <p id="totalPPIC" class="text-white text-xl font-bold">0</p>
-                </div>
-                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('EXIM')">
-                    <p class="text-gray-400 text-xs uppercase">EXIM</p>
-                    <p id="totalEXIM" class="text-white text-xl font-bold">0</p>
-                </div>
-                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('QA')">
-                    <p class="text-gray-400 text-xs uppercase">QA</p>
-                    <p id="totalQA" class="text-white text-xl font-bold">0</p>
-                </div>
-                <div class="stat-card flex-shrink-0 min-w-[100px] text-center" onclick="filterByDept('INVENTORY')">
-                    <p class="text-gray-400 text-xs uppercase">Inventory</p>
-                    <p id="totalINVENTORY" class="text-white text-xl font-bold">0</p>
+                    <h3 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider text-gray-400">🏢 Department Distribution</h3>
+                    <canvas id="deptChart" height="180"></canvas>
                 </div>
             </div>
 
             <!-- ACTION BUTTONS -->
-            <div class="flex flex-wrap gap-3 mb-6 no-print">
-                <button onclick="toggleForm()" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold px-6 py-3 rounded-xl hover:shadow-xl transition-all flex items-center gap-2 btn-tambah">
+            <div class="flex flex-wrap gap-2 mb-4 no-print">
+                <button onclick="toggleForm()" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold px-4 py-2 rounded-xl hover:shadow-xl transition-all text-sm flex items-center gap-2 btn-tambah">
                     <span>+</span> Tambah Aset
                 </button>
-                <button onclick="printReport()" class="btn btn-glow bg-white/5 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/10 transition-all border border-white/10 flex items-center gap-2">
-                    🖨️ Cetak Laporan
+                <button onclick="printReport()" class="btn btn-glow bg-white/5 text-white font-semibold px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/10 text-sm flex items-center gap-2">
+                    🖨️ Cetak
                 </button>
-                <button onclick="exportToExcel()" class="btn btn-glow bg-emerald-500/20 text-emerald-400 font-semibold px-6 py-3 rounded-xl hover:bg-emerald-500/30 transition-all border border-emerald-500/20 flex items-center gap-2">
-                    📊 Export Excel
+                <button onclick="exportToExcel()" class="btn btn-glow bg-emerald-500/20 text-emerald-400 font-semibold px-4 py-2 rounded-xl hover:bg-emerald-500/30 transition-all border border-emerald-500/20 text-sm flex items-center gap-2">
+                    📊 Excel
                 </button>
             </div>
 
-            <!-- FORM -->
-            <div id="formContainer" class="glass-card p-6 mb-6 no-print hidden">
-                <h2 class="text-xl font-bold text-white mb-4">Input Aset Baru</h2>
-                <form id="assetForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- FORM - Lengkap dengan semua field -->
+            <div id="formContainer" class="glass-card p-4 mb-4 no-print hidden">
+                <h2 class="text-lg font-bold text-white mb-3">Input Aset Baru</h2>
+                <form id="assetForm" class="form-grid">
+                    <!-- Baris 1: Identitas -->
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">ID Aset</span></label>
-                        <input type="text" id="in_id" placeholder="PC-01" class="input input-bordered bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl" required />
+                        <label>ID Aset *</label>
+                        <input type="text" id="in_id" placeholder="PC-001" required />
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">User</span></label>
-                        <input type="text" id="in_user" placeholder="Nama User" class="input input-bordered bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl" required />
+                        <label>User *</label>
+                        <input type="text" id="in_user" placeholder="Nama User" required />
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">Departemen</span></label>
-                        <select id="in_dept" class="select select-bordered bg-white/5 border-white/10 text-white focus:border-indigo-400 rounded-xl">
-                            <option value="HRD">HRD</option><option value="PAJAK">PAJAK</option><option value="PPIC">PPIC</option>
-                            <option value="EXIM">EXIM</option><option value="FINANCE">FINANCE</option><option value="IT">IT</option>
-                            <option value="INVENTORY">INVENTORY</option><option value="CAD">CAD</option><option value="GUDANG ACC">GUDANG ACC</option>
-                            <option value="GUDANG KAIN">GUDANG KAIN</option><option value="PACKING">PACKING</option><option value="SAMPLE PROD">SAMPLE PROD</option>
-                            <option value="SAMPLE ROOM">SAMPLE ROOM</option><option value="MD">MD</option><option value="BC">BC</option>
-                            <option value="QA">QA</option><option value="FACTORY MANAGER">FACTORY MANAGER</option><option value="GENERAL MANAGER">GENERAL MANAGER</option>
-                            <option value="IE">IE</option><option value="CUTTING">CUTTING</option><option value="PRODUKSI">PRODUKSI</option>
-                            <option value="DIGITAL">DIGITAL</option><option value="STAFF">STAFF</option>
+                        <label>Departemen *</label>
+                        <select id="in_dept">
+                            <option value="HRD">HRD</option><option value="PAJAK">PAJAK</option>
+                            <option value="PPIC">PPIC</option><option value="EXIM">EXIM</option>
+                            <option value="FINANCE">FINANCE</option><option value="IT">IT</option>
+                            <option value="INVENTORY">INVENTORY</option><option value="CAD">CAD</option>
+                            <option value="GUDANG ACC">GUDANG ACC</option><option value="GUDANG KAIN">GUDANG KAIN</option>
+                            <option value="PACKING">PACKING</option><option value="SAMPLE PROD">SAMPLE PROD</option>
+                            <option value="SAMPLE ROOM">SAMPLE ROOM</option><option value="MD">MD</option>
+                            <option value="BC">BC</option><option value="QA">QA</option>
+                            <option value="FACTORY MANAGER">FACTORY MANAGER</option>
+                            <option value="GENERAL MANAGER">GENERAL MANAGER</option>
+                            <option value="IE">IE</option><option value="CUTTING">CUTTING</option>
+                            <option value="PRODUKSI">PRODUKSI</option><option value="DIGITAL">DIGITAL</option>
+                            <option value="STAFF">STAFF</option>
+                        </select>
+                    </div>
+
+                    <!-- Baris 2: Device & Spesifikasi -->
+                    <div class="form-control">
+                        <label>Perangkat *</label>
+                        <select id="in_device">
+                            <option value="KOMPUTER">KOMPUTER</option>
+                            <option value="LAPTOP">LAPTOP</option>
+                            <option value="PRINTER">PRINTER</option>
+                            <option value="MONITOR">MONITOR</option>
+                            <option value="MOUSE">MOUSE</option>
+                            <option value="KEYBOARD">KEYBOARD</option>
                         </select>
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">Perangkat</span></label>
-                        <select id="in_device" class="select select-bordered bg-white/5 border-white/10 text-white focus:border-indigo-400 rounded-xl">
-                            <option value="KOMPUTER">KOMPUTER</option><option value="LAPTOP">LAPTOP</option>
+                        <label>Spesifikasi</label>
+                        <input type="text" id="in_specs" placeholder="I5,8 GB / 24 inch" />
+                    </div>
+                    <div class="form-control">
+                        <label>Status *</label>
+                        <select id="in_status">
+                            <option value="Active">Active</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Broken">Broken</option>
+                        </select>
+                    </div>
+
+                    <!-- Baris 3: IP & Network -->
+                    <div class="form-control">
+                        <label>IP Address</label>
+                        <input type="text" id="in_ip" placeholder="192.168.1.100" />
+                    </div>
+                    <div class="form-control">
+                        <label>MAC Address</label>
+                        <input type="text" id="in_mac" placeholder="AA:BB:CC:DD:EE:FF" />
+                    </div>
+                    <div class="form-control">
+                        <label>Hostname</label>
+                        <input type="text" id="in_hostname" placeholder="PC-IT-01" />
+                    </div>
+
+                    <!-- Baris 4: License -->
+                    <div class="form-control">
+                        <label>License OS</label>
+                        <input type="text" id="in_license_os" placeholder="Windows 11 Pro" />
+                    </div>
+                    <div class="form-control">
+                        <label>License Office</label>
+                        <input type="text" id="in_license_office" placeholder="Microsoft 365" />
+                    </div>
+                    <div class="form-control">
+                        <label>License Antivirus</label>
+                        <input type="text" id="in_license_av" placeholder="McAfee / Bitdefender" />
+                    </div>
+
+                    <!-- Baris 5: License Expiry & Purchase -->
+                    <div class="form-control">
+                        <label>License Expiry</label>
+                        <input type="date" id="in_license_expiry" />
+                    </div>
+                    <div class="form-control">
+                        <label>Purchase Date</label>
+                        <input type="date" id="in_purchase_date" />
+                    </div>
+                    <div class="form-control">
+                        <label>Warranty Expiry</label>
+                        <input type="date" id="in_warranty_expiry" />
+                    </div>
+
+                    <!-- Baris 6: Monitor -->
+                    <div class="form-control">
+                        <label>Monitor Brand</label>
+                        <input type="text" id="in_monitor_brand" placeholder="Dell / Samsung" />
+                    </div>
+                    <div class="form-control">
+                        <label>Monitor Size</label>
+                        <input type="text" id="in_monitor_size" placeholder="24 inch / 27 inch" />
+                    </div>
+                    <div class="form-control">
+                        <label>Monitor Serial</label>
+                        <input type="text" id="in_monitor_serial" placeholder="SN123456" />
+                    </div>
+
+                    <!-- Baris 7: Printer -->
+                    <div class="form-control">
+                        <label>Printer Brand</label>
+                        <input type="text" id="in_printer_brand" placeholder="HP / Epson" />
+                    </div>
+                    <div class="form-control">
+                        <label>Printer Model</label>
+                        <input type="text" id="in_printer_model" placeholder="LaserJet MFP" />
+                    </div>
+                    <div class="form-control">
+                        <label>Printer Serial</label>
+                        <input type="text" id="in_printer_serial" placeholder="SN789012" />
+                    </div>
+
+                    <!-- Baris 8: Mouse & Keyboard -->
+                    <div class="form-control">
+                        <label>Mouse Brand</label>
+                        <input type="text" id="in_mouse_brand" placeholder="Logitech / Rexus" />
+                    </div>
+                    <div class="form-control">
+                        <label>Mouse Type</label>
+                        <select id="in_mouse_type">
+                            <option value="">- Pilih -</option>
+                            <option value="Wired">Wired</option>
+                            <option value="Wireless">Wireless</option>
+                            <option value="Bluetooth">Bluetooth</option>
                         </select>
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">Spesifikasi</span></label>
-                        <select id="in_specs" class="select select-bordered bg-white/5 border-white/10 text-white focus:border-indigo-400 rounded-xl">
-                            <option value="I5,4 GB">I5,4 GB</option><option value="I5,8 GB">I5,8 GB</option>
+                        <label>Keyboard Brand</label>
+                        <input type="text" id="in_keyboard_brand" placeholder="Logitech / Rexus" />
+                    </div>
+
+                    <!-- Baris 9: Keyboard Type & Notes -->
+                    <div class="form-control">
+                        <label>Keyboard Type</label>
+                        <select id="in_keyboard_type">
+                            <option value="">- Pilih -</option>
+                            <option value="Wired">Wired</option>
+                            <option value="Wireless">Wireless</option>
+                            <option value="Bluetooth">Bluetooth</option>
+                            <option value="Mechanical">Mechanical</option>
                         </select>
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-gray-400 text-xs uppercase tracking-wider">Status</span></label>
-                        <select id="in_status" class="select select-bordered bg-white/5 border-white/10 text-white focus:border-indigo-400 rounded-xl">
-                            <option value="Active">Active</option><option value="Maintenance">Maintenance</option><option value="Broken">Broken</option>
-                        </select>
+                        <label>Notes</label>
+                        <input type="text" id="in_notes" placeholder="Catatan tambahan..." />
                     </div>
-                    <div class="form-control lg:col-span-3 mt-2">
-                        <button type="submit" id="btnSimpan" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:shadow-xl transition-all">
+                    <div class="form-control flex items-end">
+                        <button type="submit" id="btnSimpan" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-2 rounded-xl hover:shadow-xl transition-all w-full">
                             Simpan ke Cloud
                         </button>
                     </div>
@@ -666,35 +620,35 @@
             </div>
 
             <!-- SEARCH -->
-            <div class="mb-4 no-print">
-                <input type="text" id="searchInput" placeholder="Cari aset, user, atau departemen..." class="input input-bordered w-full max-w-sm bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl" />
+            <div class="mb-3 no-print">
+                <input type="text" id="searchInput" placeholder="Cari ID, User, Dept, IP, License..." class="input input-bordered w-full max-w-md bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl text-sm" />
             </div>
 
-            <!-- TABLE -->
+            <!-- TABLE - Full columns -->
             <div class="glass-card overflow-hidden">
                 <div class="table-wrapper" id="tableWrapper">
                     <table id="inventoryTable">
                         <thead>
                             <tr class="text-center">
-                                <th>QR Code</th>
-                                <th>User</th>
-                                <th>Departemen</th>
-                                <th>Device</th>
-                                <th>Status</th>
-                                <th class="no-print">Aksi</th>
+                                <th style="min-width:70px;">QR</th>
+                                <th style="min-width:80px;">ID Aset</th>
+                                <th style="min-width:90px;">User</th>
+                                <th style="min-width:80px;">Dept</th>
+                                <th style="min-width:80px;">Device</th>
+                                <th style="min-width:60px;">Status</th>
+                                <th style="min-width:100px;">IP Address</th>
+                                <th style="min-width:90px;">License</th>
+                                <th style="min-width:80px;">Monitor</th>
+                                <th style="min-width:80px;">Printer</th>
+                                <th style="min-width:80px;">Mouse/KB</th>
+                                <th style="min-width:60px;" class="no-print">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody">
-                            <tr><td colspan="6" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
+                            <tr><td colspan="12" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            <!-- PRINT FOOTER -->
-            <div class="print-footer no-print" style="display:none;">
-                <span>Dicetak pada: <span id="printFooterDate"></span></span>
-                <span style="margin-left:20px;">© IT Asset Manager Pro</span>
             </div>
         </div>
     </div>
@@ -833,35 +787,61 @@
             }
         }
 
-        function renderTable(data, isPrint = false) {
+        function renderTable(data) {
             const tbody = document.getElementById('inventoryBody');
             if (!tbody) return;
             if (!Array.isArray(data) || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gray-400">Data tidak tersedia.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="12" class="text-center py-10 text-gray-400">Data tidak tersedia.</td></tr>`;
                 return;
             }
 
             const isUserAdmin = !document.body.classList.contains('role-viewer');
 
             tbody.innerHTML = data.map(item => {
-                const deptVal = item.dept || item.dep || '-';
                 const statusClass = item.status?.toLowerCase() === 'active' ? 'active' : 
                                    item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
+                
+                // Format data
+                const licenseDisplay = [item.license_os, item.license_office, item.license_av]
+                    .filter(Boolean).join(' | ') || '-';
+                
+                const monitorDisplay = [item.monitor_brand, item.monitor_size]
+                    .filter(Boolean).join(' ') || '-';
+                
+                const printerDisplay = [item.printer_brand, item.printer_model]
+                    .filter(Boolean).join(' ') || '-';
+                
+                const mouseDisplay = [item.mouse_brand, item.mouse_type]
+                    .filter(Boolean).join(' ') || '-';
+                
+                const keyboardDisplay = [item.keyboard_brand, item.keyboard_type]
+                    .filter(Boolean).join(' ') || '-';
+                
+                const peripheralDisplay = mouseDisplay !== '-' || keyboardDisplay !== '-' ? 
+                    `${mouseDisplay !== '-' ? '🖱️'+mouseDisplay : ''} ${keyboardDisplay !== '-' ? '⌨️'+keyboardDisplay : ''}`.trim() : '-';
+
                 return `
                 <tr class="hover:bg-white/5 text-center">
-                    <td class="qr-cell">
-                        <canvas class="qr-code" data-value="${item.id_aset}" width="80" height="80"></canvas>
-                        <div class="text-xs text-gray-500 mt-1 id-label">${item.id_aset}</div>
+                    <td>
+                        <canvas class="qr-code" data-value="${item.id_aset}" width="60" height="60"></canvas>
                     </td>
+                    <td class="font-mono text-xs text-indigo-300">${item.id_aset}</td>
                     <td class="editable font-medium" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'user', this.innerText.trim())">${item.user || '-'}</td>
-                    <td class="editable" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${deptVal}</td>
-                    <td>${item.device || '-'}</td>
+                    <td class="editable" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${item.dept || item.dep || '-'}</td>
+                    <td><span class="badge-license">${item.device || '-'}</span></td>
                     <td><span class="badge-status ${statusClass}">${item.status || '-'}</span></td>
-                    <td class="no-print flex gap-2 justify-center flex-wrap">
-                        <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="text-xs bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg transition-all">Label</button>
-                        <button onclick="lihatHistory('${item.id_aset}')" class="text-xs bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg transition-all">📜</button>
-                        <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-3 py-1.5 rounded-lg transition-all aksi-kolom-admin">Transfer</button>
-                        <button onclick="deleteAsset('${item.id_aset}')" class="text-xs bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-3 py-1.5 rounded-lg transition-all btn-hapus aksi-kolom-admin">Hapus</button>
+                    <td class="font-mono text-xs text-blue-300">${item.ip_address || '-'}</td>
+                    <td><span class="text-[10px] text-gray-300">${licenseDisplay}</span></td>
+                    <td><span class="text-[10px] text-gray-300">${monitorDisplay}</span></td>
+                    <td><span class="text-[10px] text-gray-300">${printerDisplay}</span></td>
+                    <td><span class="text-[10px] text-gray-300">${peripheralDisplay}</span></td>
+                    <td class="no-print">
+                        <div class="flex gap-1 justify-center flex-wrap">
+                            <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">Label</button>
+                            <button onclick="lihatHistory('${item.id_aset}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">📜</button>
+                            <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all aksi-kolom-admin">Transfer</button>
+                            <button onclick="deleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all btn-hapus aksi-kolom-admin">Hapus</button>
+                        </div>
                     </td>
                 </tr>
             `}).join('');
@@ -875,7 +855,7 @@
                 new QRious({
                     element: canvas,
                     value,
-                    size: 80,
+                    size: 60,
                     background: 'white',
                     foreground: '#111827',
                     level: 'H'
@@ -889,25 +869,21 @@
             document.getElementById('totalAset').innerText = rows.length;
             document.getElementById('totalLaptop').innerText = rows.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
             document.getElementById('totalKomputer').innerText = rows.filter(i => {
-                const dev = String(i.device || '').toLowerCase();
-                return dev.includes('komputer') || dev.includes('pc');
+                const d = String(i.device || '').toLowerCase();
+                return d.includes('komputer') || d.includes('pc');
             }).length;
             document.getElementById('unitRusak').innerText = rows.filter(i => {
                 const s = String(i.status || '').toLowerCase();
                 return s === 'maintenance' || s === 'broken' || s === 'rusak';
             }).length;
-
-            const deptMap = {
-                totalHRD: 'HRD', totalIT: 'IT', totalFINANCE: 'FINANCE', totalPRODUKSI: 'PRODUKSI',
-                totalPPIC: 'PPIC', totalEXIM: 'EXIM', totalQA: 'QA', totalINVENTORY: 'INVENTORY'
-            };
-
-            Object.entries(deptMap).forEach(([id, name]) => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.innerText = rows.filter(i => String(i.dept || i.dep || '').toUpperCase().includes(name)).length;
-                }
-            });
+            document.getElementById('totalPeripheral').innerText = rows.filter(i => {
+                const d = String(i.device || '').toLowerCase();
+                return d.includes('mouse') || d.includes('keyboard');
+            }).length;
+            document.getElementById('totalPrinter').innerText = rows.filter(i => {
+                const d = String(i.device || '').toLowerCase();
+                return d.includes('printer');
+            }).length;
         }
 
         // Charts
@@ -937,7 +913,7 @@
                     responsive: true,
                     plugins: {
                         legend: {
-                            labels: { color: '#9ca3af', font: { size: 11 } }
+                            labels: { color: '#9ca3af', font: { size: 10 } }
                         }
                     },
                     cutout: '65%'
@@ -964,7 +940,7 @@
                         backgroundColor: sorted.map((_, i) => colors[i % colors.length] + '40'),
                         borderColor: sorted.map((_, i) => colors[i % colors.length]),
                         borderWidth: 2,
-                        borderRadius: 8
+                        borderRadius: 6
                     }]
                 },
                 options: {
@@ -975,259 +951,25 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { color: '#6b7280', stepSize: 1 }
+                            ticks: { color: '#6b7280', stepSize: 1, font: { size: 9 } }
                         },
                         x: {
-                            ticks: { color: '#6b7280', font: { size: 10 } }
+                            ticks: { color: '#6b7280', font: { size: 8 } }
                         }
                     }
                 }
             });
         }
 
-        // =====================
-        // PRINT FUNCTION - FIXED
-        // =====================
-        function printReport() {
-            // Siapkan data untuk cetak
-            const printData = data.length > 0 ? data : [];
-
-            // Buat elemen cetak
-            const printWin = window.open('', '_blank', 'width=1200,height=800');
-            if (!printWin) {
-                alert('Mohon izinkan popup untuk mencetak.');
-                return;
-            }
-
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-            let tableRows = '';
-            printData.forEach(item => {
-                const statusClass = item.status?.toLowerCase() === 'active' ? 'active' :
-                                   item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
-                const statusDisplay = item.status || '-';
-                tableRows += `
-                    <tr>
-                        <td style="text-align:center;padding:6px 10px;border:1px solid #d1d5db;">
-                            <div style="display:flex;flex-direction:column;align-items:center;">
-                                <canvas id="qr_${item.id_aset.replace(/[^a-zA-Z0-9]/g,'_')}" width="60" height="60" style="border:1px solid #d1d5db;border-radius:4px;background:white;padding:2px;"></canvas>
-                                <span style="font-size:8px;color:#6b7280;margin-top:2px;">${item.id_aset}</span>
-                            </div>
-                        </td>
-                        <td style="padding:6px 10px;border:1px solid #d1d5db;font-weight:600;">${item.user || '-'}</td>
-                        <td style="padding:6px 10px;border:1px solid #d1d5db;">${item.dept || item.dep || '-'}</td>
-                        <td style="padding:6px 10px;border:1px solid #d1d5db;">${item.device || '-'}</td>
-                        <td style="padding:6px 10px;border:1px solid #d1d5db;text-align:center;">
-                            <span style="padding:2px 12px;border-radius:12px;font-weight:600;font-size:10px;display:inline-block;background:${statusClass === 'active' ? '#34d399' : statusClass === 'maintenance' ? '#fbbf24' : '#fb7185'};color:${statusClass === 'maintenance' ? '#1f2937' : 'white'};">${statusDisplay}</span>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            const html = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Laporan Inventaris IT</title>
-                    <style>
-                        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-                        body { 
-                            background: white; 
-                            padding: 30px; 
-                            color: #1f2937;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
-                        .report-header {
-                            text-align: center;
-                            padding: 20px 0 15px 0;
-                            border-bottom: 3px solid #1f2937;
-                            margin-bottom: 20px;
-                        }
-                        .report-header h1 {
-                            font-size: 22px;
-                            font-weight: 800;
-                            letter-spacing: 2px;
-                            margin: 0;
-                            color: #1f2937;
-                        }
-                        .report-header .sub {
-                            font-size: 12px;
-                            color: #6b7280;
-                            margin-top: 4px;
-                        }
-                        .report-header .date {
-                            font-size: 11px;
-                            color: #9ca3af;
-                            margin-top: 2px;
-                        }
-                        .report-table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            font-size: 11px;
-                        }
-                        .report-table thead th {
-                            background: #1f2937;
-                            color: white;
-                            padding: 8px 10px;
-                            text-align: left;
-                            font-weight: 700;
-                            text-transform: uppercase;
-                            font-size: 10px;
-                            letter-spacing: 0.5px;
-                            border: 1px solid #374151;
-                        }
-                        .report-table tbody td {
-                            padding: 6px 10px;
-                            border: 1px solid #d1d5db;
-                            color: #1f2937;
-                            vertical-align: middle;
-                        }
-                        .report-table tbody tr:nth-child(even) {
-                            background: #f9fafb;
-                        }
-                        .report-table tbody tr:nth-child(odd) {
-                            background: white;
-                        }
-                        .report-footer {
-                            margin-top: 20px;
-                            padding-top: 15px;
-                            border-top: 2px solid #e5e7eb;
-                            text-align: center;
-                            font-size: 10px;
-                            color: #9ca3af;
-                        }
-                        .summary-grid {
-                            display: grid;
-                            grid-template-columns: repeat(4, 1fr);
-                            gap: 12px;
-                            margin-bottom: 20px;
-                        }
-                        .summary-item {
-                            background: #f3f4f6;
-                            padding: 10px;
-                            border-radius: 8px;
-                            text-align: center;
-                            border: 1px solid #e5e7eb;
-                        }
-                        .summary-item .label {
-                            font-size: 9px;
-                            text-transform: uppercase;
-                            color: #6b7280;
-                            font-weight: 600;
-                        }
-                        .summary-item .value {
-                            font-size: 18px;
-                            font-weight: 800;
-                            color: #1f2937;
-                            margin-top: 2px;
-                        }
-                        .qr-cell {
-                            text-align: center !important;
-                        }
-                        @page {
-                            margin: 15mm;
-                            size: A4 landscape;
-                        }
-                        @media print {
-                            body { padding: 0; }
-                            .report-table thead th { background: #1f2937 !important; color: white !important; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="report-header">
-                        <h1>IT ASSET INVENTORY REPORT</h1>
-                        <div class="sub">${currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)'}</div>
-                        <div class="date">Dicetak: ${dateStr} ${timeStr}</div>
-                    </div>
-
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <div class="label">Total Aset</div>
-                            <div class="value">${printData.length}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">Laptop</div>
-                            <div class="value">${printData.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">Komputer</div>
-                            <div class="value">${printData.filter(i => { const d = String(i.device || '').toLowerCase(); return d.includes('komputer') || d.includes('pc'); }).length}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">Maintenance</div>
-                            <div class="value">${printData.filter(i => { const s = String(i.status || '').toLowerCase(); return s === 'maintenance' || s === 'broken' || s === 'rusak'; }).length}</div>
-                        </div>
-                    </div>
-
-                    <table class="report-table">
-                        <thead>
-                            <tr>
-                                <th style="text-align:center;width:80px;">QR Code</th>
-                                <th>User</th>
-                                <th>Departemen</th>
-                                <th>Device</th>
-                                <th style="text-align:center;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows}
-                        </tbody>
-                    </table>
-
-                    <div class="report-footer">
-                        <span>Dicetak pada: ${dateStr} ${timeStr}</span>
-                        <span style="margin-left:20px;">© IT Asset Manager Pro</span>
-                    </div>
-
-                    <script>
-                        // Generate QR codes setelah halaman dimuat
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const qrData = ${JSON.stringify(printData)};
-                            qrData.forEach(item => {
-                                const canvasId = 'qr_' + item.id_aset.replace(/[^a-zA-Z0-9]/g,'_');
-                                const canvas = document.getElementById(canvasId);
-                                if (canvas && typeof QRious !== 'undefined') {
-                                    new QRious({
-                                        element: canvas,
-                                        value: item.id_aset,
-                                        size: 60,
-                                        background: 'white',
-                                        foreground: '#111827',
-                                        level: 'H'
-                                    });
-                                }
-                            });
-                        });
-                    <\/script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
-                </body>
-                </html>
-            `;
-
-            printWin.document.write(html);
-            printWin.document.close();
-
-            // Tunggu QR code selesai digenerate
-            setTimeout(() => {
-                printWin.focus();
-                printWin.print();
-            }, 1000);
-        }
-
         // CRUD
         async function updateField(idRaw, kolom, nilaiBaru) {
             const idAset = idRaw.trim();
-            const nilaiClean = nilaiBaru.trim().toUpperCase();
+            const nilaiClean = nilaiBaru.trim();
 
             if (kolom === 'user' || kolom === 'dept') {
                 const dataLama = data.find(item => item.id_aset === idAset);
                 const nilaiLama = dataLama ? String(dataLama[kolom] || dataLama['dep'] || '-') : '-';
-                if (nilaiLama.trim().toUpperCase() !== nilaiClean) {
+                if (nilaiLama.trim() !== nilaiClean) {
                     await catatHistory(idAset, kolom, nilaiLama, nilaiClean);
                 }
             }
@@ -1264,7 +1006,27 @@
                 dept: document.getElementById('in_dept').value,
                 device: document.getElementById('in_device').value,
                 specs: document.getElementById('in_specs').value,
-                status: document.getElementById('in_status').value
+                status: document.getElementById('in_status').value,
+                ip_address: document.getElementById('in_ip').value,
+                mac_address: document.getElementById('in_mac').value,
+                hostname: document.getElementById('in_hostname').value,
+                license_os: document.getElementById('in_license_os').value,
+                license_office: document.getElementById('in_license_office').value,
+                license_av: document.getElementById('in_license_av').value,
+                license_expiry: document.getElementById('in_license_expiry').value,
+                purchase_date: document.getElementById('in_purchase_date').value,
+                warranty_expiry: document.getElementById('in_warranty_expiry').value,
+                monitor_brand: document.getElementById('in_monitor_brand').value,
+                monitor_size: document.getElementById('in_monitor_size').value,
+                monitor_serial: document.getElementById('in_monitor_serial').value,
+                printer_brand: document.getElementById('in_printer_brand').value,
+                printer_model: document.getElementById('in_printer_model').value,
+                printer_serial: document.getElementById('in_printer_serial').value,
+                mouse_brand: document.getElementById('in_mouse_brand').value,
+                mouse_type: document.getElementById('in_mouse_type').value,
+                keyboard_brand: document.getElementById('in_keyboard_brand').value,
+                keyboard_type: document.getElementById('in_keyboard_type').value,
+                notes: document.getElementById('in_notes').value
             };
 
             const { error } = await supabaseClient.from(currentTable).insert([newData]);
@@ -1388,6 +1150,26 @@
                     device: aset.device,
                     specs: aset.specs,
                     status: 'Active',
+                    ip_address: aset.ip_address,
+                    mac_address: aset.mac_address,
+                    hostname: aset.hostname,
+                    license_os: aset.license_os,
+                    license_office: aset.license_office,
+                    license_av: aset.license_av,
+                    license_expiry: aset.license_expiry,
+                    purchase_date: aset.purchase_date,
+                    warranty_expiry: aset.warranty_expiry,
+                    monitor_brand: aset.monitor_brand,
+                    monitor_size: aset.monitor_size,
+                    monitor_serial: aset.monitor_serial,
+                    printer_brand: aset.printer_brand,
+                    printer_model: aset.printer_model,
+                    printer_serial: aset.printer_serial,
+                    mouse_brand: aset.mouse_brand,
+                    mouse_type: aset.mouse_type,
+                    keyboard_brand: aset.keyboard_brand,
+                    keyboard_type: aset.keyboard_type,
+                    notes: aset.notes,
                     created_at: new Date().toISOString()
                 }]);
 
@@ -1423,7 +1205,7 @@
                 const code = decodedText.trim().toUpperCase();
                 const ditemukan = data.find(item => (item.id_aset || "").toString().toUpperCase() === code);
                 if (ditemukan) {
-                    alert(`✅ DITEMUKAN!\nID: ${ditemukan.id_aset}\nUser: ${ditemukan.user || '-'}\nDept: ${ditemukan.dept || ditemukan.dep || '-'}\nDevice: ${ditemukan.device || '-'}`);
+                    alert(`✅ DITEMUKAN!\nID: ${ditemukan.id_aset}\nUser: ${ditemukan.user || '-'}\nDept: ${ditemukan.dept || ditemukan.dep || '-'}\nDevice: ${ditemukan.device || '-'}\nIP: ${ditemukan.ip_address || '-'}`);
                 } else {
                     alert("❌ Data [" + code + "] tidak ditemukan.");
                 }
@@ -1438,7 +1220,7 @@
         function filterByDept(namaDept) {
             const rows = document.querySelectorAll('#inventoryBody tr');
             rows.forEach(row => {
-                const deptCell = row.cells[2];
+                const deptCell = row.cells[3];
                 if (deptCell) {
                     const deptText = deptCell.innerText.trim().toUpperCase();
                     row.style.display = deptText.includes(namaDept.toUpperCase()) ? '' : 'none';
@@ -1452,9 +1234,40 @@
         }
 
         function exportToExcel() {
-            const table = document.querySelector("table");
-            const wb = XLSX.utils.table_to_book(table, { sheet: "Data Inventaris" });
-            XLSX.writeFile(wb, `Inventaris_${new Date().toISOString().slice(0,10)}.xlsx`);
+            // Ambil data dari state
+            const exportData = data.map(item => ({
+                'ID Aset': item.id_aset,
+                'User': item.user || '-',
+                'Departemen': item.dept || item.dep || '-',
+                'Device': item.device || '-',
+                'Spesifikasi': item.specs || '-',
+                'Status': item.status || '-',
+                'IP Address': item.ip_address || '-',
+                'MAC Address': item.mac_address || '-',
+                'Hostname': item.hostname || '-',
+                'License OS': item.license_os || '-',
+                'License Office': item.license_office || '-',
+                'License Antivirus': item.license_av || '-',
+                'License Expiry': item.license_expiry || '-',
+                'Purchase Date': item.purchase_date || '-',
+                'Warranty Expiry': item.warranty_expiry || '-',
+                'Monitor Brand': item.monitor_brand || '-',
+                'Monitor Size': item.monitor_size || '-',
+                'Monitor Serial': item.monitor_serial || '-',
+                'Printer Brand': item.printer_brand || '-',
+                'Printer Model': item.printer_model || '-',
+                'Printer Serial': item.printer_serial || '-',
+                'Mouse Brand': item.mouse_brand || '-',
+                'Mouse Type': item.mouse_type || '-',
+                'Keyboard Brand': item.keyboard_brand || '-',
+                'Keyboard Type': item.keyboard_type || '-',
+                'Notes': item.notes || '-'
+            }));
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            XLSX.utils.book_append_sheet(wb, ws, "Inventaris");
+            XLSX.writeFile(wb, `Inventaris_IT_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
         function printSingleLabel(id, user, device) {
@@ -1479,6 +1292,84 @@
             setTimeout(() => { window.print(); document.body.classList.remove('printing-label'); }, 500);
         }
 
+        function printReport() {
+            const printWin = window.open('', '_blank', 'width=1200,height=800');
+            if (!printWin) {
+                alert('Mohon izinkan popup untuk mencetak.');
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+
+            let tableRows = '';
+            data.forEach(item => {
+                const statusClass = item.status?.toLowerCase() === 'active' ? 'active' :
+                                   item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
+                tableRows += `
+                    <tr>
+                        <td style="text-align:center;padding:4px 8px;border:1px solid #d1d5db;font-size:9px;">${item.id_aset}</td>
+                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:9px;">${item.user || '-'}</td>
+                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:9px;">${item.dept || item.dep || '-'}</td>
+                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:9px;">${item.device || '-'}</td>
+                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:9px;text-align:center;">
+                            <span style="padding:1px 10px;border-radius:10px;font-weight:600;font-size:8px;display:inline-block;background:${statusClass === 'active' ? '#34d399' : statusClass === 'maintenance' ? '#fbbf24' : '#fb7185'};color:${statusClass === 'maintenance' ? '#1f2937' : 'white'};">${item.status || '-'}</span>
+                        </td>
+                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:8px;font-family:monospace;">${item.ip_address || '-'}</td>
+                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:8px;">${[item.license_os, item.license_office].filter(Boolean).join(' | ') || '-'}</td>
+                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:8px;">${[item.monitor_brand, item.monitor_size].filter(Boolean).join(' ') || '-'}</td>
+                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:8px;">${[item.printer_brand, item.printer_model].filter(Boolean).join(' ') || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Inventaris IT</title>
+                    <style>
+                        * { font-family: 'Inter', sans-serif; }
+                        body { background: white; padding: 20px; color: #1f2937; }
+                        .header { text-align:center; padding:15px 0; border-bottom:3px solid #1f2937; margin-bottom:15px; }
+                        .header h1 { font-size:20px; font-weight:800; letter-spacing:2px; }
+                        .header .sub { font-size:11px; color:#6b7280; }
+                        .header .date { font-size:10px; color:#9ca3af; }
+                        table { width:100%; border-collapse:collapse; font-size:9px; }
+                        thead th { background:#1f2937; color:white; padding:6px 8px; text-align:left; font-weight:700; text-transform:uppercase; font-size:7px; border:1px solid #374151; }
+                        tbody td { padding:4px 8px; border:1px solid #d1d5db; }
+                        tbody tr:nth-child(even) { background:#f9fafb; }
+                        .footer { margin-top:15px; padding-top:10px; border-top:2px solid #e5e7eb; text-align:center; font-size:9px; color:#9ca3af; }
+                        @page { margin:10mm; size: A4 landscape; }
+                        @media print { body { padding:0; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>IT ASSET INVENTORY REPORT</h1>
+                        <div class="sub">${currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)'}</div>
+                        <div class="date">Dicetak: ${dateStr}</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>User</th><th>Dept</th><th>Device</th>
+                                <th>Status</th><th>IP</th><th>License</th><th>Monitor</th><th>Printer</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                    <div class="footer">© IT Asset Manager Pro - Total Aset: ${data.length}</div>
+                </body>
+                </html>
+            `;
+
+            printWin.document.write(html);
+            printWin.document.close();
+            setTimeout(() => { printWin.focus(); printWin.print(); }, 500);
+        }
+
         function setPT(tabel, history) {
             currentTable = tabel;
             currentHistory = history;
@@ -1491,17 +1382,21 @@
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const kw = e.target.value.toLowerCase();
             const filtered = data.filter(i => {
-                const user = String(i.user || '');
-                const idAset = String(i.id_aset || '');
-                const dept = String(i.dept || i.dep || '');
-                return user.toLowerCase().includes(kw) || idAset.toLowerCase().includes(kw) || dept.toLowerCase().includes(kw);
+                const searchFields = [
+                    i.id_aset, i.user, i.dept, i.dep, i.device,
+                    i.ip_address, i.license_os, i.license_office,
+                    i.monitor_brand, i.printer_brand, i.mouse_brand, i.keyboard_brand,
+                    i.hostname, i.notes
+                ].filter(Boolean).join(' ').toLowerCase();
+                return searchFields.includes(kw);
             });
             renderTable(filtered);
             updateStats(filtered);
             updateCharts(filtered);
         });
 
-        console.log('🚀 IT Asset Manager Pro v3.0 - Print Fixed');
+        console.log('🚀 IT Asset Manager Pro v4.0 - Complete Edition');
+        console.log('📋 Fitur: IP, License, Monitor, Printer, Mouse, Keyboard');
     </script>
 </body>
 </html>
