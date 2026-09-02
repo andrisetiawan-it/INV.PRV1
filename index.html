@@ -180,6 +180,7 @@
             border-radius: 8px;
             background: white;
             padding: 3px;
+            display: inline-block;
         }
 
         .btn-glow {
@@ -300,6 +301,197 @@
             width: 0%;
         }
 
+        /* ============================================
+           PRINT STYLES - QR CODE FIX
+           ============================================ */
+        @media print {
+            .no-print { display: none !important; }
+            
+            body { 
+                background: white !important; 
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color: #1f2937 !important;
+            }
+            
+            .glass, .glass-card, .chart-container { 
+                background: white !important; 
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+            
+            .table-wrapper thead th { 
+                background: #1f2937 !important; 
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .table-wrapper tbody td { 
+                color: #1f2937 !important;
+                border-bottom: 1px solid #e5e7eb !important;
+            }
+            
+            .badge-status {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .badge-status.active {
+                background: #34d399 !important;
+                color: white !important;
+                border: 1px solid #34d399 !important;
+            }
+            
+            .badge-status.maintenance {
+                background: #fbbf24 !important;
+                color: #1f2937 !important;
+                border: 1px solid #fbbf24 !important;
+            }
+            
+            .badge-status.broken {
+                background: #fb7185 !important;
+                color: white !important;
+                border: 1px solid #fb7185 !important;
+            }
+            
+            /* QR CODE PRINT FIX */
+            .qr-code {
+                border: 1px solid #d1d5db !important;
+                background: white !important;
+                display: inline-block !important;
+                max-width: 60px !important;
+                max-height: 60px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                image-rendering: pixelated !important;
+            }
+            
+            canvas.qr-code {
+                display: inline-block !important;
+                width: 60px !important;
+                height: 60px !important;
+                background: white !important;
+            }
+            
+            /* Print container */
+            .print-container {
+                padding: 10px !important;
+            }
+            
+            /* Report header for print */
+            .print-report-header {
+                display: block !important;
+                text-align: center !important;
+                padding: 15px 0 !important;
+                border-bottom: 3px solid #1f2937 !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .print-report-header h1 {
+                font-size: 20px !important;
+                font-weight: 800 !important;
+                color: #1f2937 !important;
+                letter-spacing: 2px !important;
+                margin: 0 !important;
+            }
+            
+            .print-report-header .sub {
+                font-size: 11px !important;
+                color: #6b7280 !important;
+                margin-top: 2px !important;
+            }
+            
+            .print-report-header .date {
+                font-size: 10px !important;
+                color: #9ca3af !important;
+                margin-top: 2px !important;
+            }
+            
+            .print-footer {
+                margin-top: 15px !important;
+                padding-top: 10px !important;
+                border-top: 2px solid #e5e7eb !important;
+                text-align: center !important;
+                font-size: 9px !important;
+                color: #9ca3af !important;
+            }
+            
+            .print-summary {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .print-summary-item {
+                background: #f3f4f6 !important;
+                padding: 8px !important;
+                border-radius: 6px !important;
+                text-align: center !important;
+                border: 1px solid #e5e7eb !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .print-summary-item .label {
+                font-size: 8px !important;
+                text-transform: uppercase !important;
+                color: #6b7280 !important;
+                font-weight: 600 !important;
+            }
+            
+            .print-summary-item .value {
+                font-size: 18px !important;
+                font-weight: 800 !important;
+                color: #1f2937 !important;
+                margin-top: 2px !important;
+            }
+            
+            /* Pastikan QR code di print report */
+            .print-qr-cell {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+            
+            .print-qr-cell canvas,
+            .print-qr-cell img {
+                width: 50px !important;
+                height: 50px !important;
+                border: 1px solid #d1d5db !important;
+                border-radius: 4px !important;
+                background: white !important;
+                display: inline-block !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Label print */
+            body.printing-label .print-container { display: none !important; }
+            
+            .print-only-label {
+                display: none !important;
+            }
+            
+            body.printing-label .print-only-label {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                height: 100vh !important;
+                background: white !important;
+            }
+            
+            body.printing-label .print-only-label canvas {
+                max-width: 200px !important;
+                max-height: 200px !important;
+            }
+            
+            @page {
+                margin: 10mm;
+                size: A4 landscape;
+            }
+        }
+
         @media (max-width: 1024px) {
             .form-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -310,14 +502,6 @@
             .table-wrapper thead th { font-size: 0.5rem; padding: 6px 4px; }
             .table-wrapper tbody td { padding: 4px 4px; font-size: 0.6rem; }
             .qr-code { width: 40px; height: 40px; }
-        }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; }
-            .glass, .glass-card, .chart-container { background: white !important; border: 1px solid #ddd !important; }
-            .table-wrapper thead th { background: #f3f4f6 !important; color: #1f2937 !important; }
-            .table-wrapper tbody td { color: #1f2937 !important; }
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -550,10 +734,8 @@
                         <button onclick="closeEditModal()" class="text-gray-400 hover:text-white transition-colors">✕</button>
                     </div>
                     <form id="editForm" class="form-grid">
-                        <!-- Hidden ID -->
                         <input type="hidden" id="edit_id" />
                         
-                        <!-- Identitas -->
                         <div class="form-control">
                             <label>User *</label>
                             <input type="text" id="edit_user" required />
@@ -876,7 +1058,7 @@
                                 <th style="min-width:80px;">Monitor</th>
                                 <th style="min-width:80px;">Printer</th>
                                 <th style="min-width:80px;">Mouse/KB</th>
-                                <th style="min-width:80px;" class="no-print">Aksi</th>
+                                <th style="min-width:100px;" class="no-print">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody">
@@ -1091,7 +1273,7 @@
                 if (!value) return;
                 new QRious({
                     element: canvas,
-                    value,
+                    value: value,
                     size: 60,
                     background: 'white',
                     foreground: '#111827',
@@ -1199,7 +1381,267 @@
         }
 
         // ============================================
-        // EDIT FUNCTION
+        // PRINT REPORT - DENGAN QR CODE FIX
+        // ============================================
+        function printReport() {
+            const printWin = window.open('', '_blank', 'width=1200,height=800');
+            if (!printWin) {
+                alert('Mohon izinkan popup untuk mencetak.');
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+
+            let tableRows = '';
+            data.forEach((item, index) => {
+                const statusClass = item.status?.toLowerCase() === 'active' ? 'active' :
+                                   item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
+                
+                const statusColor = statusClass === 'active' ? '#34d399' : 
+                                   statusClass === 'maintenance' ? '#fbbf24' : '#fb7185';
+                const statusTextColor = statusClass === 'maintenance' ? '#1f2937' : 'white';
+
+                // Buat ID unik untuk canvas QR
+                const qrId = 'qr_print_' + index;
+                
+                tableRows += `
+                    <tr>
+                        <td class="print-qr-cell" style="text-align:center;padding:4px 6px;border:1px solid #d1d5db;vertical-align:middle;width:70px;">
+                            <canvas id="${qrId}" width="50" height="50" style="width:50px;height:50px;border:1px solid #d1d5db;border-radius:4px;background:white;display:inline-block;"></canvas>
+                            <div style="font-size:7px;color:#6b7280;margin-top:2px;">${item.id_aset}</div>
+                        </td>
+                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:9px;font-weight:600;">${item.user || '-'}</td>
+                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:9px;">${item.dept || item.dep || '-'}</td>
+                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:9px;">${item.device || '-'}</td>
+                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:9px;text-align:center;">
+                            <span style="padding:2px 10px;border-radius:12px;font-weight:600;font-size:8px;display:inline-block;background:${statusColor};color:${statusTextColor};">${item.status || '-'}</span>
+                        </td>
+                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:8px;font-family:monospace;">${item.ip_address || '-'}</td>
+                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:8px;">${[item.license_os, item.license_office].filter(Boolean).join(' | ') || '-'}</td>
+                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:8px;">${[item.monitor_brand, item.monitor_size].filter(Boolean).join(' ') || '-'}</td>
+                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:8px;">${[item.printer_brand, item.printer_model].filter(Boolean).join(' ') || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            // Summary stats
+            const total = data.length;
+            const laptop = data.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
+            const komputer = data.filter(i => { const d = String(i.device || '').toLowerCase(); return d.includes('komputer') || d.includes('pc'); }).length;
+            const maintenance = data.filter(i => { const s = String(i.status || '').toLowerCase(); return s === 'maintenance' || s === 'broken' || s === 'rusak'; }).length;
+
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Inventaris IT</title>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
+                    <style>
+                        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+                        body { 
+                            background: white; 
+                            padding: 20px; 
+                            color: #1f2937;
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+                        .header { 
+                            text-align:center; 
+                            padding:15px 0; 
+                            border-bottom:3px solid #1f2937; 
+                            margin-bottom:15px; 
+                        }
+                        .header h1 { 
+                            font-size:22px; 
+                            font-weight:800; 
+                            letter-spacing:2px; 
+                            margin:0;
+                            color: #1f2937;
+                        }
+                        .header .sub { 
+                            font-size:12px; 
+                            color:#6b7280; 
+                            margin-top:2px;
+                        }
+                        .header .date { 
+                            font-size:10px; 
+                            color:#9ca3af; 
+                            margin-top:2px;
+                        }
+                        .summary {
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: 10px;
+                            margin-bottom: 15px;
+                        }
+                        .summary-item {
+                            background: #f3f4f6;
+                            padding: 8px;
+                            border-radius: 6px;
+                            text-align: center;
+                            border: 1px solid #e5e7eb;
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+                        .summary-item .label {
+                            font-size: 8px;
+                            text-transform: uppercase;
+                            color: #6b7280;
+                            font-weight: 600;
+                        }
+                        .summary-item .value {
+                            font-size: 18px;
+                            font-weight: 800;
+                            color: #1f2937;
+                            margin-top: 2px;
+                        }
+                        table { 
+                            width:100%; 
+                            border-collapse:collapse; 
+                            font-size:9px; 
+                        }
+                        thead th { 
+                            background:#1f2937 !important; 
+                            color:white !important; 
+                            padding:6px 8px; 
+                            text-align:left; 
+                            font-weight:700; 
+                            text-transform:uppercase; 
+                            font-size:7px; 
+                            border:1px solid #374151;
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+                        tbody td { 
+                            padding:4px 6px; 
+                            border:1px solid #d1d5db; 
+                            vertical-align:middle;
+                        }
+                        tbody tr:nth-child(even) { background:#f9fafb; }
+                        .footer { 
+                            margin-top:15px; 
+                            padding-top:10px; 
+                            border-top:2px solid #e5e7eb; 
+                            text-align:center; 
+                            font-size:9px; 
+                            color:#9ca3af; 
+                        }
+                        .print-qr-cell {
+                            text-align:center !important;
+                            vertical-align:middle !important;
+                        }
+                        .print-qr-cell canvas {
+                            display:inline-block !important;
+                            border:1px solid #d1d5db !important;
+                            border-radius:4px !important;
+                            background:white !important;
+                            width:50px !important;
+                            height:50px !important;
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+                        @page { 
+                            margin:10mm; 
+                            size: A4 landscape; 
+                        }
+                        @media print { 
+                            body { padding:0; }
+                            thead th { background:#1f2937 !important; color:white !important; }
+                            .summary-item { background:#f3f4f6 !important; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>IT ASSET INVENTORY REPORT</h1>
+                        <div class="sub">${currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)'}</div>
+                        <div class="date">Dicetak: ${dateStr}</div>
+                    </div>
+
+                    <div class="summary">
+                        <div class="summary-item">
+                            <div class="label">Total Aset</div>
+                            <div class="value">${total}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Laptop</div>
+                            <div class="value">${laptop}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Komputer</div>
+                            <div class="value">${komputer}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Maintenance</div>
+                            <div class="value">${maintenance}</div>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;width:70px;">QR Code</th>
+                                <th>User</th>
+                                <th>Dept</th>
+                                <th>Device</th>
+                                <th style="text-align:center;">Status</th>
+                                <th>IP</th>
+                                <th>License</th>
+                                <th>Monitor</th>
+                                <th>Printer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+
+                    <div class="footer">
+                        © IT Asset Manager Pro - Total Aset: ${total}
+                    </div>
+
+                    <script>
+                        // Generate QR codes after page loads
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const data = ${JSON.stringify(data)};
+                            data.forEach((item, index) => {
+                                const canvasId = 'qr_print_' + index;
+                                const canvas = document.getElementById(canvasId);
+                                if (canvas && typeof QRious !== 'undefined') {
+                                    try {
+                                        new QRious({
+                                            element: canvas,
+                                            value: item.id_aset,
+                                            size: 50,
+                                            background: 'white',
+                                            foreground: '#111827',
+                                            level: 'H'
+                                        });
+                                    } catch(e) {
+                                        console.log('QR Error:', e);
+                                    }
+                                }
+                            });
+                        });
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            printWin.document.write(html);
+            printWin.document.close();
+            
+            // Tunggu QR code selesai digenerate
+            setTimeout(() => {
+                printWin.focus();
+                printWin.print();
+            }, 1500);
+        }
+
+        // ============================================
+        // EDIT FUNCTIONS
         // ============================================
         function openEditModal(id) {
             const asset = data.find(item => item.id_aset === id);
@@ -1279,14 +1721,11 @@
                 notes: document.getElementById('edit_notes').value
             };
 
-            // Catat history untuk perubahan
             const oldData = data.find(item => item.id_aset === id);
             if (oldData) {
-                // Cek perubahan user
                 if (oldData.user !== updateData.user) {
                     await catatHistory(id, 'user', oldData.user || '-', updateData.user);
                 }
-                // Cek perubahan dept
                 if ((oldData.dept || oldData.dep) !== updateData.dept) {
                     await catatHistory(id, 'dept', oldData.dept || oldData.dep || '-', updateData.dept);
                 }
@@ -1895,84 +2334,6 @@
             setTimeout(() => { window.print(); document.body.classList.remove('printing-label'); }, 500);
         }
 
-        function printReport() {
-            const printWin = window.open('', '_blank', 'width=1200,height=800');
-            if (!printWin) {
-                alert('Mohon izinkan popup untuk mencetak.');
-                return;
-            }
-
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-
-            let tableRows = '';
-            data.forEach(item => {
-                const statusClass = item.status?.toLowerCase() === 'active' ? 'active' :
-                                   item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
-                tableRows += `
-                    <tr>
-                        <td style="text-align:center;padding:4px 8px;border:1px solid #d1d5db;font-size:9px;">${item.id_aset}</td>
-                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:9px;">${item.user || '-'}</td>
-                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:9px;">${item.dept || item.dep || '-'}</td>
-                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:9px;">${item.device || '-'}</td>
-                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:9px;text-align:center;">
-                            <span style="padding:1px 10px;border-radius:10px;font-weight:600;font-size:8px;display:inline-block;background:${statusClass === 'active' ? '#34d399' : statusClass === 'maintenance' ? '#fbbf24' : '#fb7185'};color:${statusClass === 'maintenance' ? '#1f2937' : 'white'};">${item.status || '-'}</span>
-                        </td>
-                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:8px;font-family:monospace;">${item.ip_address || '-'}</td>
-                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:8px;">${[item.license_os, item.license_office].filter(Boolean).join(' | ') || '-'}</td>
-                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:8px;">${[item.monitor_brand, item.monitor_size].filter(Boolean).join(' ') || '-'}</td>
-                        <td style="padding:4px 8px;border:1px solid #d1d5db;font-size:8px;">${[item.printer_brand, item.printer_model].filter(Boolean).join(' ') || '-'}</td>
-                    </tr>
-                `;
-            });
-
-            const html = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Laporan Inventaris IT</title>
-                    <style>
-                        * { font-family: 'Inter', sans-serif; }
-                        body { background: white; padding: 20px; color: #1f2937; }
-                        .header { text-align:center; padding:15px 0; border-bottom:3px solid #1f2937; margin-bottom:15px; }
-                        .header h1 { font-size:20px; font-weight:800; letter-spacing:2px; }
-                        .header .sub { font-size:11px; color:#6b7280; }
-                        .header .date { font-size:10px; color:#9ca3af; }
-                        table { width:100%; border-collapse:collapse; font-size:9px; }
-                        thead th { background:#1f2937; color:white; padding:6px 8px; text-align:left; font-weight:700; text-transform:uppercase; font-size:7px; border:1px solid #374151; }
-                        tbody td { padding:4px 8px; border:1px solid #d1d5db; }
-                        tbody tr:nth-child(even) { background:#f9fafb; }
-                        .footer { margin-top:15px; padding-top:10px; border-top:2px solid #e5e7eb; text-align:center; font-size:9px; color:#9ca3af; }
-                        @page { margin:10mm; size: A4 landscape; }
-                        @media print { body { padding:0; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>IT ASSET INVENTORY REPORT</h1>
-                        <div class="sub">${currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)'}</div>
-                        <div class="date">Dicetak: ${dateStr}</div>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th><th>User</th><th>Dept</th><th>Device</th>
-                                <th>Status</th><th>IP</th><th>License</th><th>Monitor</th><th>Printer</th>
-                            </tr>
-                        </thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
-                    <div class="footer">© IT Asset Manager Pro - Total Aset: ${data.length}</div>
-                </body>
-                </html>
-            `;
-
-            printWin.document.write(html);
-            printWin.document.close();
-            setTimeout(() => { printWin.focus(); printWin.print(); }, 500);
-        }
-
         function setPT(tabel, history) {
             currentTable = tabel;
             currentHistory = history;
@@ -2025,9 +2386,8 @@
             updateCharts(filtered);
         });
 
-        console.log('🚀 IT Asset Manager Pro v5.0 - Dengan Edit & Bulk Import');
-        console.log('📋 Fitur: Edit, Import Massal, Clone, Transfer, History');
-        console.log('📦 Total field: 26 field lengkap!');
+        console.log('🚀 IT Asset Manager Pro v5.0 - QR Code Print Fix');
+        console.log('📋 QR Code sekarang muncul di print!');
     </script>
 </body>
 </html>
