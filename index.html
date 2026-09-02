@@ -911,17 +911,12 @@
 
                 if (ditemukan) {
                     alert(
-                      "✅ DATA DITEMUKAN!
-" +
-                      "--------------------------
-" +
-                      "ID Aset : " + ditemukan.id_aset + "
-" +
-                      "User    : " + (ditemukan.user || '-') + "
-" +
-                      "Dept    : " + (ditemukan.dept || ditemukan.dep || '-') + "
-" +
-                      "Device  : " + (ditemukan.device || '-')
+                        `✅ DATA DITEMUKAN!\n` +
+                        `--------------------------\n` +
+                        `ID Aset : ${ditemukan.id_aset}\n` +
+                        `User    : ${ditemukan.user || '-'}\n` +
+                        `Dept    : ${ditemukan.dept || ditemukan.dep || '-'}\n` +
+                        `Device  : ${ditemukan.device || '-'}`
                     );
                 } else {
                     alert("❌ Data Aset [" + code + "] tidak ditemukan di database saat ini.");
