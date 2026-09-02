@@ -230,7 +230,6 @@
 
         .login-box input::placeholder { color: rgba(255, 255, 255, 0.3); }
 
-        /* Form Grid */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -267,7 +266,6 @@
         .form-grid input::placeholder { color: rgba(255, 255, 255, 0.25); }
         .form-grid select option { background: #1a1040; color: white; }
 
-        /* Drop Zone */
         .drop-zone {
             border: 2px dashed rgba(99, 102, 241, 0.3);
             border-radius: 16px;
@@ -496,7 +494,6 @@
                         <button onclick="closeBulkImport()" class="text-gray-400 hover:text-white transition-colors">✕</button>
                     </div>
                     
-                    <!-- Template Download -->
                     <div class="mb-4">
                         <p class="text-gray-400 text-sm mb-2">Download template Excel, isi data, lalu upload kembali</p>
                         <button onclick="downloadTemplate()" class="btn btn-glow bg-blue-500/20 text-blue-400 font-semibold px-4 py-2 rounded-xl text-sm border border-blue-500/20 hover:bg-blue-500/30 transition-all">
@@ -504,7 +501,6 @@
                         </button>
                     </div>
 
-                    <!-- Drop Zone -->
                     <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
                         <div class="text-4xl mb-3">📁</div>
                         <p class="text-gray-300 font-semibold">Drag & drop file Excel disini</p>
@@ -513,7 +509,6 @@
                         <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" onchange="handleFileUpload(event)" />
                     </div>
 
-                    <!-- Progress -->
                     <div id="importProgress" class="hidden mt-4">
                         <div class="flex justify-between text-sm text-gray-400 mb-1">
                             <span>Mengimport data...</span>
@@ -525,7 +520,6 @@
                         <p id="importStatus" class="text-sm text-gray-400 mt-2"></p>
                     </div>
 
-                    <!-- Preview -->
                     <div id="importPreview" class="hidden mt-4">
                         <h3 class="text-white font-semibold text-sm mb-2">Preview Data</h3>
                         <div class="overflow-auto max-h-48 rounded-xl border border-white/10">
@@ -548,7 +542,164 @@
                 </div>
             </div>
 
-            <!-- FORM -->
+            <!-- EDIT MODAL -->
+            <div id="editModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
+                <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-white">✏️ Edit Aset: <span id="editIdDisplay" class="text-indigo-400"></span></h2>
+                        <button onclick="closeEditModal()" class="text-gray-400 hover:text-white transition-colors">✕</button>
+                    </div>
+                    <form id="editForm" class="form-grid">
+                        <!-- Hidden ID -->
+                        <input type="hidden" id="edit_id" />
+                        
+                        <!-- Identitas -->
+                        <div class="form-control">
+                            <label>User *</label>
+                            <input type="text" id="edit_user" required />
+                        </div>
+                        <div class="form-control">
+                            <label>Departemen *</label>
+                            <select id="edit_dept">
+                                <option value="HRD">HRD</option><option value="PAJAK">PAJAK</option>
+                                <option value="PPIC">PPIC</option><option value="EXIM">EXIM</option>
+                                <option value="FINANCE">FINANCE</option><option value="IT">IT</option>
+                                <option value="INVENTORY">INVENTORY</option><option value="CAD">CAD</option>
+                                <option value="GUDANG ACC">GUDANG ACC</option><option value="GUDANG KAIN">GUDANG KAIN</option>
+                                <option value="PACKING">PACKING</option><option value="SAMPLE PROD">SAMPLE PROD</option>
+                                <option value="SAMPLE ROOM">SAMPLE ROOM</option><option value="MD">MD</option>
+                                <option value="BC">BC</option><option value="QA">QA</option>
+                                <option value="FACTORY MANAGER">FACTORY MANAGER</option>
+                                <option value="GENERAL MANAGER">GENERAL MANAGER</option>
+                                <option value="IE">IE</option><option value="CUTTING">CUTTING</option>
+                                <option value="PRODUKSI">PRODUKSI</option><option value="DIGITAL">DIGITAL</option>
+                                <option value="STAFF">STAFF</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>Perangkat *</label>
+                            <select id="edit_device">
+                                <option value="KOMPUTER">KOMPUTER</option>
+                                <option value="LAPTOP">LAPTOP</option>
+                                <option value="PRINTER">PRINTER</option>
+                                <option value="MONITOR">MONITOR</option>
+                                <option value="MOUSE">MOUSE</option>
+                                <option value="KEYBOARD">KEYBOARD</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>Spesifikasi</label>
+                            <input type="text" id="edit_specs" placeholder="I5,8 GB / 24 inch" />
+                        </div>
+                        <div class="form-control">
+                            <label>Status *</label>
+                            <select id="edit_status">
+                                <option value="Active">Active</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Broken">Broken</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>IP Address</label>
+                            <input type="text" id="edit_ip" placeholder="192.168.1.100" />
+                        </div>
+                        <div class="form-control">
+                            <label>MAC Address</label>
+                            <input type="text" id="edit_mac" placeholder="AA:BB:CC:DD:EE:FF" />
+                        </div>
+                        <div class="form-control">
+                            <label>Hostname</label>
+                            <input type="text" id="edit_hostname" placeholder="PC-IT-01" />
+                        </div>
+                        <div class="form-control">
+                            <label>License OS</label>
+                            <input type="text" id="edit_license_os" placeholder="Windows 11 Pro" />
+                        </div>
+                        <div class="form-control">
+                            <label>License Office</label>
+                            <input type="text" id="edit_license_office" placeholder="Microsoft 365" />
+                        </div>
+                        <div class="form-control">
+                            <label>License Antivirus</label>
+                            <input type="text" id="edit_license_av" placeholder="McAfee / Bitdefender" />
+                        </div>
+                        <div class="form-control">
+                            <label>License Expiry</label>
+                            <input type="date" id="edit_license_expiry" />
+                        </div>
+                        <div class="form-control">
+                            <label>Purchase Date</label>
+                            <input type="date" id="edit_purchase_date" />
+                        </div>
+                        <div class="form-control">
+                            <label>Warranty Expiry</label>
+                            <input type="date" id="edit_warranty_expiry" />
+                        </div>
+                        <div class="form-control">
+                            <label>Monitor Brand</label>
+                            <input type="text" id="edit_monitor_brand" placeholder="Dell / Samsung" />
+                        </div>
+                        <div class="form-control">
+                            <label>Monitor Size</label>
+                            <input type="text" id="edit_monitor_size" placeholder="24 inch / 27 inch" />
+                        </div>
+                        <div class="form-control">
+                            <label>Monitor Serial</label>
+                            <input type="text" id="edit_monitor_serial" placeholder="SN123456" />
+                        </div>
+                        <div class="form-control">
+                            <label>Printer Brand</label>
+                            <input type="text" id="edit_printer_brand" placeholder="HP / Epson" />
+                        </div>
+                        <div class="form-control">
+                            <label>Printer Model</label>
+                            <input type="text" id="edit_printer_model" placeholder="LaserJet MFP" />
+                        </div>
+                        <div class="form-control">
+                            <label>Printer Serial</label>
+                            <input type="text" id="edit_printer_serial" placeholder="SN789012" />
+                        </div>
+                        <div class="form-control">
+                            <label>Mouse Brand</label>
+                            <input type="text" id="edit_mouse_brand" placeholder="Logitech / Rexus" />
+                        </div>
+                        <div class="form-control">
+                            <label>Mouse Type</label>
+                            <select id="edit_mouse_type">
+                                <option value="">- Pilih -</option>
+                                <option value="Wired">Wired</option>
+                                <option value="Wireless">Wireless</option>
+                                <option value="Bluetooth">Bluetooth</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>Keyboard Brand</label>
+                            <input type="text" id="edit_keyboard_brand" placeholder="Logitech / Rexus" />
+                        </div>
+                        <div class="form-control">
+                            <label>Keyboard Type</label>
+                            <select id="edit_keyboard_type">
+                                <option value="">- Pilih -</option>
+                                <option value="Wired">Wired</option>
+                                <option value="Wireless">Wireless</option>
+                                <option value="Bluetooth">Bluetooth</option>
+                                <option value="Mechanical">Mechanical</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>Notes</label>
+                            <input type="text" id="edit_notes" placeholder="Catatan tambahan..." />
+                        </div>
+                        <div class="form-control flex items-end col-span-3">
+                            <button type="submit" id="btnUpdate" class="btn btn-glow bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold py-2 rounded-xl hover:shadow-xl transition-all w-full">
+                                💾 Update Aset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- FORM TAMBAH -->
             <div id="formContainer" class="glass-card p-4 mb-4 no-print hidden">
                 <div class="flex justify-between items-center mb-3">
                     <h2 class="text-lg font-bold text-white">Input Aset Baru</h2>
@@ -725,7 +876,7 @@
                                 <th style="min-width:80px;">Monitor</th>
                                 <th style="min-width:80px;">Printer</th>
                                 <th style="min-width:80px;">Mouse/KB</th>
-                                <th style="min-width:60px;" class="no-print">Aksi</th>
+                                <th style="min-width:80px;" class="no-print">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody">
@@ -921,6 +1072,7 @@
                     <td><span class="text-[10px] text-gray-300">${peripheralDisplay}</span></td>
                     <td class="no-print">
                         <div class="flex gap-1 justify-center flex-wrap">
+                            <button onclick="openEditModal('${item.id_aset}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all">✏️ Edit</button>
                             <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">Label</button>
                             <button onclick="lihatHistory('${item.id_aset}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">📜</button>
                             <button onclick="duplicateAsset('${item.id_aset}')" class="text-[10px] bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-2 py-1 rounded transition-all">📋 Clone</button>
@@ -1047,6 +1199,117 @@
         }
 
         // ============================================
+        // EDIT FUNCTION
+        // ============================================
+        function openEditModal(id) {
+            const asset = data.find(item => item.id_aset === id);
+            if (!asset) {
+                alert('Data tidak ditemukan!');
+                return;
+            }
+
+            document.getElementById('editIdDisplay').innerText = id;
+            document.getElementById('edit_id').value = id;
+            document.getElementById('edit_user').value = asset.user || '';
+            document.getElementById('edit_dept').value = asset.dept || asset.dep || '';
+            document.getElementById('edit_device').value = asset.device || '';
+            document.getElementById('edit_specs').value = asset.specs || '';
+            document.getElementById('edit_status').value = asset.status || 'Active';
+            document.getElementById('edit_ip').value = asset.ip_address || '';
+            document.getElementById('edit_mac').value = asset.mac_address || '';
+            document.getElementById('edit_hostname').value = asset.hostname || '';
+            document.getElementById('edit_license_os').value = asset.license_os || '';
+            document.getElementById('edit_license_office').value = asset.license_office || '';
+            document.getElementById('edit_license_av').value = asset.license_av || '';
+            document.getElementById('edit_license_expiry').value = asset.license_expiry || '';
+            document.getElementById('edit_purchase_date').value = asset.purchase_date || '';
+            document.getElementById('edit_warranty_expiry').value = asset.warranty_expiry || '';
+            document.getElementById('edit_monitor_brand').value = asset.monitor_brand || '';
+            document.getElementById('edit_monitor_size').value = asset.monitor_size || '';
+            document.getElementById('edit_monitor_serial').value = asset.monitor_serial || '';
+            document.getElementById('edit_printer_brand').value = asset.printer_brand || '';
+            document.getElementById('edit_printer_model').value = asset.printer_model || '';
+            document.getElementById('edit_printer_serial').value = asset.printer_serial || '';
+            document.getElementById('edit_mouse_brand').value = asset.mouse_brand || '';
+            document.getElementById('edit_mouse_type').value = asset.mouse_type || '';
+            document.getElementById('edit_keyboard_brand').value = asset.keyboard_brand || '';
+            document.getElementById('edit_keyboard_type').value = asset.keyboard_type || '';
+            document.getElementById('edit_notes').value = asset.notes || '';
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnUpdate');
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            const id = document.getElementById('edit_id').value;
+            
+            const updateData = {
+                user: document.getElementById('edit_user').value,
+                dept: document.getElementById('edit_dept').value,
+                device: document.getElementById('edit_device').value,
+                specs: document.getElementById('edit_specs').value,
+                status: document.getElementById('edit_status').value,
+                ip_address: document.getElementById('edit_ip').value,
+                mac_address: document.getElementById('edit_mac').value,
+                hostname: document.getElementById('edit_hostname').value,
+                license_os: document.getElementById('edit_license_os').value,
+                license_office: document.getElementById('edit_license_office').value,
+                license_av: document.getElementById('edit_license_av').value,
+                license_expiry: document.getElementById('edit_license_expiry').value || null,
+                purchase_date: document.getElementById('edit_purchase_date').value || null,
+                warranty_expiry: document.getElementById('edit_warranty_expiry').value || null,
+                monitor_brand: document.getElementById('edit_monitor_brand').value,
+                monitor_size: document.getElementById('edit_monitor_size').value,
+                monitor_serial: document.getElementById('edit_monitor_serial').value,
+                printer_brand: document.getElementById('edit_printer_brand').value,
+                printer_model: document.getElementById('edit_printer_model').value,
+                printer_serial: document.getElementById('edit_printer_serial').value,
+                mouse_brand: document.getElementById('edit_mouse_brand').value,
+                mouse_type: document.getElementById('edit_mouse_type').value,
+                keyboard_brand: document.getElementById('edit_keyboard_brand').value,
+                keyboard_type: document.getElementById('edit_keyboard_type').value,
+                notes: document.getElementById('edit_notes').value
+            };
+
+            // Catat history untuk perubahan
+            const oldData = data.find(item => item.id_aset === id);
+            if (oldData) {
+                // Cek perubahan user
+                if (oldData.user !== updateData.user) {
+                    await catatHistory(id, 'user', oldData.user || '-', updateData.user);
+                }
+                // Cek perubahan dept
+                if ((oldData.dept || oldData.dep) !== updateData.dept) {
+                    await catatHistory(id, 'dept', oldData.dept || oldData.dep || '-', updateData.dept);
+                }
+            }
+
+            const { error } = await supabaseClient
+                .from(currentTable)
+                .update(updateData)
+                .eq('id_aset', id);
+
+            if (error) {
+                alert('Gagal update: ' + error.message);
+            } else {
+                alert('✅ Data berhasil diupdate!');
+                closeEditModal();
+                fetchData();
+            }
+
+            btn.innerText = "💾 Update Aset";
+            btn.disabled = false;
+        });
+
+        // ============================================
         // BULK IMPORT FUNCTIONS
         // ============================================
         function openBulkImport() {
@@ -1062,7 +1325,6 @@
         }
 
         function downloadTemplate() {
-            // Create template with all fields
             const headers = [
                 'id_aset', 'user', 'dept', 'device', 'specs', 'status',
                 'ip_address', 'mac_address', 'hostname',
@@ -1105,10 +1367,7 @@
 
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet([sampleData], { headers });
-            
-            // Set column widths
             ws['!cols'] = headers.map(h => ({ wch: Math.max(h.length, 15) }));
-            
             XLSX.utils.book_append_sheet(wb, ws, 'Template');
             XLSX.writeFile(wb, 'Template_Import_Aset_IT.xlsx');
         }
@@ -1144,13 +1403,11 @@
             const headerRow = document.getElementById('previewHeader');
             const bodyRow = document.getElementById('previewBody');
 
-            // Header
             const headers = Object.keys(data[0]);
             headerRow.innerHTML = headers.map(h => 
                 `<th class="px-3 py-2 text-left text-gray-400 font-semibold text-[10px]">${h}</th>`
             ).join('');
 
-            // Body (max 5 rows preview)
             const previewData = data.slice(0, 5);
             bodyRow.innerHTML = previewData.map(row => 
                 `<tr>${headers.map(h => 
@@ -1158,7 +1415,6 @@
                 ).join('')}</tr>`
             ).join('');
 
-            // Show total count
             document.getElementById('importStatus').innerText = `📊 ${data.length} data siap diimport`;
             previewDiv.classList.remove('hidden');
         }
@@ -1187,7 +1443,6 @@
             for (let i = 0; i < importData.length; i++) {
                 const row = importData[i];
                 
-                // Skip jika id_aset kosong
                 if (!row.id_aset) {
                     failed++;
                     errors.push(`Baris ${i+1}: ID Aset kosong`);
@@ -1195,7 +1450,6 @@
                 }
 
                 try {
-                    // Mapping field
                     const asset = {
                         id_aset: String(row.id_aset).trim(),
                         user: String(row.user || '').trim(),
@@ -1225,7 +1479,6 @@
                         notes: String(row.notes || '').trim()
                     };
 
-                    // Cek duplikat
                     const { data: existing } = await supabaseClient
                         .from(currentTable)
                         .select('id_aset')
@@ -1252,14 +1505,12 @@
                     errors.push(`Baris ${i+1}: ${err.message}`);
                 }
 
-                // Update progress
                 const progress = ((i + 1) / importData.length) * 100;
                 progressFill.style.width = progress + '%';
                 progressText.innerText = Math.round(progress) + '%';
                 statusText.innerText = `📊 ${success} berhasil, ${failed} gagal...`;
             }
 
-            // Selesai
             statusText.innerText = `✅ Selesai! ${success} data berhasil diimport, ${failed} gagal.`;
             
             if (errors.length > 0) {
@@ -1271,7 +1522,6 @@
 
             fetchData();
             
-            // Tutup modal setelah 3 detik
             setTimeout(() => {
                 closeBulkImport();
             }, 3000);
@@ -1287,18 +1537,15 @@
                 return;
             }
 
-            // Generate new ID
             const newId = prompt('Masukkan ID baru untuk clone:', original.id_aset + '-copy');
             if (!newId) return;
 
-            // Cek duplikat
             const existing = data.find(item => item.id_aset === newId);
             if (existing) {
                 alert(`ID '${newId}' sudah ada!`);
                 return;
             }
 
-            // Clone data
             const cloneData = { ...original };
             cloneData.id_aset = newId;
             delete cloneData.created_at;
@@ -1370,9 +1617,9 @@
                 license_os: document.getElementById('in_license_os').value,
                 license_office: document.getElementById('in_license_office').value,
                 license_av: document.getElementById('in_license_av').value,
-                license_expiry: document.getElementById('in_license_expiry').value,
-                purchase_date: document.getElementById('in_purchase_date').value,
-                warranty_expiry: document.getElementById('in_warranty_expiry').value,
+                license_expiry: document.getElementById('in_license_expiry').value || null,
+                purchase_date: document.getElementById('in_purchase_date').value || null,
+                warranty_expiry: document.getElementById('in_warranty_expiry').value || null,
                 monitor_brand: document.getElementById('in_monitor_brand').value,
                 monitor_size: document.getElementById('in_monitor_size').value,
                 monitor_serial: document.getElementById('in_monitor_serial').value,
@@ -1778,8 +2025,8 @@
             updateCharts(filtered);
         });
 
-        console.log('🚀 IT Asset Manager Pro v5.0 - Bulk Import + Clone');
-        console.log('📋 Fitur: Import Massal Excel, Clone/Duplicate Aset');
+        console.log('🚀 IT Asset Manager Pro v5.0 - Dengan Edit & Bulk Import');
+        console.log('📋 Fitur: Edit, Import Massal, Clone, Transfer, History');
         console.log('📦 Total field: 26 field lengkap!');
     </script>
 </body>
