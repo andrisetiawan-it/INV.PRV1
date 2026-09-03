@@ -65,6 +65,7 @@
             padding: 16px;
             transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
         }
 
         .stat-card:hover {
@@ -136,6 +137,15 @@
             background: rgba(99, 102, 241, 0.05);
         }
 
+        .table-wrapper tbody tr.deleted-row {
+            opacity: 0.4;
+            background: rgba(255, 0, 0, 0.05);
+        }
+
+        .table-wrapper tbody tr.deleted-row td {
+            text-decoration: line-through;
+        }
+
         .badge-status {
             padding: 2px 10px;
             border-radius: 20px;
@@ -163,6 +173,12 @@
             border: 1px solid rgba(251, 113, 133, 0.2);
         }
 
+        .badge-status.deleted {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+            border: 1px solid rgba(107, 114, 128, 0.2);
+        }
+
         .badge-license {
             padding: 2px 8px;
             border-radius: 12px;
@@ -172,6 +188,25 @@
             color: #60a5fa;
             border: 1px solid rgba(96, 165, 250, 0.15);
             white-space: nowrap;
+        }
+
+        .badge-license.expired {
+            background: rgba(251, 113, 133, 0.2);
+            color: #fb7185;
+            border: 1px solid rgba(251, 113, 133, 0.2);
+        }
+
+        .badge-license.expiring-soon {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            animation: pulse-yellow 2s infinite;
+        }
+
+        @keyframes pulse-yellow {
+            0% { box-shadow: 0 0 0 0px rgba(251, 191, 36, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0); }
+            100% { box-shadow: 0 0 0 0px rgba(251, 191, 36, 0); }
         }
 
         .qr-code {
@@ -301,7 +336,54 @@
             width: 0%;
         }
 
-        /* Department Stats - Kembali seperti semula */
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            max-width: 400px;
+        }
+
+        .toast {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        .toast-success { background: rgba(52, 211, 153, 0.2); border-color: rgba(52, 211, 153, 0.3); }
+        .toast-warning { background: rgba(251, 191, 36, 0.2); border-color: rgba(251, 191, 36, 0.3); }
+        .toast-error { background: rgba(251, 113, 133, 0.2); border-color: rgba(251, 113, 133, 0.3); }
+        .toast-info { background: rgba(96, 165, 250, 0.2); border-color: rgba(96, 165, 250, 0.3); }
+
+        .toast .toast-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .toast .toast-message {
+            font-size: 0.8rem;
+            color: #d1d5db;
+            margin-top: 2px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100px); opacity: 0; }
+        }
+
+        /* Department Stats */
         .dept-stats {
             display: flex;
             gap: 8px;
@@ -345,6 +427,20 @@
             margin-top: 2px;
         }
 
+        /* User Role Badge */
+        .role-badge {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-badge.superadmin { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.2); }
+        .role-badge.admin { background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.2); }
+        .role-badge.manager { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
+        .role-badge.viewer { background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.2); }
+
         /* Print Styles */
         @media print {
             .no-print { display: none !important; }
@@ -369,32 +465,7 @@
                 print-color-adjust: exact !important;
             }
             .badge-status { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .badge-status.active { background: #34d399 !important; color: white !important; }
-            .badge-status.maintenance { background: #fbbf24 !important; color: #1f2937 !important; }
-            .badge-status.broken { background: #fb7185 !important; color: white !important; }
-            .print-qr-cell canvas {
-                display: inline-block !important;
-                border: 1px solid #d1d5db !important;
-                border-radius: 4px !important;
-                background: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            body.printing-label .print-container { display: none !important; }
-            .print-only-label { display: none !important; }
-            body.printing-label .print-only-label {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                height: 100vh !important;
-                background: white !important;
-            }
-            .dept-stats .dept-item {
-                background: #f3f4f6 !important;
-                border: 1px solid #e5e7eb !important;
-            }
-            .dept-stats .dept-item .dept-name { color: #6b7280 !important; }
-            .dept-stats .dept-item .dept-count { color: #1f2937 !important; }
+            .toast-container { display: none !important; }
         }
 
         @media (max-width: 1024px) {
@@ -407,8 +478,7 @@
             .table-wrapper thead th { font-size: 0.5rem; padding: 6px 4px; }
             .table-wrapper tbody td { padding: 4px 4px; font-size: 0.6rem; }
             .qr-code { width: 40px; height: 40px; }
-            .dept-stats .dept-item { padding: 6px 10px; min-width: 60px; }
-            .dept-stats .dept-item .dept-count { font-size: 0.9rem; }
+            .toast-container { max-width: 90%; right: 10px; }
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -417,6 +487,9 @@
     </style>
 </head>
 <body class="bg-animated">
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <!-- LOGIN SECTION -->
     <div id="loginSection" class="flex items-center justify-center min-h-screen no-print">
@@ -467,8 +540,13 @@
                     <span class="text-white font-bold text-lg">IT Asset</span>
                     <span class="text-indigo-400 font-bold text-lg">Manager</span>
                 </div>
+                <span id="userRoleBadge" class="role-badge admin ml-2">Admin</span>
             </div>
             <div class="flex items-center gap-4">
+                <div id="notificationBell" class="relative cursor-pointer" onclick="showNotifications()">
+                    <span class="text-xl">🔔</span>
+                    <span id="notificationCount" class="absolute -top-1 -right-2 bg-rose-500 text-white text-[10px] font-bold rounded-full px-1.5 min-w-[18px] text-center hidden">0</span>
+                </div>
                 <div id="statusConnection" class="flex items-center gap-2 text-sm">
                     <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                     <span class="text-gray-300">Connected</span>
@@ -492,7 +570,7 @@
             </div>
 
             <!-- STATS GRID -->
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6 no-print">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6 no-print">
                 <div class="stat-card" onclick="resetFilter()">
                     <div class="flex items-center gap-3">
                         <div class="stat-icon bg-indigo-500/20 text-indigo-400">📦</div>
@@ -547,6 +625,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="stat-card" onclick="showLicenseNotifications()">
+                    <div class="flex items-center gap-3">
+                        <div class="stat-icon bg-red-500/20 text-red-400">⏰</div>
+                        <div>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Expired License</p>
+                            <p id="totalExpiredLicense" class="text-red-400 text-xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- CHARTS ROW -->
@@ -575,11 +662,12 @@
                 <button onclick="exportToExcel()" class="btn btn-glow bg-emerald-500/20 text-emerald-400 font-semibold px-4 py-2 rounded-xl hover:bg-emerald-500/30 transition-all border border-emerald-500/20 text-sm flex items-center gap-2">
                     📊 Excel
                 </button>
+                <button onclick="showDeletedAssets()" class="btn btn-glow bg-rose-500/20 text-rose-400 font-semibold px-4 py-2 rounded-xl hover:bg-rose-500/30 transition-all border border-rose-500/20 text-sm flex items-center gap-2">
+                    🗑️ Trash
+                </button>
             </div>
 
-            <!-- ======================================== -->
-            <!-- DEPARTMENT STATS - KEMBALI LAGI BRO! -->
-            <!-- ======================================== -->
+            <!-- DEPARTMENT STATS -->
             <div class="dept-stats no-print" id="deptStatsContainer">
                 <div class="dept-item" onclick="filterByDept('HRD')">
                     <div class="dept-name">HRD</div>
@@ -1044,6 +1132,10 @@
             <!-- SEARCH -->
             <div class="mb-3 no-print">
                 <input type="text" id="searchInput" placeholder="Cari ID, User, Dept, IP, License..." class="input input-bordered w-full max-w-md bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl text-sm" />
+                <div class="inline-flex gap-2 ml-2">
+                    <button onclick="showExpiredOnly()" class="text-xs bg-red-500/20 hover:bg-red-500/30 text-red-400 px-3 py-1.5 rounded-lg transition-all border border-red-500/20">⏰ Expired License</button>
+                    <button onclick="showExpiringSoon()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-3 py-1.5 rounded-lg transition-all border border-amber-500/20">⚠️ Expiring Soon</button>
+                </div>
             </div>
 
             <!-- TABLE -->
@@ -1063,7 +1155,7 @@
                                 <th style="min-width:80px;">Monitor</th>
                                 <th style="min-width:80px;">Printer</th>
                                 <th style="min-width:80px;">Mouse/KB</th>
-                                <th style="min-width:100px;" class="no-print">Aksi</th>
+                                <th style="min-width:120px;" class="no-print">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody">
@@ -1102,8 +1194,23 @@
         </div>
     </div>
 
+    <!-- TRASH MODAL -->
+    <div id="trashModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
+        <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white">🗑️ Trash - Aset Terhapus</h2>
+                <button onclick="closeTrashModal()" class="text-gray-400 hover:text-white transition-colors">✕</button>
+            </div>
+            <div id="trashBody" class="space-y-2">
+                <p class="text-gray-400 text-sm">Loading...</p>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Konfigurasi Supabase
+        // ============================================
+        // KONFIGURASI
+        // ============================================
         const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -1113,13 +1220,307 @@
         let currentTable = '';
         let currentHistory = '';
         let data = [];
+        let deletedData = [];
         let asetIdSedangDiproses = null;
         let html5QrcodeScanner = null;
         let statusChartInstance = null;
         let deptChartInstance = null;
         let importData = [];
+        let currentUserRole = 'viewer';
+        let notifications = [];
 
-        // Auth
+        // ============================================
+        // USER ROLES & AUTH
+        // ============================================
+        const USER_ROLES = {
+            'andri@panrama.com': { role: 'superadmin', label: 'Super Admin' },
+            'admin@panrama.com': { role: 'admin', label: 'Admin' },
+            'manager@panrama.com': { role: 'manager', label: 'Manager' },
+            'viewer@panrama.com': { role: 'viewer', label: 'Viewer' }
+        };
+
+        function getUserRole(email) {
+            return USER_ROLES[email] || { role: 'viewer', label: 'Viewer' };
+        }
+
+        function hasPermission(requiredRole) {
+            const roles = ['viewer', 'manager', 'admin', 'superadmin'];
+            const userRoleIndex = roles.indexOf(currentUserRole);
+            const requiredIndex = roles.indexOf(requiredRole);
+            return userRoleIndex >= requiredIndex;
+        }
+
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+        function showToast(title, message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            `;
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ============================================
+        // NOTIFICATION SYSTEM - LICENSE EXPIRY
+        // ============================================
+        function checkLicenseExpiry() {
+            const today = new Date();
+            const expiringSoon = [];
+            const expired = [];
+
+            data.forEach(item => {
+                if (!item.license_expiry) return;
+                const expiry = new Date(item.license_expiry);
+                const diff = (expiry - today) / (1000 * 60 * 60 * 24);
+                
+                if (diff < 0) {
+                    expired.push(item);
+                } else if (diff <= 30) {
+                    expiringSoon.push(item);
+                }
+            });
+
+            // Update badge count
+            const count = expired.length + expiringSoon.length;
+            const badge = document.getElementById('notificationCount');
+            if (count > 0) {
+                badge.classList.remove('hidden');
+                badge.innerText = count;
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            // Update expired license stats
+            document.getElementById('totalExpiredLicense').innerText = expired.length;
+
+            // Show notifications
+            notifications = [];
+            if (expired.length > 0) {
+                notifications.push({
+                    title: '⚠️ License Expired!',
+                    message: `${expired.length} aset memiliki license yang sudah expired!`,
+                    type: 'error'
+                });
+                showToast('⚠️ License Expired!', `${expired.length} aset memiliki license expired!`, 'error');
+            }
+            
+            if (expiringSoon.length > 0) {
+                notifications.push({
+                    title: '⏰ License Expiring Soon',
+                    message: `${expiringSoon.length} aset akan expired dalam 30 hari!`,
+                    type: 'warning'
+                });
+                showToast('⏰ License Expiring Soon', `${expiringSoon.length} aset akan expired dalam 30 hari!`, 'warning');
+            }
+
+            return { expired, expiringSoon };
+        }
+
+        function showNotifications() {
+            if (notifications.length === 0) {
+                showToast('✅ Semua Aman!', 'Tidak ada notifikasi license expiry.', 'success');
+                return;
+            }
+
+            notifications.forEach(n => {
+                showToast(n.title, n.message, n.type);
+            });
+        }
+
+        function showLicenseNotifications() {
+            const { expired, expiringSoon } = checkLicenseExpiry();
+            
+            if (expired.length === 0 && expiringSoon.length === 0) {
+                showToast('✅ Semua License Aktif!', 'Tidak ada license yang expired atau akan expired.', 'success');
+                return;
+            }
+
+            let message = '';
+            if (expired.length > 0) {
+                message += `❌ ${expired.length} aset expired\n`;
+                expired.slice(0, 5).forEach(item => {
+                    message += `   - ${item.id_aset} (${item.user})\n`;
+                });
+                if (expired.length > 5) message += `   ... dan ${expired.length - 5} lainnya\n`;
+            }
+            
+            if (expiringSoon.length > 0) {
+                message += `\n⚠️ ${expiringSoon.length} aset akan expired dalam 30 hari\n`;
+                expiringSoon.slice(0, 5).forEach(item => {
+                    message += `   - ${item.id_aset} (${item.user}) - ${item.license_expiry}\n`;
+                });
+                if (expiringSoon.length > 5) message += `   ... dan ${expiringSoon.length - 5} lainnya`;
+            }
+
+            showToast('📋 License Report', message, 'info', 10000);
+        }
+
+        // ============================================
+        // SOFT DELETE FUNCTIONS
+        // ============================================
+        async function softDeleteAsset(id) {
+            if (!confirm(`Hapus aset ${id}? (Bisa dipulihkan dari Trash)`)) return;
+
+            const { error } = await supabaseClient
+                .from(currentTable)
+                .update({ 
+                    deleted_at: new Date().toISOString(),
+                    deleted_by: (await supabaseClient.auth.getUser()).data.user?.email || 'System'
+                })
+                .eq('id_aset', id);
+
+            if (error) {
+                alert('Gagal hapus: ' + error.message);
+            } else {
+                showToast('🗑️ Aset Terhapus', `Aset ${id} telah dipindahkan ke Trash.`, 'warning');
+                fetchData();
+            }
+        }
+
+        async function restoreAsset(id) {
+            if (!confirm(`Pulihkan aset ${id} dari Trash?`)) return;
+
+            const { error } = await supabaseClient
+                .from(currentTable)
+                .update({ 
+                    deleted_at: null,
+                    deleted_by: null
+                })
+                .eq('id_aset', id);
+
+            if (error) {
+                alert('Gagal pulihkan: ' + error.message);
+            } else {
+                showToast('✅ Aset Dipulihkan', `Aset ${id} berhasil dipulihkan.`, 'success');
+                fetchData();
+                closeTrashModal();
+            }
+        }
+
+        async function permanentDeleteAsset(id) {
+            if (!confirm(`⚠️ PERMANENT: Hapus aset ${id} selamanya? Tindakan ini tidak bisa dibatalkan!`)) return;
+
+            const { error } = await supabaseClient
+                .from(currentTable)
+                .delete()
+                .eq('id_aset', id);
+
+            if (error) {
+                alert('Gagal hapus permanen: ' + error.message);
+            } else {
+                showToast('💀 Aset Dihapus Permanen', `Aset ${id} telah dihapus selamanya.`, 'error');
+                fetchData();
+                closeTrashModal();
+            }
+        }
+
+        async function showDeletedAssets() {
+            const { data: trash, error } = await supabaseClient
+                .from(currentTable)
+                .select('*')
+                .not('deleted_at', 'is', null)
+                .order('deleted_at', { ascending: false });
+
+            if (error) {
+                alert('Error: ' + error.message);
+                return;
+            }
+
+            const modal = document.getElementById('trashModal');
+            const body = document.getElementById('trashBody');
+
+            if (!trash || trash.length === 0) {
+                body.innerHTML = `
+                    <div class="text-center py-10 text-gray-400">
+                        <div class="text-4xl mb-3">🗑️</div>
+                        <p>Trash kosong. Tidak ada aset yang terhapus.</p>
+                    </div>
+                `;
+            } else {
+                body.innerHTML = `
+                    <p class="text-gray-400 text-sm mb-3">${trash.length} aset di Trash. Klik Restore untuk memulihkan.</p>
+                    <div class="overflow-auto max-h-[60vh]">
+                        <table class="w-full text-xs">
+                            <thead class="bg-white/5 sticky top-0">
+                                <tr>
+                                    <th class="px-3 py-2 text-left text-gray-400">ID</th>
+                                    <th class="px-3 py-2 text-left text-gray-400">User</th>
+                                    <th class="px-3 py-2 text-left text-gray-400">Dept</th>
+                                    <th class="px-3 py-2 text-left text-gray-400">Device</th>
+                                    <th class="px-3 py-2 text-left text-gray-400">Dihapus</th>
+                                    <th class="px-3 py-2 text-left text-gray-400">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${trash.map(item => `
+                                    <tr class="border-t border-white/5">
+                                        <td class="px-3 py-2 text-indigo-300 font-mono">${item.id_aset}</td>
+                                        <td class="px-3 py-2">${item.user || '-'}</td>
+                                        <td class="px-3 py-2">${item.dept || item.dep || '-'}</td>
+                                        <td class="px-3 py-2">${item.device || '-'}</td>
+                                        <td class="px-3 py-2 text-gray-400 text-[10px]">${new Date(item.deleted_at).toLocaleString('id-ID')}</td>
+                                        <td class="px-3 py-2">
+                                            <button onclick="restoreAsset('${item.id_aset}')" class="text-[10px] bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 px-2 py-1 rounded transition-all">♻️ Restore</button>
+                                            <button onclick="permanentDeleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all">💀 Hapus</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeTrashModal() {
+            document.getElementById('trashModal').classList.add('hidden');
+        }
+
+        // ============================================
+        // FILTER FUNCTIONS
+        // ============================================
+        function showExpiredOnly() {
+            const today = new Date();
+            const filtered = data.filter(item => {
+                if (!item.license_expiry) return false;
+                const expiry = new Date(item.license_expiry);
+                return (expiry - today) < 0;
+            });
+            renderTable(filtered);
+            updateStats(filtered);
+            updateDeptStats(filtered);
+            showToast('⏰ Filter', `${filtered.length} aset dengan license expired.`, 'info');
+        }
+
+        function showExpiringSoon() {
+            const today = new Date();
+            const filtered = data.filter(item => {
+                if (!item.license_expiry) return false;
+                const expiry = new Date(item.license_expiry);
+                const diff = (expiry - today) / (1000 * 60 * 60 * 24);
+                return diff <= 30 && diff >= 0;
+            });
+            renderTable(filtered);
+            updateStats(filtered);
+            updateDeptStats(filtered);
+            showToast('⚠️ Filter', `${filtered.length} aset akan expired dalam 30 hari.`, 'warning');
+        }
+
+        // ============================================
+        // AUTH
+        // ============================================
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (session) checkUser();
         });
@@ -1132,6 +1533,12 @@
                 const mainContent = document.getElementById('main-content');
 
                 if (user) {
+                    const roleInfo = getUserRole(user.email);
+                    currentUserRole = roleInfo.role;
+                    
+                    document.getElementById('userRoleBadge').innerText = roleInfo.label;
+                    document.getElementById('userRoleBadge').className = `role-badge ${roleInfo.role}`;
+                    
                     if (loginSec) loginSec.classList.add('hidden');
                     if (pilihModal) pilihModal.classList.remove('hidden');
                     if (mainContent) mainContent.classList.add('hidden');
@@ -1148,14 +1555,27 @@
             const { data: { session } } = await supabaseClient.auth.getSession();
             const user = session?.user;
 
+            // Hide/show berdasarkan role
+            const isAdmin = hasPermission('admin');
+            const isManager = hasPermission('manager');
+
+            // Admin-only buttons
+            document.querySelectorAll('.btn-tambah').forEach(el => {
+                el.style.display = isAdmin ? '' : 'none';
+            });
+            document.querySelectorAll('.btn-hapus').forEach(el => {
+                el.style.display = isAdmin ? '' : 'none';
+            });
+            document.querySelectorAll('.aksi-kolom-admin').forEach(el => {
+                el.style.display = isAdmin ? '' : 'none';
+            });
+
+            // Scanner hanya untuk superadmin
+            const scannerSection = document.getElementById('scannerSection');
             if (user && user.email === 'andri@panrama.com') {
-                document.body.classList.remove('role-viewer');
-                const scannerSection = document.getElementById('scannerSection');
                 if (scannerSection) scannerSection.classList.remove('hidden');
                 initScanner();
             } else {
-                document.body.classList.add('role-viewer');
-                const scannerSection = document.getElementById('scannerSection');
                 if (scannerSection) scannerSection.classList.add('hidden');
             }
         }
@@ -1188,12 +1608,21 @@
             window.location.replace(window.location.pathname);
         }
 
-        // Data Fetching
+        // ============================================
+        // DATA FETCHING
+        // ============================================
         async function fetchData() {
             try {
-                const { data: result, error } = await supabaseClient.from(currentTable).select('*').order('id_aset', { ascending: true });
+                // Fetch only non-deleted assets
+                const { data: result, error } = await supabaseClient
+                    .from(currentTable)
+                    .select('*')
+                    .is('deleted_at', null)
+                    .order('id_aset', { ascending: true });
+                    
                 if (error) throw error;
                 data = Array.isArray(result) ? result : [];
+                
                 document.getElementById('statusConnection').innerHTML = `
                     <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                     <span class="text-gray-300">Connected</span>
@@ -1202,6 +1631,7 @@
                 updateStats(data);
                 updateCharts(data);
                 updateDeptStats(data);
+                checkLicenseExpiry();
             } catch (err) {
                 console.error(err);
                 document.getElementById('statusConnection').innerHTML = `
@@ -1219,53 +1649,69 @@
                 return;
             }
 
-            const isUserAdmin = !document.body.classList.contains('role-viewer');
+            const isUserAdmin = hasPermission('admin');
 
             tbody.innerHTML = data.map(item => {
                 const statusClass = item.status?.toLowerCase() === 'active' ? 'active' : 
                                    item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
                 
-                const licenseDisplay = [item.license_os, item.license_office, item.license_av]
-                    .filter(Boolean).join(' | ') || '-';
+                // Check license status
+                let licenseClass = 'badge-license';
+                let licenseText = [item.license_os, item.license_office, item.license_av].filter(Boolean).join(' | ') || '-';
                 
-                const monitorDisplay = [item.monitor_brand, item.monitor_size]
-                    .filter(Boolean).join(' ') || '-';
+                if (item.license_expiry) {
+                    const today = new Date();
+                    const expiry = new Date(item.license_expiry);
+                    const diff = (expiry - today) / (1000 * 60 * 60 * 24);
+                    if (diff < 0) {
+                        licenseClass += ' expired';
+                        licenseText += ' ⛔ EXPIRED';
+                    } else if (diff <= 30) {
+                        licenseClass += ' expiring-soon';
+                        licenseText += ` ⏰ ${Math.round(diff)} days`;
+                    }
+                }
                 
-                const printerDisplay = [item.printer_brand, item.printer_model]
-                    .filter(Boolean).join(' ') || '-';
+                const monitorDisplay = [item.monitor_brand, item.monitor_size].filter(Boolean).join(' ') || '-';
+                const printerDisplay = [item.printer_brand, item.printer_model].filter(Boolean).join(' ') || '-';
                 
-                const mouseDisplay = [item.mouse_brand, item.mouse_type]
-                    .filter(Boolean).join(' ') || '-';
-                
-                const keyboardDisplay = [item.keyboard_brand, item.keyboard_type]
-                    .filter(Boolean).join(' ') || '-';
-                
+                const mouseDisplay = [item.mouse_brand, item.mouse_type].filter(Boolean).join(' ') || '-';
+                const keyboardDisplay = [item.keyboard_brand, item.keyboard_type].filter(Boolean).join(' ') || '-';
                 const peripheralDisplay = mouseDisplay !== '-' || keyboardDisplay !== '-' ? 
                     `${mouseDisplay !== '-' ? '🖱️'+mouseDisplay : ''} ${keyboardDisplay !== '-' ? '⌨️'+keyboardDisplay : ''}`.trim() : '-';
 
+                // Check if deleted
+                const isDeleted = item.deleted_at !== null;
+                const rowClass = isDeleted ? 'deleted-row' : '';
+
                 return `
-                <tr class="hover:bg-white/5 text-center">
+                <tr class="hover:bg-white/5 text-center ${rowClass}">
                     <td>
                         <canvas class="qr-code" data-value="${item.id_aset}" width="60" height="60"></canvas>
                     </td>
                     <td class="font-mono text-xs text-indigo-300">${item.id_aset}</td>
-                    <td class="editable font-medium" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'user', this.innerText.trim())">${item.user || '-'}</td>
-                    <td class="editable" contenteditable="${isUserAdmin}" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${item.dept || item.dep || '-'}</td>
+                    <td class="editable font-medium" contenteditable="${isUserAdmin && !isDeleted}" onblur="updateField('${item.id_aset}', 'user', this.innerText.trim())">${item.user || '-'}</td>
+                    <td class="editable" contenteditable="${isUserAdmin && !isDeleted}" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${item.dept || item.dep || '-'}</td>
                     <td><span class="badge-license">${item.device || '-'}</span></td>
                     <td><span class="badge-status ${statusClass}">${item.status || '-'}</span></td>
                     <td class="font-mono text-xs text-blue-300">${item.ip_address || '-'}</td>
-                    <td><span class="text-[10px] text-gray-300">${licenseDisplay}</span></td>
+                    <td><span class="${licenseClass}">${licenseText}</span></td>
                     <td><span class="text-[10px] text-gray-300">${monitorDisplay}</span></td>
                     <td><span class="text-[10px] text-gray-300">${printerDisplay}</span></td>
                     <td><span class="text-[10px] text-gray-300">${peripheralDisplay}</span></td>
                     <td class="no-print">
                         <div class="flex gap-1 justify-center flex-wrap">
-                            <button onclick="openEditModal('${item.id_aset}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all">✏️ Edit</button>
-                            <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">Label</button>
-                            <button onclick="lihatHistory('${item.id_aset}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">📜</button>
-                            <button onclick="duplicateAsset('${item.id_aset}')" class="text-[10px] bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-2 py-1 rounded transition-all">📋 Clone</button>
-                            <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all aksi-kolom-admin">Transfer</button>
-                            <button onclick="deleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all btn-hapus aksi-kolom-admin">Hapus</button>
+                            ${isDeleted ? `
+                                <button onclick="restoreAsset('${item.id_aset}')" class="text-[10px] bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 px-2 py-1 rounded transition-all">♻️ Restore</button>
+                                <button onclick="permanentDeleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all">💀 Hapus</button>
+                            ` : `
+                                <button onclick="openEditModal('${item.id_aset}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all">✏️ Edit</button>
+                                <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">Label</button>
+                                <button onclick="lihatHistory('${item.id_aset}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">📜</button>
+                                <button onclick="duplicateAsset('${item.id_aset}')" class="text-[10px] bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-2 py-1 rounded transition-all">📋 Clone</button>
+                                <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all aksi-kolom-admin">Transfer</button>
+                                <button onclick="softDeleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all btn-hapus aksi-kolom-admin">🗑️ Hapus</button>
+                            `}
                         </div>
                     </td>
                 </tr>
@@ -1288,7 +1734,9 @@
             });
         }
 
-        // Stats
+        // ============================================
+        // STATS & CHARTS
+        // ============================================
         function updateStats(items) {
             const rows = Array.isArray(items) ? items : [];
             document.getElementById('totalAset').innerText = rows.length;
@@ -1311,11 +1759,9 @@
             }).length;
         }
 
-        // Department Stats - UPDATE SEMUA DEPT
         function updateDeptStats(items) {
             const rows = Array.isArray(items) ? items : [];
             
-            // Mapping department IDs
             const deptMap = {
                 totalHRD: 'HRD',
                 totalPAJAK: 'PAJAK',
@@ -1353,7 +1799,6 @@
             });
         }
 
-        // Charts
         function updateCharts(items) {
             const rows = Array.isArray(items) ? items : [];
 
@@ -1429,7 +1874,7 @@
         }
 
         // ============================================
-        // PRINT REPORT - DENGAN QR CODE FIX
+        // PRINT REPORT
         // ============================================
         function printReport() {
             const printWin = window.open('', '_blank', 'width=1200,height=800');
@@ -1476,6 +1921,10 @@
             const laptop = data.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
             const komputer = data.filter(i => { const d = String(i.device || '').toLowerCase(); return d.includes('komputer') || d.includes('pc'); }).length;
             const maintenance = data.filter(i => { const s = String(i.status || '').toLowerCase(); return s === 'maintenance' || s === 'broken' || s === 'rusak'; }).length;
+            const expired = data.filter(i => {
+                if (!i.license_expiry) return false;
+                return (new Date(i.license_expiry) - new Date()) < 0;
+            }).length;
 
             const html = `
                 <!DOCTYPE html>
@@ -1518,7 +1967,7 @@
                         }
                         .summary {
                             display: grid;
-                            grid-template-columns: repeat(4, 1fr);
+                            grid-template-columns: repeat(5, 1fr);
                             gap: 10px;
                             margin-bottom: 15px;
                         }
@@ -1543,6 +1992,7 @@
                             color: #1f2937;
                             margin-top: 2px;
                         }
+                        .summary-item .value.expired { color: #ef4444; }
                         table { 
                             width:100%; 
                             border-collapse:collapse; 
@@ -1588,6 +2038,10 @@
                             -webkit-print-color-adjust: exact !important;
                             print-color-adjust: exact !important;
                         }
+                        .expired-badge {
+                            color: #ef4444;
+                            font-weight: 700;
+                        }
                         @page { 
                             margin:10mm; 
                             size: A4 landscape; 
@@ -1622,6 +2076,10 @@
                         <div class="summary-item">
                             <div class="label">Maintenance</div>
                             <div class="value">${maintenance}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">⏰ Expired License</div>
+                            <div class="value expired">${expired}</div>
                         </div>
                     </div>
 
@@ -1664,9 +2122,7 @@
                                             foreground: '#111827',
                                             level: 'H'
                                         });
-                                    } catch(e) {
-                                        console.log('QR Error:', e);
-                                    }
+                                    } catch(e) {}
                                 }
                             });
                         });
@@ -1685,117 +2141,304 @@
         }
 
         // ============================================
-        // EDIT FUNCTIONS
+        // CRUD OPERATIONS
         // ============================================
-        function openEditModal(id) {
-            const asset = data.find(item => item.id_aset === id);
-            if (!asset) {
-                alert('Data tidak ditemukan!');
+        async function updateField(idRaw, kolom, nilaiBaru) {
+            if (!hasPermission('admin')) {
+                showToast('⛔ Access Denied', 'Hanya Admin yang bisa mengubah data!', 'error');
                 return;
             }
 
-            document.getElementById('editIdDisplay').innerText = id;
-            document.getElementById('edit_id').value = id;
-            document.getElementById('edit_user').value = asset.user || '';
-            document.getElementById('edit_dept').value = asset.dept || asset.dep || '';
-            document.getElementById('edit_device').value = asset.device || '';
-            document.getElementById('edit_specs').value = asset.specs || '';
-            document.getElementById('edit_status').value = asset.status || 'Active';
-            document.getElementById('edit_ip').value = asset.ip_address || '';
-            document.getElementById('edit_mac').value = asset.mac_address || '';
-            document.getElementById('edit_hostname').value = asset.hostname || '';
-            document.getElementById('edit_license_os').value = asset.license_os || '';
-            document.getElementById('edit_license_office').value = asset.license_office || '';
-            document.getElementById('edit_license_av').value = asset.license_av || '';
-            document.getElementById('edit_license_expiry').value = asset.license_expiry || '';
-            document.getElementById('edit_purchase_date').value = asset.purchase_date || '';
-            document.getElementById('edit_warranty_expiry').value = asset.warranty_expiry || '';
-            document.getElementById('edit_monitor_brand').value = asset.monitor_brand || '';
-            document.getElementById('edit_monitor_size').value = asset.monitor_size || '';
-            document.getElementById('edit_monitor_serial').value = asset.monitor_serial || '';
-            document.getElementById('edit_printer_brand').value = asset.printer_brand || '';
-            document.getElementById('edit_printer_model').value = asset.printer_model || '';
-            document.getElementById('edit_printer_serial').value = asset.printer_serial || '';
-            document.getElementById('edit_mouse_brand').value = asset.mouse_brand || '';
-            document.getElementById('edit_mouse_type').value = asset.mouse_type || '';
-            document.getElementById('edit_keyboard_brand').value = asset.keyboard_brand || '';
-            document.getElementById('edit_keyboard_type').value = asset.keyboard_type || '';
-            document.getElementById('edit_notes').value = asset.notes || '';
+            const idAset = idRaw.trim();
+            const nilaiClean = nilaiBaru.trim();
 
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnUpdate');
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
-
-            const id = document.getElementById('edit_id').value;
-            
-            const updateData = {
-                user: document.getElementById('edit_user').value,
-                dept: document.getElementById('edit_dept').value,
-                device: document.getElementById('edit_device').value,
-                specs: document.getElementById('edit_specs').value,
-                status: document.getElementById('edit_status').value,
-                ip_address: document.getElementById('edit_ip').value,
-                mac_address: document.getElementById('edit_mac').value,
-                hostname: document.getElementById('edit_hostname').value,
-                license_os: document.getElementById('edit_license_os').value,
-                license_office: document.getElementById('edit_license_office').value,
-                license_av: document.getElementById('edit_license_av').value,
-                license_expiry: document.getElementById('edit_license_expiry').value || null,
-                purchase_date: document.getElementById('edit_purchase_date').value || null,
-                warranty_expiry: document.getElementById('edit_warranty_expiry').value || null,
-                monitor_brand: document.getElementById('edit_monitor_brand').value,
-                monitor_size: document.getElementById('edit_monitor_size').value,
-                monitor_serial: document.getElementById('edit_monitor_serial').value,
-                printer_brand: document.getElementById('edit_printer_brand').value,
-                printer_model: document.getElementById('edit_printer_model').value,
-                printer_serial: document.getElementById('edit_printer_serial').value,
-                mouse_brand: document.getElementById('edit_mouse_brand').value,
-                mouse_type: document.getElementById('edit_mouse_type').value,
-                keyboard_brand: document.getElementById('edit_keyboard_brand').value,
-                keyboard_type: document.getElementById('edit_keyboard_type').value,
-                notes: document.getElementById('edit_notes').value
-            };
-
-            const oldData = data.find(item => item.id_aset === id);
-            if (oldData) {
-                if (oldData.user !== updateData.user) {
-                    await catatHistory(id, 'user', oldData.user || '-', updateData.user);
-                }
-                if ((oldData.dept || oldData.dep) !== updateData.dept) {
-                    await catatHistory(id, 'dept', oldData.dept || oldData.dep || '-', updateData.dept);
+            if (kolom === 'user' || kolom === 'dept') {
+                const dataLama = data.find(item => item.id_aset === idAset);
+                const nilaiLama = dataLama ? String(dataLama[kolom] || dataLama['dep'] || '-') : '-';
+                if (nilaiLama.trim() !== nilaiClean) {
+                    await catatHistory(idAset, kolom, nilaiLama, nilaiClean);
                 }
             }
 
             const { error } = await supabaseClient
                 .from(currentTable)
-                .update(updateData)
-                .eq('id_aset', id);
+                .update({ [kolom]: nilaiClean })
+                .eq('id_aset', idAset);
 
             if (error) {
-                alert('Gagal update: ' + error.message);
+                alert("Gagal update: " + error.message);
+                fetchData();
             } else {
-                alert('✅ Data berhasil diupdate!');
-                closeEditModal();
                 fetchData();
             }
+        }
 
-            btn.innerText = "💾 Update Aset";
+        document.getElementById('assetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!hasPermission('admin')) {
+                showToast('⛔ Access Denied', 'Hanya Admin yang bisa menambah aset!', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btnSimpan');
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            const newData = {
+                id_aset: document.getElementById('in_id').value,
+                user: document.getElementById('in_user').value,
+                dept: document.getElementById('in_dept').value,
+                device: document.getElementById('in_device').value,
+                specs: document.getElementById('in_specs').value,
+                status: document.getElementById('in_status').value,
+                ip_address: document.getElementById('in_ip').value,
+                mac_address: document.getElementById('in_mac').value,
+                hostname: document.getElementById('in_hostname').value,
+                license_os: document.getElementById('in_license_os').value,
+                license_office: document.getElementById('in_license_office').value,
+                license_av: document.getElementById('in_license_av').value,
+                license_expiry: document.getElementById('in_license_expiry').value || null,
+                purchase_date: document.getElementById('in_purchase_date').value || null,
+                warranty_expiry: document.getElementById('in_warranty_expiry').value || null,
+                monitor_brand: document.getElementById('in_monitor_brand').value,
+                monitor_size: document.getElementById('in_monitor_size').value,
+                monitor_serial: document.getElementById('in_monitor_serial').value,
+                printer_brand: document.getElementById('in_printer_brand').value,
+                printer_model: document.getElementById('in_printer_model').value,
+                printer_serial: document.getElementById('in_printer_serial').value,
+                mouse_brand: document.getElementById('in_mouse_brand').value,
+                mouse_type: document.getElementById('in_mouse_type').value,
+                keyboard_brand: document.getElementById('in_keyboard_brand').value,
+                keyboard_type: document.getElementById('in_keyboard_type').value,
+                notes: document.getElementById('in_notes').value,
+                deleted_at: null
+            };
+
+            const { error } = await supabaseClient.from(currentTable).insert([newData]);
+            if (error) {
+                alert("Gagal: " + error.message);
+            } else {
+                e.target.reset();
+                showToast('✅ Aset Ditambahkan', `Aset ${newData.id_aset} berhasil ditambahkan.`, 'success');
+                fetchData();
+                toggleForm();
+            }
+            btn.innerText = "Simpan ke Cloud";
             btn.disabled = false;
         });
 
         // ============================================
-        // BULK IMPORT FUNCTIONS
+        // HISTORY
+        // ============================================
+        async function catatHistory(idAset, kolom, lama, baru) {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                const historyTable = currentHistory || 'history_aset';
+                await supabaseClient.from(historyTable).insert([{
+                    id_aset: idAset,
+                    user_lama: lama,
+                    user_baru: baru,
+                    aksi: kolom === 'dept' ? 'Ubah Departemen' : 'Ubah ' + kolom,
+                    keterangan: `${kolom.toUpperCase()} diubah dari "${lama}" menjadi "${baru}"`,
+                    tgl_perubahan: new Date().toISOString(),
+                    admin_eksekusi: user ? user.email : 'System'
+                }]);
+            } catch (err) {
+                console.error("Gagal simpan history:", err.message);
+            }
+        }
+
+        async function lihatHistory(idAset) {
+            const historyTable = currentHistory || 'history_aset';
+            const { data: logs } = await supabaseClient
+                .from(historyTable)
+                .select('*')
+                .eq('id_aset', idAset)
+                .order('tgl_perubahan', { ascending: false });
+
+            if (!logs || logs.length === 0) {
+                showToast('📜 History', `Belum ada riwayat untuk aset ${idAset}`, 'info');
+                return;
+            }
+
+            renderHistoryModal(idAset, logs, historyTable);
+        }
+
+        function renderHistoryModal(idAset, logs, sourceTable) {
+            const modal = document.getElementById('historyModal');
+            document.getElementById('historyModalTitle').innerText = `Riwayat: ${idAset}`;
+            document.getElementById('historyModalSource').innerText = `Sumber: ${sourceTable}`;
+            const body = document.getElementById('historyModalBody');
+            body.innerHTML = '';
+
+            logs.forEach(log => {
+                const tgl = new Date(log.tgl_perubahan).toLocaleString('id-ID');
+                body.innerHTML += `
+                    <div class="glass-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-white font-semibold text-sm">${log.aksi || 'Update'}</div>
+                                <div class="text-xs text-gray-400">${tgl}</div>
+                            </div>
+                            <span class="text-xs text-gray-400">${log.jenis_mutasi || 'Perubahan'}</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mt-2">${log.keterangan || '-'}</p>
+                        <div class="text-xs text-gray-400 mt-2">Admin: ${log.admin_eksekusi || '-'}</div>
+                    </div>
+                `;
+            });
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        // ============================================
+        // TRANSFER
+        // ============================================
+        function bukaModalTransfer(id, nama) {
+            asetIdSedangDiproses = id;
+            document.getElementById('infoAset').innerText = `Aset: ${nama}`;
+            document.getElementById('modalTransfer').classList.remove('hidden');
+
+            const btnP1 = document.getElementById('btnKeP1');
+            const btnP2 = document.getElementById('btnKeP2');
+            btnP1.onclick = () => prosesMutasi('inventaris_p1');
+            btnP2.onclick = () => prosesMutasi('inventaris_p2');
+            btnP1.style.display = currentTable === 'inventaris_p1' ? 'none' : 'block';
+            btnP2.style.display = currentTable === 'inventaris_p2' ? 'none' : 'block';
+        }
+
+        function tutupModalTransfer() {
+            document.getElementById('modalTransfer').classList.add('hidden');
+            asetIdSedangDiproses = null;
+        }
+
+        async function prosesMutasi(tabelTujuan) {
+            if (!confirm(`Yakin pindahkan aset ini ke ${tabelTujuan}?`)) return;
+
+            try {
+                const { data: aset } = await supabaseClient
+                    .from(currentTable)
+                    .select('*')
+                    .eq('id_aset', asetIdSedangDiproses)
+                    .single();
+
+                if (!aset) throw new Error("Data aset tidak ditemukan!");
+
+                const namaPTAsal = currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)';
+                const namaPTTujuan = tabelTujuan === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)';
+                const tabelHistoryTujuan = tabelTujuan === 'inventaris_p1' ? 'history_aset' : 'history_p2';
+
+                await supabaseClient.from(tabelTujuan).delete().eq('id_aset', aset.id_aset);
+                await supabaseClient.from(tabelTujuan).insert([{
+                    id_aset: aset.id_aset,
+                    user: aset.user,
+                    dept: aset.dept || aset.dep || '-',
+                    device: aset.device,
+                    specs: aset.specs,
+                    status: 'Active',
+                    ip_address: aset.ip_address,
+                    mac_address: aset.mac_address,
+                    hostname: aset.hostname,
+                    license_os: aset.license_os,
+                    license_office: aset.license_office,
+                    license_av: aset.license_av,
+                    license_expiry: aset.license_expiry,
+                    purchase_date: aset.purchase_date,
+                    warranty_expiry: aset.warranty_expiry,
+                    monitor_brand: aset.monitor_brand,
+                    monitor_size: aset.monitor_size,
+                    monitor_serial: aset.monitor_serial,
+                    printer_brand: aset.printer_brand,
+                    printer_model: aset.printer_model,
+                    printer_serial: aset.printer_serial,
+                    mouse_brand: aset.mouse_brand,
+                    mouse_type: aset.mouse_type,
+                    keyboard_brand: aset.keyboard_brand,
+                    keyboard_type: aset.keyboard_type,
+                    notes: aset.notes,
+                    created_at: new Date().toISOString()
+                }]);
+
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                await supabaseClient.from(tabelHistoryTujuan).insert([{
+                    id_aset: aset.id_aset,
+                    user: aset.user,
+                    user_lama: aset.user,
+                    user_baru: aset.user,
+                    aksi: 'Mutasi',
+                    jenis_mutasi: 'Transfer',
+                    asal_pt: namaPTAsal,
+                    tujuan_pt: namaPTTujuan,
+                    keterangan: `Pindahan dari ${namaPTAsal} ke ${namaPTTujuan}`,
+                    tgl_perubahan: new Date().toISOString(),
+                    admin_eksekusi: user ? user.email : 'System'
+                }]);
+
+                await supabaseClient.from(currentTable).delete().eq('id_aset', asetIdSedangDiproses);
+                showToast('🔄 Transfer Berhasil', `Aset ${aset.id_aset} dipindahkan ke ${namaPTTujuan}`, 'success');
+                tutupModalTransfer();
+                fetchData();
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
+        }
+
+        // ============================================
+        // DUPLICATE / CLONE
+        // ============================================
+        async function duplicateAsset(id) {
+            if (!hasPermission('admin')) {
+                showToast('⛔ Access Denied', 'Hanya Admin yang bisa clone aset!', 'error');
+                return;
+            }
+
+            const original = data.find(item => item.id_aset === id);
+            if (!original) {
+                alert('Data tidak ditemukan!');
+                return;
+            }
+
+            const newId = prompt('Masukkan ID baru untuk clone:', original.id_aset + '-copy');
+            if (!newId) return;
+
+            const existing = data.find(item => item.id_aset === newId);
+            if (existing) {
+                alert(`ID '${newId}' sudah ada!`);
+                return;
+            }
+
+            const cloneData = { ...original };
+            cloneData.id_aset = newId;
+            delete cloneData.created_at;
+            delete cloneData.updated_at;
+            delete cloneData.deleted_at;
+            delete cloneData.deleted_by;
+
+            const { error } = await supabaseClient
+                .from(currentTable)
+                .insert([cloneData]);
+
+            if (error) {
+                alert('Gagal clone: ' + error.message);
+            } else {
+                showToast('📋 Clone Berhasil', `Aset ${id} -> ${newId}`, 'success');
+                fetchData();
+            }
+        }
+
+        // ============================================
+        // BULK IMPORT
         // ============================================
         function openBulkImport() {
+            if (!hasPermission('admin')) {
+                showToast('⛔ Access Denied', 'Hanya Admin yang bisa import massal!', 'error');
+                return;
+            }
             document.getElementById('bulkImportModal').classList.remove('hidden');
             document.getElementById('importPreview').classList.add('hidden');
             document.getElementById('importProgress').classList.add('hidden');
@@ -1959,7 +2602,8 @@
                         mouse_type: String(row.mouse_type || '').trim(),
                         keyboard_brand: String(row.keyboard_brand || '').trim(),
                         keyboard_type: String(row.keyboard_type || '').trim(),
-                        notes: String(row.notes || '').trim()
+                        notes: String(row.notes || '').trim(),
+                        deleted_at: null
                     };
 
                     const { data: existing } = await supabaseClient
@@ -2011,295 +2655,8 @@
         }
 
         // ============================================
-        // DUPLICATE / CLONE ASSET
+        // UTILITY FUNCTIONS
         // ============================================
-        async function duplicateAsset(id) {
-            const original = data.find(item => item.id_aset === id);
-            if (!original) {
-                alert('Data tidak ditemukan!');
-                return;
-            }
-
-            const newId = prompt('Masukkan ID baru untuk clone:', original.id_aset + '-copy');
-            if (!newId) return;
-
-            const existing = data.find(item => item.id_aset === newId);
-            if (existing) {
-                alert(`ID '${newId}' sudah ada!`);
-                return;
-            }
-
-            const cloneData = { ...original };
-            cloneData.id_aset = newId;
-            delete cloneData.created_at;
-            delete cloneData.updated_at;
-
-            const { error } = await supabaseClient
-                .from(currentTable)
-                .insert([cloneData]);
-
-            if (error) {
-                alert('Gagal clone: ' + error.message);
-            } else {
-                alert(`✅ Berhasil clone aset ${id} -> ${newId}`);
-                fetchData();
-            }
-        }
-
-        // ============================================
-        // CRUD OPERATIONS
-        // ============================================
-        async function updateField(idRaw, kolom, nilaiBaru) {
-            const idAset = idRaw.trim();
-            const nilaiClean = nilaiBaru.trim();
-
-            if (kolom === 'user' || kolom === 'dept') {
-                const dataLama = data.find(item => item.id_aset === idAset);
-                const nilaiLama = dataLama ? String(dataLama[kolom] || dataLama['dep'] || '-') : '-';
-                if (nilaiLama.trim() !== nilaiClean) {
-                    await catatHistory(idAset, kolom, nilaiLama, nilaiClean);
-                }
-            }
-
-            const { error } = await supabaseClient
-                .from(currentTable)
-                .update({ [kolom]: nilaiClean })
-                .eq('id_aset', idAset);
-
-            if (error) {
-                alert("Gagal update: " + error.message);
-                fetchData();
-            } else {
-                fetchData();
-            }
-        }
-
-        async function deleteAsset(id) {
-            if (confirm(`Hapus aset ${id}?`)) {
-                await supabaseClient.from(currentTable).delete().eq('id_aset', id);
-                fetchData();
-            }
-        }
-
-        document.getElementById('assetForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnSimpan');
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
-
-            const newData = {
-                id_aset: document.getElementById('in_id').value,
-                user: document.getElementById('in_user').value,
-                dept: document.getElementById('in_dept').value,
-                device: document.getElementById('in_device').value,
-                specs: document.getElementById('in_specs').value,
-                status: document.getElementById('in_status').value,
-                ip_address: document.getElementById('in_ip').value,
-                mac_address: document.getElementById('in_mac').value,
-                hostname: document.getElementById('in_hostname').value,
-                license_os: document.getElementById('in_license_os').value,
-                license_office: document.getElementById('in_license_office').value,
-                license_av: document.getElementById('in_license_av').value,
-                license_expiry: document.getElementById('in_license_expiry').value || null,
-                purchase_date: document.getElementById('in_purchase_date').value || null,
-                warranty_expiry: document.getElementById('in_warranty_expiry').value || null,
-                monitor_brand: document.getElementById('in_monitor_brand').value,
-                monitor_size: document.getElementById('in_monitor_size').value,
-                monitor_serial: document.getElementById('in_monitor_serial').value,
-                printer_brand: document.getElementById('in_printer_brand').value,
-                printer_model: document.getElementById('in_printer_model').value,
-                printer_serial: document.getElementById('in_printer_serial').value,
-                mouse_brand: document.getElementById('in_mouse_brand').value,
-                mouse_type: document.getElementById('in_mouse_type').value,
-                keyboard_brand: document.getElementById('in_keyboard_brand').value,
-                keyboard_type: document.getElementById('in_keyboard_type').value,
-                notes: document.getElementById('in_notes').value
-            };
-
-            const { error } = await supabaseClient.from(currentTable).insert([newData]);
-            if (error) {
-                alert("Gagal: " + error.message);
-            } else {
-                e.target.reset();
-                fetchData();
-                toggleForm();
-            }
-            btn.innerText = "Simpan ke Cloud";
-            btn.disabled = false;
-        });
-
-        // History
-        async function catatHistory(idAset, kolom, lama, baru) {
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                const historyTable = currentHistory || 'history_aset';
-                await supabaseClient.from(historyTable).insert([{
-                    id_aset: idAset,
-                    user_lama: lama,
-                    user_baru: baru,
-                    aksi: kolom === 'dept' ? 'Ubah Departemen' : 'Ubah ' + kolom,
-                    keterangan: `${kolom.toUpperCase()} diubah dari "${lama}" menjadi "${baru}"`,
-                    tgl_perubahan: new Date().toISOString(),
-                    admin_eksekusi: user ? user.email : 'System'
-                }]);
-            } catch (err) {
-                console.error("Gagal simpan history:", err.message);
-            }
-        }
-
-        async function lihatHistory(idAset) {
-            const historyTable = currentHistory || 'history_aset';
-            const { data: logs } = await supabaseClient
-                .from(historyTable)
-                .select('*')
-                .eq('id_aset', idAset)
-                .order('tgl_perubahan', { ascending: false });
-
-            if (!logs || logs.length === 0) {
-                alert("Belum ada riwayat untuk aset: " + idAset);
-                return;
-            }
-
-            renderHistoryModal(idAset, logs, historyTable);
-        }
-
-        function renderHistoryModal(idAset, logs, sourceTable) {
-            const modal = document.getElementById('historyModal');
-            document.getElementById('historyModalTitle').innerText = `Riwayat: ${idAset}`;
-            document.getElementById('historyModalSource').innerText = `Sumber: ${sourceTable}`;
-            const body = document.getElementById('historyModalBody');
-            body.innerHTML = '';
-
-            logs.forEach(log => {
-                const tgl = new Date(log.tgl_perubahan).toLocaleString('id-ID');
-                body.innerHTML += `
-                    <div class="glass-card p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <div class="text-white font-semibold text-sm">${log.aksi || 'Update'}</div>
-                                <div class="text-xs text-gray-400">${tgl}</div>
-                            </div>
-                            <span class="text-xs text-gray-400">${log.jenis_mutasi || 'Perubahan'}</span>
-                        </div>
-                        <p class="text-sm text-gray-300 mt-2">${log.keterangan || '-'}</p>
-                        <div class="text-xs text-gray-400 mt-2">Admin: ${log.admin_eksekusi || '-'}</div>
-                    </div>
-                `;
-            });
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeHistoryModal() {
-            document.getElementById('historyModal').classList.add('hidden');
-        }
-
-        // Transfer
-        function bukaModalTransfer(id, nama) {
-            asetIdSedangDiproses = id;
-            document.getElementById('infoAset').innerText = `Aset: ${nama}`;
-            document.getElementById('modalTransfer').classList.remove('hidden');
-
-            const btnP1 = document.getElementById('btnKeP1');
-            const btnP2 = document.getElementById('btnKeP2');
-            btnP1.onclick = () => prosesMutasi('inventaris_p1');
-            btnP2.onclick = () => prosesMutasi('inventaris_p2');
-            btnP1.style.display = currentTable === 'inventaris_p1' ? 'none' : 'block';
-            btnP2.style.display = currentTable === 'inventaris_p2' ? 'none' : 'block';
-        }
-
-        function tutupModalTransfer() {
-            document.getElementById('modalTransfer').classList.add('hidden');
-            asetIdSedangDiproses = null;
-        }
-
-        async function prosesMutasi(tabelTujuan) {
-            if (!confirm(`Yakin pindahkan aset ini ke ${tabelTujuan}?`)) return;
-
-            try {
-                const { data: aset } = await supabaseClient
-                    .from(currentTable)
-                    .select('*')
-                    .eq('id_aset', asetIdSedangDiproses)
-                    .single();
-
-                if (!aset) throw new Error("Data aset tidak ditemukan!");
-
-                const namaPTAsal = currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)';
-                const namaPTTujuan = tabelTujuan === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)';
-                const tabelHistoryTujuan = tabelTujuan === 'inventaris_p1' ? 'history_aset' : 'history_p2';
-
-                await supabaseClient.from(tabelTujuan).delete().eq('id_aset', aset.id_aset);
-                await supabaseClient.from(tabelTujuan).insert([{
-                    id_aset: aset.id_aset,
-                    user: aset.user,
-                    dept: aset.dept || aset.dep || '-',
-                    device: aset.device,
-                    specs: aset.specs,
-                    status: 'Active',
-                    ip_address: aset.ip_address,
-                    mac_address: aset.mac_address,
-                    hostname: aset.hostname,
-                    license_os: aset.license_os,
-                    license_office: aset.license_office,
-                    license_av: aset.license_av,
-                    license_expiry: aset.license_expiry,
-                    purchase_date: aset.purchase_date,
-                    warranty_expiry: aset.warranty_expiry,
-                    monitor_brand: aset.monitor_brand,
-                    monitor_size: aset.monitor_size,
-                    monitor_serial: aset.monitor_serial,
-                    printer_brand: aset.printer_brand,
-                    printer_model: aset.printer_model,
-                    printer_serial: aset.printer_serial,
-                    mouse_brand: aset.mouse_brand,
-                    mouse_type: aset.mouse_type,
-                    keyboard_brand: aset.keyboard_brand,
-                    keyboard_type: aset.keyboard_type,
-                    notes: aset.notes,
-                    created_at: new Date().toISOString()
-                }]);
-
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                await supabaseClient.from(tabelHistoryTujuan).insert([{
-                    id_aset: aset.id_aset,
-                    user: aset.user,
-                    user_lama: aset.user,
-                    user_baru: aset.user,
-                    aksi: 'Mutasi',
-                    jenis_mutasi: 'Transfer',
-                    asal_pt: namaPTAsal,
-                    tujuan_pt: namaPTTujuan,
-                    keterangan: `Pindahan dari ${namaPTAsal} ke ${namaPTTujuan}`,
-                    tgl_perubahan: new Date().toISOString(),
-                    admin_eksekusi: user ? user.email : 'System'
-                }]);
-
-                await supabaseClient.from(currentTable).delete().eq('id_aset', asetIdSedangDiproses);
-                alert("Mutasi Berhasil!");
-                tutupModalTransfer();
-                fetchData();
-            } catch (err) {
-                alert("Error: " + err.message);
-            }
-        }
-
-        // Scanner
-        function initScanner() {
-            if (html5QrcodeScanner) return;
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 200, aspectRatio: 1.0 });
-            html5QrcodeScanner.render((decodedText) => {
-                const code = decodedText.trim().toUpperCase();
-                const ditemukan = data.find(item => (item.id_aset || "").toString().toUpperCase() === code);
-                if (ditemukan) {
-                    alert(`✅ DITEMUKAN!\nID: ${ditemukan.id_aset}\nUser: ${ditemukan.user || '-'}\nDept: ${ditemukan.dept || ditemukan.dep || '-'}\nDevice: ${ditemukan.device || '-'}\nIP: ${ditemukan.ip_address || '-'}`);
-                } else {
-                    alert("❌ Data [" + code + "] tidak ditemukan.");
-                }
-            });
-        }
-
-        // Utility
         function toggleForm() {
             document.getElementById('formContainer').classList.toggle('hidden');
         }
@@ -2318,11 +2675,6 @@
         function resetFilter() {
             document.querySelectorAll('#inventoryBody tr').forEach(row => row.style.display = '');
             document.getElementById('searchInput').value = '';
-            // Reset department stats highlight
-            document.querySelectorAll('.dept-item').forEach(el => {
-                el.style.borderColor = 'rgba(255,255,255,0.06)';
-                el.style.background = 'rgba(255,255,255,0.04)';
-            });
         }
 
         function exportToExcel() {
@@ -2391,34 +2743,26 @@
             fetchData();
         }
 
-        // Drag & Drop untuk import
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropZone = document.getElementById('dropZone');
-            
-            dropZone.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.classList.add('dragover');
-            });
-
-            dropZone.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-            });
-
-            dropZone.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-                
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    const fileInput = document.getElementById('fileInput');
-                    fileInput.files = files;
-                    handleFileUpload({ target: fileInput });
+        function initScanner() {
+            if (html5QrcodeScanner) return;
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 200, aspectRatio: 1.0 });
+            html5QrcodeScanner.render((decodedText) => {
+                const code = decodedText.trim().toUpperCase();
+                const ditemukan = data.find(item => (item.id_aset || "").toString().toUpperCase() === code);
+                if (ditemukan) {
+                    showToast('✅ QR Ditemukan', 
+                        `ID: ${ditemukan.id_aset}\nUser: ${ditemukan.user || '-'}\nDept: ${ditemukan.dept || ditemukan.dep || '-'}`, 
+                        'success'
+                    );
+                } else {
+                    showToast('❌ QR Tidak Ditemukan', `Data ${code} tidak ada di database.`, 'error');
                 }
             });
-        });
+        }
 
-        // Search
+        // ============================================
+        // SEARCH
+        // ============================================
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const kw = e.target.value.toLowerCase();
             const filtered = data.filter(i => {
@@ -2436,8 +2780,155 @@
             updateDeptStats(filtered);
         });
 
-        console.log('🚀 IT Asset Manager Pro v5.0 - Department Stats Kembali!');
-        console.log('📋 Total ' + Object.keys(document.querySelectorAll('.dept-item')).length + ' department stats');
+        // ============================================
+        // EDIT MODAL
+        // ============================================
+        function openEditModal(id) {
+            if (!hasPermission('admin')) {
+                showToast('⛔ Access Denied', 'Hanya Admin yang bisa edit aset!', 'error');
+                return;
+            }
+
+            const asset = data.find(item => item.id_aset === id);
+            if (!asset) {
+                alert('Data tidak ditemukan!');
+                return;
+            }
+
+            document.getElementById('editIdDisplay').innerText = id;
+            document.getElementById('edit_id').value = id;
+            document.getElementById('edit_user').value = asset.user || '';
+            document.getElementById('edit_dept').value = asset.dept || asset.dep || '';
+            document.getElementById('edit_device').value = asset.device || '';
+            document.getElementById('edit_specs').value = asset.specs || '';
+            document.getElementById('edit_status').value = asset.status || 'Active';
+            document.getElementById('edit_ip').value = asset.ip_address || '';
+            document.getElementById('edit_mac').value = asset.mac_address || '';
+            document.getElementById('edit_hostname').value = asset.hostname || '';
+            document.getElementById('edit_license_os').value = asset.license_os || '';
+            document.getElementById('edit_license_office').value = asset.license_office || '';
+            document.getElementById('edit_license_av').value = asset.license_av || '';
+            document.getElementById('edit_license_expiry').value = asset.license_expiry || '';
+            document.getElementById('edit_purchase_date').value = asset.purchase_date || '';
+            document.getElementById('edit_warranty_expiry').value = asset.warranty_expiry || '';
+            document.getElementById('edit_monitor_brand').value = asset.monitor_brand || '';
+            document.getElementById('edit_monitor_size').value = asset.monitor_size || '';
+            document.getElementById('edit_monitor_serial').value = asset.monitor_serial || '';
+            document.getElementById('edit_printer_brand').value = asset.printer_brand || '';
+            document.getElementById('edit_printer_model').value = asset.printer_model || '';
+            document.getElementById('edit_printer_serial').value = asset.printer_serial || '';
+            document.getElementById('edit_mouse_brand').value = asset.mouse_brand || '';
+            document.getElementById('edit_mouse_type').value = asset.mouse_type || '';
+            document.getElementById('edit_keyboard_brand').value = asset.keyboard_brand || '';
+            document.getElementById('edit_keyboard_type').value = asset.keyboard_type || '';
+            document.getElementById('edit_notes').value = asset.notes || '';
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnUpdate');
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            const id = document.getElementById('edit_id').value;
+            
+            const updateData = {
+                user: document.getElementById('edit_user').value,
+                dept: document.getElementById('edit_dept').value,
+                device: document.getElementById('edit_device').value,
+                specs: document.getElementById('edit_specs').value,
+                status: document.getElementById('edit_status').value,
+                ip_address: document.getElementById('edit_ip').value,
+                mac_address: document.getElementById('edit_mac').value,
+                hostname: document.getElementById('edit_hostname').value,
+                license_os: document.getElementById('edit_license_os').value,
+                license_office: document.getElementById('edit_license_office').value,
+                license_av: document.getElementById('edit_license_av').value,
+                license_expiry: document.getElementById('edit_license_expiry').value || null,
+                purchase_date: document.getElementById('edit_purchase_date').value || null,
+                warranty_expiry: document.getElementById('edit_warranty_expiry').value || null,
+                monitor_brand: document.getElementById('edit_monitor_brand').value,
+                monitor_size: document.getElementById('edit_monitor_size').value,
+                monitor_serial: document.getElementById('edit_monitor_serial').value,
+                printer_brand: document.getElementById('edit_printer_brand').value,
+                printer_model: document.getElementById('edit_printer_model').value,
+                printer_serial: document.getElementById('edit_printer_serial').value,
+                mouse_brand: document.getElementById('edit_mouse_brand').value,
+                mouse_type: document.getElementById('edit_mouse_type').value,
+                keyboard_brand: document.getElementById('edit_keyboard_brand').value,
+                keyboard_type: document.getElementById('edit_keyboard_type').value,
+                notes: document.getElementById('edit_notes').value
+            };
+
+            const oldData = data.find(item => item.id_aset === id);
+            if (oldData) {
+                if (oldData.user !== updateData.user) {
+                    await catatHistory(id, 'user', oldData.user || '-', updateData.user);
+                }
+                if ((oldData.dept || oldData.dep) !== updateData.dept) {
+                    await catatHistory(id, 'dept', oldData.dept || oldData.dep || '-', updateData.dept);
+                }
+            }
+
+            const { error } = await supabaseClient
+                .from(currentTable)
+                .update(updateData)
+                .eq('id_aset', id);
+
+            if (error) {
+                alert('Gagal update: ' + error.message);
+            } else {
+                showToast('✅ Aset Diupdate', `Aset ${id} berhasil diupdate.`, 'success');
+                closeEditModal();
+                fetchData();
+            }
+
+            btn.innerText = "💾 Update Aset";
+            btn.disabled = false;
+        });
+
+        // ============================================
+        // DRAG & DROP
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            
+            if (dropZone) {
+                dropZone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+
+                dropZone.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                });
+
+                dropZone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const fileInput = document.getElementById('fileInput');
+                        fileInput.files = files;
+                        handleFileUpload({ target: fileInput });
+                    }
+                });
+            }
+        });
+
+        console.log('🚀 IT Asset Manager Pro v6.0 - Premium Edition');
+        console.log('📋 Fitur: Notifikasi License, Multi-Role, Soft Delete');
+        console.log('👤 User Roles: Super Admin | Admin | Manager | Viewer');
+        console.log('🔔 Auto-check license expiry setiap load data');
+        console.log('🗑️ Soft delete dengan restore & permanent delete');
     </script>
 </body>
 </html>
