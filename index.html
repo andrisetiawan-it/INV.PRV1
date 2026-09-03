@@ -301,178 +301,87 @@
             width: 0%;
         }
 
-        /* ============================================
-           PRINT STYLES - QR CODE FIX
-           ============================================ */
+        /* Department Stats - Kembali seperti semula */
+        .dept-stats {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 12px 0;
+            margin-bottom: 12px;
+            scrollbar-width: thin;
+        }
+
+        .dept-stats .dept-item {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 10px 16px;
+            min-width: 80px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .dept-stats .dept-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .dept-stats .dept-item .dept-name {
+            color: #9ca3af;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .dept-stats .dept-item .dept-count {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* Print Styles */
         @media print {
             .no-print { display: none !important; }
-            
             body { 
                 background: white !important; 
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
-                color: #1f2937 !important;
             }
-            
             .glass, .glass-card, .chart-container { 
                 background: white !important; 
                 border: 1px solid #ddd !important;
-                box-shadow: none !important;
             }
-            
             .table-wrapper thead th { 
                 background: #1f2937 !important; 
                 color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
             }
-            
-            .table-wrapper tbody td { 
-                color: #1f2937 !important;
-                border-bottom: 1px solid #e5e7eb !important;
-            }
-            
-            .badge-status {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            .badge-status.active {
-                background: #34d399 !important;
-                color: white !important;
-                border: 1px solid #34d399 !important;
-            }
-            
-            .badge-status.maintenance {
-                background: #fbbf24 !important;
-                color: #1f2937 !important;
-                border: 1px solid #fbbf24 !important;
-            }
-            
-            .badge-status.broken {
-                background: #fb7185 !important;
-                color: white !important;
-                border: 1px solid #fb7185 !important;
-            }
-            
-            /* QR CODE PRINT FIX */
+            .table-wrapper tbody td { color: #1f2937 !important; }
             .qr-code {
                 border: 1px solid #d1d5db !important;
                 background: white !important;
-                display: inline-block !important;
-                max-width: 60px !important;
-                max-height: 60px !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                image-rendering: pixelated !important;
-            }
-            
-            canvas.qr-code {
-                display: inline-block !important;
-                width: 60px !important;
-                height: 60px !important;
-                background: white !important;
-            }
-            
-            /* Print container */
-            .print-container {
-                padding: 10px !important;
-            }
-            
-            /* Report header for print */
-            .print-report-header {
-                display: block !important;
-                text-align: center !important;
-                padding: 15px 0 !important;
-                border-bottom: 3px solid #1f2937 !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .print-report-header h1 {
-                font-size: 20px !important;
-                font-weight: 800 !important;
-                color: #1f2937 !important;
-                letter-spacing: 2px !important;
-                margin: 0 !important;
-            }
-            
-            .print-report-header .sub {
-                font-size: 11px !important;
-                color: #6b7280 !important;
-                margin-top: 2px !important;
-            }
-            
-            .print-report-header .date {
-                font-size: 10px !important;
-                color: #9ca3af !important;
-                margin-top: 2px !important;
-            }
-            
-            .print-footer {
-                margin-top: 15px !important;
-                padding-top: 10px !important;
-                border-top: 2px solid #e5e7eb !important;
-                text-align: center !important;
-                font-size: 9px !important;
-                color: #9ca3af !important;
-            }
-            
-            .print-summary {
-                display: grid !important;
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 10px !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .print-summary-item {
-                background: #f3f4f6 !important;
-                padding: 8px !important;
-                border-radius: 6px !important;
-                text-align: center !important;
-                border: 1px solid #e5e7eb !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            
-            .print-summary-item .label {
-                font-size: 8px !important;
-                text-transform: uppercase !important;
-                color: #6b7280 !important;
-                font-weight: 600 !important;
-            }
-            
-            .print-summary-item .value {
-                font-size: 18px !important;
-                font-weight: 800 !important;
-                color: #1f2937 !important;
-                margin-top: 2px !important;
-            }
-            
-            /* Pastikan QR code di print report */
-            .print-qr-cell {
-                text-align: center !important;
-                vertical-align: middle !important;
-            }
-            
-            .print-qr-cell canvas,
-            .print-qr-cell img {
-                width: 50px !important;
-                height: 50px !important;
+            .badge-status { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .badge-status.active { background: #34d399 !important; color: white !important; }
+            .badge-status.maintenance { background: #fbbf24 !important; color: #1f2937 !important; }
+            .badge-status.broken { background: #fb7185 !important; color: white !important; }
+            .print-qr-cell canvas {
+                display: inline-block !important;
                 border: 1px solid #d1d5db !important;
                 border-radius: 4px !important;
                 background: white !important;
-                display: inline-block !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            
-            /* Label print */
             body.printing-label .print-container { display: none !important; }
-            
-            .print-only-label {
-                display: none !important;
-            }
-            
+            .print-only-label { display: none !important; }
             body.printing-label .print-only-label {
                 display: flex !important;
                 justify-content: center !important;
@@ -480,16 +389,12 @@
                 height: 100vh !important;
                 background: white !important;
             }
-            
-            body.printing-label .print-only-label canvas {
-                max-width: 200px !important;
-                max-height: 200px !important;
+            .dept-stats .dept-item {
+                background: #f3f4f6 !important;
+                border: 1px solid #e5e7eb !important;
             }
-            
-            @page {
-                margin: 10mm;
-                size: A4 landscape;
-            }
+            .dept-stats .dept-item .dept-name { color: #6b7280 !important; }
+            .dept-stats .dept-item .dept-count { color: #1f2937 !important; }
         }
 
         @media (max-width: 1024px) {
@@ -502,6 +407,8 @@
             .table-wrapper thead th { font-size: 0.5rem; padding: 6px 4px; }
             .table-wrapper tbody td { padding: 4px 4px; font-size: 0.6rem; }
             .qr-code { width: 40px; height: 40px; }
+            .dept-stats .dept-item { padding: 6px 10px; min-width: 60px; }
+            .dept-stats .dept-item .dept-count { font-size: 0.9rem; }
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -668,6 +575,104 @@
                 <button onclick="exportToExcel()" class="btn btn-glow bg-emerald-500/20 text-emerald-400 font-semibold px-4 py-2 rounded-xl hover:bg-emerald-500/30 transition-all border border-emerald-500/20 text-sm flex items-center gap-2">
                     📊 Excel
                 </button>
+            </div>
+
+            <!-- ======================================== -->
+            <!-- DEPARTMENT STATS - KEMBALI LAGI BRO! -->
+            <!-- ======================================== -->
+            <div class="dept-stats no-print" id="deptStatsContainer">
+                <div class="dept-item" onclick="filterByDept('HRD')">
+                    <div class="dept-name">HRD</div>
+                    <div class="dept-count" id="totalHRD">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('PAJAK')">
+                    <div class="dept-name">PAJAK</div>
+                    <div class="dept-count" id="totalPAJAK">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('PPIC')">
+                    <div class="dept-name">PPIC</div>
+                    <div class="dept-count" id="totalPPIC">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('EXIM')">
+                    <div class="dept-name">EXIM</div>
+                    <div class="dept-count" id="totalEXIM">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('FINANCE')">
+                    <div class="dept-name">FINANCE</div>
+                    <div class="dept-count" id="totalFINANCE">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('IT')">
+                    <div class="dept-name">IT</div>
+                    <div class="dept-count" id="totalIT">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('INVENTORY')">
+                    <div class="dept-name">INVENTORY</div>
+                    <div class="dept-count" id="totalINVENTORY">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('CAD')">
+                    <div class="dept-name">CAD</div>
+                    <div class="dept-count" id="totalCAD">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('GUDANG ACC')">
+                    <div class="dept-name">GUDANG ACC</div>
+                    <div class="dept-count" id="totalGUDANG_ACC">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('GUDANG KAIN')">
+                    <div class="dept-name">GUDANG KAIN</div>
+                    <div class="dept-count" id="totalGUDANG_KAIN">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('PACKING')">
+                    <div class="dept-name">PACKING</div>
+                    <div class="dept-count" id="totalPACKING">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('SAMPLE PROD')">
+                    <div class="dept-name">SAMPLE PROD</div>
+                    <div class="dept-count" id="totalSAMPLE_PROD">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('SAMPLE ROOM')">
+                    <div class="dept-name">SAMPLE ROOM</div>
+                    <div class="dept-count" id="totalSAMPLE_ROOM">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('MD')">
+                    <div class="dept-name">MD</div>
+                    <div class="dept-count" id="totalMD">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('BC')">
+                    <div class="dept-name">BC</div>
+                    <div class="dept-count" id="totalBC">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('QA')">
+                    <div class="dept-name">QA</div>
+                    <div class="dept-count" id="totalQA">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('FACTORY MANAGER')">
+                    <div class="dept-name">FM</div>
+                    <div class="dept-count" id="totalFACTORY_MANAGER">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('GENERAL MANAGER')">
+                    <div class="dept-name">GM</div>
+                    <div class="dept-count" id="totalGENERAL_MANAGER">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('IE')">
+                    <div class="dept-name">IE</div>
+                    <div class="dept-count" id="totalIE">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('PRODUKSI')">
+                    <div class="dept-name">PRODUKSI</div>
+                    <div class="dept-count" id="totalPRODUKSI">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('CUTTING')">
+                    <div class="dept-name">CUTTING</div>
+                    <div class="dept-count" id="totalCUTTING">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('DIGITAL')">
+                    <div class="dept-name">DIGITAL</div>
+                    <div class="dept-count" id="totalDIGITAL">0</div>
+                </div>
+                <div class="dept-item" onclick="filterByDept('STAFF')">
+                    <div class="dept-name">STAFF</div>
+                    <div class="dept-count" id="totalSTAFF">0</div>
+                </div>
             </div>
 
             <!-- BULK IMPORT MODAL -->
@@ -1196,6 +1201,7 @@
                 renderTable(data);
                 updateStats(data);
                 updateCharts(data);
+                updateDeptStats(data);
             } catch (err) {
                 console.error(err);
                 document.getElementById('statusConnection').innerHTML = `
@@ -1305,6 +1311,48 @@
             }).length;
         }
 
+        // Department Stats - UPDATE SEMUA DEPT
+        function updateDeptStats(items) {
+            const rows = Array.isArray(items) ? items : [];
+            
+            // Mapping department IDs
+            const deptMap = {
+                totalHRD: 'HRD',
+                totalPAJAK: 'PAJAK',
+                totalPPIC: 'PPIC',
+                totalEXIM: 'EXIM',
+                totalFINANCE: 'FINANCE',
+                totalIT: 'IT',
+                totalINVENTORY: 'INVENTORY',
+                totalCAD: 'CAD',
+                totalGUDANG_ACC: 'GUDANG ACC',
+                totalGUDANG_KAIN: 'GUDANG KAIN',
+                totalPACKING: 'PACKING',
+                totalSAMPLE_PROD: 'SAMPLE PROD',
+                totalSAMPLE_ROOM: 'SAMPLE ROOM',
+                totalMD: 'MD',
+                totalBC: 'BC',
+                totalQA: 'QA',
+                totalFACTORY_MANAGER: 'FACTORY MANAGER',
+                totalGENERAL_MANAGER: 'GENERAL MANAGER',
+                totalIE: 'IE',
+                totalPRODUKSI: 'PRODUKSI',
+                totalCUTTING: 'CUTTING',
+                totalDIGITAL: 'DIGITAL',
+                totalSTAFF: 'STAFF'
+            };
+
+            Object.entries(deptMap).forEach(([id, name]) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerText = rows.filter(i => {
+                        const dept = String(i.dept || i.dep || '').toUpperCase().trim();
+                        return dept === name || dept.includes(name);
+                    }).length;
+                }
+            });
+        }
+
         // Charts
         function updateCharts(items) {
             const rows = Array.isArray(items) ? items : [];
@@ -1402,7 +1450,6 @@
                                    statusClass === 'maintenance' ? '#fbbf24' : '#fb7185';
                 const statusTextColor = statusClass === 'maintenance' ? '#1f2937' : 'white';
 
-                // Buat ID unik untuk canvas QR
                 const qrId = 'qr_print_' + index;
                 
                 tableRows += `
@@ -1425,7 +1472,6 @@
                 `;
             });
 
-            // Summary stats
             const total = data.length;
             const laptop = data.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
             const komputer = data.filter(i => { const d = String(i.device || '').toLowerCase(); return d.includes('komputer') || d.includes('pc'); }).length;
@@ -1603,7 +1649,6 @@
                     </div>
 
                     <script>
-                        // Generate QR codes after page loads
                         document.addEventListener('DOMContentLoaded', function() {
                             const data = ${JSON.stringify(data)};
                             data.forEach((item, index) => {
@@ -1633,7 +1678,6 @@
             printWin.document.write(html);
             printWin.document.close();
             
-            // Tunggu QR code selesai digenerate
             setTimeout(() => {
                 printWin.focus();
                 printWin.print();
@@ -2274,6 +2318,11 @@
         function resetFilter() {
             document.querySelectorAll('#inventoryBody tr').forEach(row => row.style.display = '');
             document.getElementById('searchInput').value = '';
+            // Reset department stats highlight
+            document.querySelectorAll('.dept-item').forEach(el => {
+                el.style.borderColor = 'rgba(255,255,255,0.06)';
+                el.style.background = 'rgba(255,255,255,0.04)';
+            });
         }
 
         function exportToExcel() {
@@ -2384,10 +2433,11 @@
             renderTable(filtered);
             updateStats(filtered);
             updateCharts(filtered);
+            updateDeptStats(filtered);
         });
 
-        console.log('🚀 IT Asset Manager Pro v5.0 - QR Code Print Fix');
-        console.log('📋 QR Code sekarang muncul di print!');
+        console.log('🚀 IT Asset Manager Pro v5.0 - Department Stats Kembali!');
+        console.log('📋 Total ' + Object.keys(document.querySelectorAll('.dept-item')).length + ' department stats');
     </script>
 </body>
 </html>
