@@ -359,11 +359,12 @@
                         <th>Keterangan</th>
                         <th>Jenis Inventaris</th>
                         <th>Department</th>
+                        <th>Gambar</th>
                         <th>Lokasi</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 `;
-                if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="11" class="text-center py-10 text-gray-400">Belum ada data General Assets.</td></tr>`; return; }
+                if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="12" class="text-center py-10 text-gray-400">Belum ada data General Assets.</td></tr>`; return; }
                 tbody.innerHTML = data.map((item, idx) => `
                     <tr>
                         <td>${idx + 1}</td>
@@ -375,6 +376,7 @@
                         <td>${item.keterangan || '-'}</td>
                         <td><span class="badge-status active">${item.jenis_inventaris || 'Fixed Asset'}</span></td>
                         <td>${item.department || '-'}</td>
+                        <td>${item.gambar ? `<a href="${item.gambar}" target="_blank" class="text-blue-400 underline text-[10px]">Lihat Foto</a>` : '-'}</td>
                         <td>${item.lokasi || '-'}</td>
                         <td class="text-center"><button onclick="deleteGeneralItem(${item.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button></td>
                     </tr>
@@ -444,7 +446,11 @@
                     <div><label>Keterangan</label><input type="text" id="gen_keterangan" placeholder="Catatan" /></div>
                     <div><label>Jenis Inventaris</label><select id="gen_jenis"><option value="Fixed Asset">Fixed Asset</option><option value="Consumable">Consumable</option></select></div>
                     <div><label>Department *</label><input type="text" id="gen_dept" placeholder="IT / HRGA" required /></div>
-                    <div><label>Lokasi</label><input type="text" id="gen_lokasi" placeholder="Ruang Kantor Administrasi" /></div>
+                    <div><label>Link / URL Gambar</label><input type="text" id="gen_gambar" placeholder="https://..." /></div>
+                    <div class="col-span-3">
+                        <label>Lokasi</label>
+                        <input type="text" id="gen_lokasi" placeholder="Ruang Kantor Administrasi" />
+                    </div>
                     <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveGeneralAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan Data</button></div>
                 `;
             }
@@ -476,6 +482,7 @@
                 keterangan: document.getElementById('gen_keterangan').value,
                 jenis_inventaris: document.getElementById('gen_jenis').value,
                 department: document.getElementById('gen_dept').value,
+                gambar: document.getElementById('gen_gambar').value,
                 lokasi: document.getElementById('gen_lokasi').value,
                 deleted_at: null
             };
@@ -514,8 +521,8 @@
                 sampleData = { id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10' };
                 ws = XLSX.utils.json_to_sheet([sampleData], { headers });
             } else {
-                // Urutan kolom template persis seperti tabel di gambar
-                const headers = ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'keterangan', 'jenis_inventaris', 'department', 'lokasi'];
+                // Sesuai urutan kolom persis gambar
+                const headers = ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'keterangan', 'jenis_inventaris', 'department', 'gambar', 'lokasi'];
                 sampleData = { 
                     nama_material: 'Meja Kerja', 
                     nama_material_mandarin: '工作台', 
@@ -525,6 +532,7 @@
                     keterangan: '', 
                     jenis_inventaris: 'Fixed Asset', 
                     department: 'HRGA', 
+                    gambar: '',
                     lokasi: 'Ruang Kantor Administrasi' 
                 };
                 ws = XLSX.utils.json_to_sheet([sampleData], { header: headers });
