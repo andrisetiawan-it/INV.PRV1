@@ -530,7 +530,6 @@
                 XLSX.utils.book_append_sheet(wb, ws, 'Template_IT');
                 XLSX.writeFile(wb, 'Template_Import_IT.xlsx');
             } else {
-                // Header template Excel persis seperti gambar referensi
                 const excelRows = [
                     ["No", "Nama Material", "材料名称", "Spesifikasi", "Jumlah", "Satuan", "Keterangan", "Jenis Inventaris", "Department", "Gambar", "Lokasi"],
                     [1, "Meja Kerja", "工作台", "Standard", 15, "Buah", "", "Fixed Asset", "HRGA", "", "Ruang Kantor Administrasi"]
@@ -567,43 +566,54 @@
         }
 
         async function confirmImport() {
-            if (importData.length === 0) return;
-            if (!confirm(`Import ${importData.length} data?`)) return;
-            const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
+            if (importData.length === 0) {
+                alert('Data import kosong!');
+                return;
+            }
+            if (!confirm(`Yakin ingin mengimport ${importData.length} data ke database?`)) return;
             
+            const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
             let success = 0;
+
             for (let item of importData) {
                 let payload = {};
                 if (activeModule === 'it') {
                     payload = {
-                        id_aset: item.id_aset || item['ID Aset'],
-                        user: item.user || item.User,
-                        dept: item.dept || item.Department,
-                        device: item.device || item.Device,
-                        specs: item.specs || item.Spesifikasi,
+                        id_aset: item.id_aset || item['ID Aset'] || '',
+                        user: item.user || item.User || '',
+                        dept: item.dept || item.Department || item['Departemen'] || '',
+                        device: item.device || item.Device || '',
+                        specs: item.specs || item.Spesifikasi || '',
                         status: item.status || item.Status || 'Active',
-                        ip_address: item.ip_address || item['IP Address'],
+                        ip_address: item.ip_address || item['IP Address'] || '',
                         deleted_at: null
                     };
                 } else {
                     payload = {
-                        nama_material: item.nama_material || item['Nama Material'],
-                        nama_material_mandarin: item.nama_material_mandarin || item['材料名称'],
-                        spesifikasi: item.spesifikasi || item['Spesifikasi'],
+                        nama_material: item.nama_material || item['Nama Material'] || item['nama material'] || '',
+                        nama_material_mandarin: item.nama_material_mandarin || item['材料名称'] || item['Nama Material Mandarin'] || '',
+                        spesifikasi: item.spesifikasi || item['Spesifikasi'] || '',
                         jumlah: parseInt(item.jumlah || item['Jumlah']) || 1,
                         satuan: item.satuan || item['Satuan'] || 'Buah',
                         keterangan: item.keterangan || item['Keterangan'] || '',
                         jenis_inventaris: item.jenis_inventaris || item['Jenis Inventaris'] || 'Fixed Asset',
-                        department: item.department || item['Department'] || '',
+                        department: item.department || item['Department'] || item['Departemen'] || '',
                         gambar: item.gambar || item['Gambar'] || '',
                         lokasi: item.lokasi || item['Lokasi'] || '',
                         deleted_at: null
                     };
+                    if (!payload.nama_material) continue;
                 }
+
                 const { error } = await supabaseClient.from(targetTable).insert([payload]);
-                if (!error) success++;
+                if (!error) {
+                    success++;
+                } else {
+                    console.error("Gagal insert baris:", error.message);
+                }
             }
-            showToast('Sukses', `${success} data berhasil diimport!`, 'success');
+
+            showToast('Sukses', `${success} dari ${importData.length} data berhasil diimport!`, 'success');
             closeBulkImport();
             loadData();
         }
