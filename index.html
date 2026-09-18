@@ -17,6 +17,584 @@
         body { background: #0a0e1a; min-height: 100vh; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
         .glass-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; transition: all 0.4s ease; }
+        .glass-card:hover { transform: translateY(-4px); border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15); }
+        .gradient-text { background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .bg-animated { background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; transition: all 0.3s ease; cursor: pointer; }
+        .stat-card:hover { transform: scale(1.02); border-color: rgba(99, 102, 241, 0.3); }
+        .stat-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .chart-container { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 20px; }
+        .table-wrapper { max-height: 65vh; overflow: auto; border-radius: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        .table-wrapper thead th { position: sticky; top: 0; z-index: 20; background: rgba(26, 16, 64, 0.95) !important; backdrop-filter: blur(10px); color: #c4b5fd !important; font-weight: 600; padding: 10px 8px; text-transform: uppercase; font-size: 0.6rem; }
+        .table-wrapper tbody td { padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #e5e7eb; font-size: 0.7rem; vertical-align: middle; }
+        .table-wrapper tbody tr:hover { background: rgba(99, 102, 241, 0.05); }
+        .badge-status { padding: 2px 10px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; }
+        .badge-status.active { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
+        .badge-status.maintenance { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); }
+        .badge-status.broken { background: rgba(251, 113, 133, 0.2); color: #fb7185; border: 1px solid rgba(251, 113, 133, 0.2); }
+        .badge-license { padding: 2px 8px; border-radius: 12px; font-size: 0.6rem; font-weight: 500; background: rgba(96, 165, 250, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.15); }
+        .qr-code { width: 50px; height: 50px; border-radius: 6px; background: white; padding: 2px; display: inline-block; }
+        .login-box { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 40px; width: 100%; max-width: 400px; }
+        .login-box input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 12px 16px; width: 100%; }
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .form-grid label { color: #9ca3af; font-size: 0.6rem; text-transform: uppercase; font-weight: 600; }
+        .form-grid input, .form-grid select { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: white; border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; width: 100%; }
+        .form-grid select option { background: #1a1040; color: white; }
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; max-width: 400px; }
+        .toast { padding: 16px 20px; border-radius: 12px; margin-bottom: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        .toast-success { background: rgba(52, 211, 153, 0.2); } .toast-error { background: rgba(251, 113, 133, 0.2); } .toast-info { background: rgba(96, 165, 250, 0.2); }
+        .tab-btn { padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #9ca3af; }
+        .tab-btn.active { background: linear-gradient(135deg, #818cf8, #c084fc); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.3); border-color: transparent; }
+        .dept-stats { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 12px 0; margin-bottom: 12px; scrollbar-width: thin; }
+        .dept-item { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 10px 16px; min-width: 80px; text-align: center; cursor: pointer; transition: all 0.3s ease; flex-shrink: 0; }
+        .dept-item:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.05); }
+        .role-badge { padding: 2px 10px; border-radius: 12px; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; }
+        .role-badge.superadmin { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.2); }
+        .role-badge.admin { background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.2); }
+        .role-badge.viewer { background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.2); }
+        @media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
+        @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="bg-animated">
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- LOGIN SECTION -->
+    <div id="loginSection" class="flex items-center justify-center min-h-screen">
+        <div class="login-box text-center">
+            <div class="text-4xl mb-3">⚡</div>
+            <h1 class="text-2xl font-bold gradient-text">Enterprise Asset Manager</h1>
+            <p class="text-gray-400 text-sm mt-2 mb-6">Secure Enterprise Inventory System</p>
+            <div class="space-y-4">
+                <input type="email" id="loginEmail" placeholder="Email Admin" />
+                <input type="password" id="loginPassword" placeholder="Password" />
+                <button onclick="handleLogin()" id="btnLogin" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl">Masuk Sistem</button>
+            </div>
+            <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
+        </div>
+    </div>
+
+    <!-- PILIH PT MODAL -->
+    <div id="pilihPTModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
+        <div class="glass-card p-10 text-center max-w-md w-full mx-4">
+            <div class="text-5xl mb-4">🏢</div>
+            <h2 class="text-2xl font-bold text-white mb-2">Pilih Database PT</h2>
+            <p class="text-gray-400 text-sm mb-8">Select company database to manage assets</p>
+            <div class="grid gap-4">
+                <button onclick="setPT('inventaris_p1', 'history_aset')" class="btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-4 rounded-xl">PT Magicase (P1)</button>
+                <button onclick="setPT('inventaris_p2', 'history_p2')" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-xl">PT Panrama (P2)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main-content" class="hidden">
+        <nav class="glass px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">⚡</span>
+                <div>
+                    <span class="text-white font-bold text-lg">Asset Manager</span>
+                    <span id="companyBadge" class="text-indigo-400 font-bold text-sm ml-2"></span>
+                </div>
+                <span id="userRoleBadge" class="role-badge admin ml-2">Admin</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div id="statusConnection" class="flex items-center gap-2 text-sm">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <span class="text-gray-300">Connected</span>
+                </div>
+                <button onclick="handleLogout()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">Logout</button>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto p-4">
+            <!-- TAB SWITCHER: IT / GENERAL ASSETS -->
+            <div class="flex gap-3 mb-6">
+                <button onclick="switchModule('it')" id="btnTabIT" class="tab-btn active">💻 IT Computers & Hardware</button>
+                <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 General Assets / HRGA (Meja, AC, APAR)</button>
+            </div>
+
+            <!-- SCANNER (Khusus Modul IT) -->
+            <div id="scannerSection" class="mb-6">
+                <div class="flex justify-center">
+                    <div class="glass-card p-4" style="width:100%;max-width:300px;">
+                        <div id="reader" style="width:100%;min-height:150px;" class="rounded-xl overflow-hidden"></div>
+                        <p class="text-center text-gray-400 text-xs mt-2">📷 Scan QR Code Aset</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATS GRID -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card" onclick="resetFilter()">
+                    <div class="flex items-center gap-3">
+                        <div class="stat-icon bg-indigo-500/20 text-indigo-400">📦</div>
+                        <div>
+                            <p class="text-gray-400 text-[10px] uppercase">Total Item</p>
+                            <p id="statTotal" class="text-white text-xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-3">
+                        <div class="stat-icon bg-emerald-500/20 text-emerald-400">✨</div>
+                        <div>
+                            <p class="text-gray-400 text-[10px] uppercase">Active / Fixed Asset</p>
+                            <p id="statActive" class="text-white text-xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-3">
+                        <div class="stat-icon bg-amber-500/20 text-amber-400">⚠️</div>
+                        <div>
+                            <p class="text-gray-400 text-[10px] uppercase">Maintenance / Rusak</p>
+                            <p id="statMaint" class="text-white text-xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-3">
+                        <div class="stat-icon bg-purple-500/20 text-purple-400">🏢</div>
+                        <div>
+                            <p class="text-gray-400 text-[10px] uppercase">Department</p>
+                            <p id="statDept" class="text-white text-xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS ROW (Khusus IT) -->
+            <div id="chartsRow" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="chart-container">
+                    <h3 class="text-gray-400 font-semibold mb-3 text-xs uppercase">📍 Status Distribution</h3>
+                    <canvas id="statusChart" height="150"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-gray-400 font-semibold mb-3 text-xs uppercase">🏢 Department Distribution</h3>
+                    <canvas id="deptChart" height="150"></canvas>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button onclick="toggleForm()" class="btn bg-indigo-500 text-white font-semibold px-4 py-2 rounded-xl text-sm">+ Tambah Data</button>
+                <button onclick="exportToExcel()" class="btn bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-xl text-sm">📊 Export Excel</button>
+            </div>
+
+            <!-- DEPARTMENT STATS -->
+            <div class="dept-stats" id="deptStatsContainer">
+                <div class="dept-item" onclick="filterByDept('HRD')"><div class="text-[10px] text-gray-400">HRD</div><div id="cnt_HRD" class="text-white font-bold">0</div></div>
+                <div class="dept-item" onclick="filterByDept('FINANCE')"><div class="text-[10px] text-gray-400">FINANCE</div><div id="cnt_FINANCE" class="text-white font-bold">0</div></div>
+                <div class="dept-item" onclick="filterByDept('IT')"><div class="text-[10px] text-gray-400">IT</div><div id="cnt_IT" class="text-white font-bold">0</div></div>
+                <div class="dept-item" onclick="filterByDept('PRODUKSI')"><div class="text-[10px] text-gray-400">PRODUKSI</div><div id="cnt_PRODUKSI" class="text-white font-bold">0</div></div>
+                <div class="dept-item" onclick="filterByDept('HRGA')"><div class="text-[10px] text-gray-400">HRGA</div><div id="cnt_HRGA" class="text-white font-bold">0</div></div>
+            </div>
+
+            <!-- FORM INPUT DINAMIS -->
+            <div id="formContainer" class="glass-card p-4 mb-4 hidden">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 id="formTitle" class="text-lg font-bold text-white">Input Aset Baru</h2>
+                    <button onclick="toggleForm()" class="text-gray-400 hover:text-white">✕</button>
+                </div>
+                <form id="dynamicForm" class="form-grid">
+                    <!-- Form dirender otomatis via script -->
+                </form>
+            </div>
+
+            <!-- SEARCH BAR -->
+            <div class="mb-4">
+                <input type="text" id="searchInput" placeholder="Cari data berdasarkan ID, User, Dept, Material, atau Lokasi..." class="input input-bordered w-full max-w-md bg-white/5 border-white/10 text-white text-sm rounded-xl" />
+            </div>
+
+            <!-- TABLE CONTAINER -->
+            <div class="glass-card overflow-hidden">
+                <div class="table-wrapper">
+                    <table id="mainTable">
+                        <thead id="tableHead"></thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="12" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentPTTable = '';
+        let currentHistoryTable = '';
+        let activeModule = 'it'; // 'it' atau 'general'
+        let rawData = [];
+        let statusChartInstance = null;
+        let deptChartInstance = null;
+        let html5QrcodeScanner = null;
+
+        function showToast(title, message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<div class="font-semibold text-white">${title}</div><div class="text-xs text-gray-300">${message}</div>`;
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session) checkUser();
+        });
+        checkUser();
+
+        function checkUser() {
+            supabaseClient.auth.getUser().then(({ data: { user } }) => {
+                if (user) {
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('pilihPTModal').classList.remove('hidden');
+                } else {
+                    document.getElementById('loginSection').classList.remove('hidden');
+                    document.getElementById('pilihPTModal').classList.add('hidden');
+                    document.getElementById('main-content').classList.add('hidden');
+                }
+            });
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const err = document.getElementById('loginError');
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                err.innerText = "Email atau Password Salah!";
+                err.classList.remove('hidden');
+            } else {
+                err.classList.add('hidden');
+                checkUser();
+            }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        function setPT(table, history) {
+            currentPTTable = table;
+            currentHistoryTable = history;
+            document.getElementById('companyBadge').innerText = table === 'inventaris_p1' ? '(PT Magicase P1)' : '(PT Panrama P2)';
+            document.getElementById('pilihPTModal').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            loadData();
+            initScanner();
+        }
+
+        function switchModule(module) {
+            activeModule = module;
+            document.getElementById('btnTabIT').className = module === 'it' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('btnTabGeneral').className = module === 'general' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('formContainer').classList.add('hidden');
+            document.getElementById('scannerSection').style.display = module === 'it' ? 'block' : 'none';
+            document.getElementById('chartsRow').style.display = module === 'it' ? 'grid' : 'none';
+            loadData();
+        }
+
+        async function loadData() {
+            const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
+            try {
+                const { data, error } = await supabaseClient
+                    .from(tableName)
+                    .select('*')
+                    .is('deleted_at', null);
+
+                if (error) throw error;
+                rawData = data || [];
+                renderTable(rawData);
+                updateStats(rawData);
+                if (activeModule === 'it') updateCharts(rawData);
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Gagal memuat data: ' + err.message, 'error');
+            }
+        }
+
+        function renderTable(data) {
+            const thead = document.getElementById('tableHead');
+            const tbody = document.getElementById('tableBody');
+
+            if (activeModule === 'it') {
+                thead.innerHTML = `
+                    <tr>
+                        <th>QR</th>
+                        <th>ID Aset</th>
+                        <th>User</th>
+                        <th>Dept</th>
+                        <th>Device</th>
+                        <th>Status</th>
+                        <th>IP Address</th>
+                        <th>License / Specs</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                `;
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-10 text-gray-400">Belum ada data komputer/IT.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = data.map(item => `
+                    <tr>
+                        <td><canvas class="qr-code" data-value="${item.id_aset}" width="50" height="50"></canvas></td>
+                        <td class="font-mono text-indigo-300">${item.id_aset}</td>
+                        <td>${item.user || '-'}</td>
+                        <td>${item.dept || '-'}</td>
+                        <td>${item.device || '-'}</td>
+                        <td><span class="badge-status ${String(item.status).toLowerCase()}">${item.status || 'Active'}</span></td>
+                        <td class="font-mono text-blue-300">${item.ip_address || '-'}</td>
+                        <td>${[item.license_os, item.specs].filter(Boolean).join(' | ') || '-'}</td>
+                        <td class="text-center">
+                            <button onclick="deleteItem('${item.id_aset}')" class="text-rose-400 hover:text-rose-300 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button>
+                        </td>
+                    </tr>
+                `).join('');
+                generateQRCodes();
+            } else {
+                thead.innerHTML = `
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Material (ID / 中文)</th>
+                        <th>Spesifikasi</th>
+                        <th>Jumlah</th>
+                        <th>Satuan</th>
+                        <th>Jenis Inventaris</th>
+                        <th>Department</th>
+                        <th>Lokasi</th>
+                        <th>Keterangan</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                `;
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-10 text-gray-400">Belum ada data General Assets / HRGA. Silakan tambah data baru.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = data.map((item, idx) => `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>
+                            <div class="font-semibold">${item.nama_material || '-'}</div>
+                            <div class="text-gray-400 text-[10px]">${item.nama_material_mandarin || ''}</div>
+                        </td>
+                        <td>${item.spesifikasi || '-'}</td>
+                        <td class="font-bold text-indigo-300">${item.jumlah || 1}</td>
+                        <td>${item.satuan || 'Buah'}</td>
+                        <td><span class="badge-status active">${item.jenis_inventaris || 'Fixed Asset'}</span></td>
+                        <td>${item.department || '-'}</td>
+                        <td>${item.lokasi || '-'}</td>
+                        <td>${item.keterangan || '-'}</td>
+                        <td class="text-center">
+                            <button onclick="deleteGeneralItem(${item.id})" class="text-rose-400 hover:text-rose-300 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function generateQRCodes() {
+            document.querySelectorAll('canvas.qr-code').forEach(canvas => {
+                const value = canvas.dataset.value || '';
+                if (!value) return;
+                new QRious({ element: canvas, value: value, size: 50, background: 'white', foreground: '#111827', level: 'H' });
+            });
+        }
+
+        function updateStats(data) {
+            document.getElementById('statTotal').innerText = data.length;
+            document.getElementById('statActive').innerText = data.filter(i => String(i.status || i.jenis_inventaris).toLowerCase().includes('active') || String(i.status || i.jenis_inventaris).toLowerCase().includes('fixed')).length;
+            document.getElementById('statMaint').innerText = data.filter(i => String(i.status).toLowerCase() === 'maintenance' || String(i.status).toLowerCase() === 'broken').length;
+            
+            const depts = new Set(data.map(i => i.dept || i.department).filter(Boolean));
+            document.getElementById('statDept').innerText = depts.size;
+
+            ['HRD', 'FINANCE', 'IT', 'PRODUKSI', 'HRGA'].forEach(d => {
+                const el = document.getElementById(`cnt_${d}`);
+                if (el) el.innerText = data.filter(i => String(i.dept || i.department || '').toUpperCase().includes(d)).length;
+            });
+        }
+
+        function updateCharts(rows) {
+            const statusCounts = {
+                Active: rows.filter(i => String(i.status || '').toLowerCase() === 'active').length,
+                Maintenance: rows.filter(i => String(i.status || '').toLowerCase() === 'maintenance').length,
+                Broken: rows.filter(i => String(i.status || '').toLowerCase() === 'broken').length
+            };
+
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            if (statusChartInstance) statusChartInstance.destroy();
+            statusChartInstance = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Maintenance', 'Broken'],
+                    datasets: [{ data: [statusCounts.Active, statusCounts.Maintenance, statusCounts.Broken], backgroundColor: ['#34d399', '#fbbf24', '#fb7185'], borderWidth: 0 }]
+                },
+                options: { responsive: true, plugins: { legend: { labels: { color: '#9ca3af', font: { size: 10 } } } }, cutout: '65%' }
+            });
+
+            const deptCounts = {};
+            rows.forEach(i => { const d = String(i.dept || 'Other').toUpperCase(); deptCounts[d] = (deptCounts[d] || 0) + 1; });
+            const sorted = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+            const deptCtx = document.getElementById('deptChart').getContext('2d');
+            if (deptChartInstance) deptChartInstance.destroy();
+            deptChartInstance = new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(d => d[0]),
+                    datasets: [{ data: sorted.map(d => d[1]), backgroundColor: '#818cf8', borderRadius: 6 }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1 } }, x: { ticks: { color: '#6b7280' } } } }
+            });
+        }
+
+        function toggleForm() {
+            const formContainer = document.getElementById('formContainer');
+            formContainer.classList.toggle('hidden');
+            const form = document.getElementById('dynamicForm');
+            
+            if (activeModule === 'it') {
+                document.getElementById('formTitle').innerText = "Input Komputer / IT Aset Baru";
+                form.innerHTML = `
+                    <div><label>ID Aset *</label><input type="text" id="it_id" placeholder="PC-001" required /></div>
+                    <div><label>User *</label><input type="text" id="it_user" placeholder="Nama Karyawan" required /></div>
+                    <div><label>Departemen *</label><input type="text" id="it_dept" placeholder="IT / HRGA" required /></div>
+                    <div><label>Device *</label><select id="it_device"><option value="KOMPUTER">KOMPUTER</option><option value="LAPTOP">LAPTOP</option><option value="PRINTER">PRINTER</option></select></div>
+                    <div><label>Spesifikasi</label><input type="text" id="it_specs" placeholder="Core i5 / 8GB" /></div>
+                    <div><label>Status</label><select id="it_status"><option value="Active">Active</option><option value="Maintenance">Maintenance</option></select></div>
+                    <div><label>IP Address</label><input type="text" id="it_ip" placeholder="192.168.10.x" /></div>
+                    <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveITAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan IT Aset</button></div>
+                `;
+            } else {
+                document.getElementById('formTitle').innerText = "Input General Asset / HRGA Baru";
+                form.innerHTML = `
+                    <div><label>Nama Material (ID) *</label><input type="text" id="gen_nama" placeholder="Meja Kerja / AC" required /></div>
+                    <div><label>Nama Material (Mandarin / 中文)</label><input type="text" id="gen_mandarin" placeholder="工作台 / 空调" /></div>
+                    <div><label>Spesifikasi / Merk</label><input type="text" id="gen_specs" placeholder="Acer / 1.5 PK" /></div>
+                    <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="1" min="1" required /></div>
+                    <div><label>Satuan</label><input type="text" id="gen_satuan" value="Buah" /></div>
+                    <div><label>Jenis Inventaris</label><select id="gen_jenis"><option value="Fixed Asset">Fixed Asset</option><option value="Consumable">Consumable</option></select></div>
+                    <div><label>Department *</label><input type="text" id="gen_dept" placeholder="IT / HRGA" required /></div>
+                    <div><label>Lokasi Penempatan</label><input type="text" id="gen_lokasi" placeholder="Ruang Kantor Administrasi" /></div>
+                    <div><label>Keterangan</label><input type="text" id="gen_keterangan" placeholder="Catatan" /></div>
+                    <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveGeneralAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan General Asset</button></div>
+                `;
+            }
+        }
+
+        async function saveITAsset() {
+            const payload = {
+                id_aset: document.getElementById('it_id').value,
+                user: document.getElementById('it_user').value,
+                dept: document.getElementById('it_dept').value,
+                device: document.getElementById('it_device').value,
+                specs: document.getElementById('it_specs').value,
+                status: document.getElementById('it_status').value,
+                ip_address: document.getElementById('it_ip').value,
+                deleted_at: null
+            };
+            const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
+            if (error) alert('Gagal: ' + error.message);
+            else { showToast('Sukses', 'IT Aset disimpan!', 'success'); toggleForm(); loadData(); }
+        }
+
+        async function saveGeneralAsset() {
+            const payload = {
+                nama_material: document.getElementById('gen_nama').value,
+                nama_material_mandarin: document.getElementById('gen_mandarin').value,
+                spesifikasi: document.getElementById('gen_specs').value,
+                jumlah: parseInt(document.getElementById('gen_jumlah').value) || 1,
+                satuan: document.getElementById('gen_satuan').value,
+                jenis_inventaris: document.getElementById('gen_jenis').value,
+                department: document.getElementById('gen_dept').value,
+                lokasi: document.getElementById('gen_lokasi').value,
+                keterangan: document.getElementById('gen_keterangan').value,
+                deleted_at: null
+            };
+            const { error } = await supabaseClient.from('general_assets').insert([payload]);
+            if (error) alert('Gagal: ' + error.message);
+            else { showToast('Sukses', 'General Asset disimpan!', 'success'); toggleForm(); loadData(); }
+        }
+
+        async function deleteItem(id) {
+            if (!confirm(`Hapus aset ${id}?`)) return;
+            const { error } = await supabaseClient.from(currentPTTable).update({ deleted_at: new Date().toISOString() }).eq('id_aset', id);
+            if (error) alert('Gagal: ' + error.message);
+            else { loadData(); showToast('Terhapus', 'Aset masuk ke trash', 'info'); }
+        }
+
+        async function deleteGeneralItem(id) {
+            if (!confirm(`Hapus data ini?`)) return;
+            const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+            if (error) alert('Gagal: ' + error.message);
+            else { loadData(); showToast('Terhapus', 'Data masuk ke trash', 'info'); }
+        }
+
+        function filterByDept(deptName) {
+            const filtered = rawData.filter(i => String(i.dept || i.department || '').toUpperCase().includes(deptName));
+            renderTable(filtered);
+            showToast('Filter', `Menampilkan departemen: ${deptName}`, 'info');
+        }
+
+        function resetFilter() {
+            renderTable(rawData);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const kw = e.target.value.toLowerCase();
+            const filtered = rawData.filter(item => Object.values(item).filter(Boolean).join(' ').toLowerCase().includes(kw));
+            renderTable(filtered);
+        });
+
+        function exportToExcel() {
+            const ws = XLSX.utils.json_to_sheet(rawData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, activeModule === 'it' ? 'IT_Assets' : 'General_Assets');
+            XLSX.writeFile(wb, `Export_${activeModule.toUpperCase()}_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        function initScanner() {
+            if (html5QrcodeScanner) return;
+            try {
+                html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 180 });
+                html5QrcodeScanner.render((decodedText) => {
+                    const code = decodedText.trim().toUpperCase();
+                    const found = rawData.find(item => String(item.id_aset || '').toUpperCase() === code);
+                    if (found) showToast('QR Ditemukan', `ID: ${found.id_aset} | User: ${found.user || '-'}`, 'success');
+                    else showToast('Tidak Ditemukan', `QR Code ${code} tidak ada di database.`, 'error');
+                }, () => {});
+            } catch(e) {}
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Asset & IT Manager Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #0a0e1a; min-height: 100vh; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+        .glass-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; transition: all 0.4s ease; }
         .glass-card:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.3); }
         .gradient-text { background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .bg-animated { background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
