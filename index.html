@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Asset Manager Pro</title>
+    <title>Enterprise Asset & IT Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -13,1153 +13,163 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
-
         * { font-family: 'Inter', sans-serif; }
         body { background: #0a0e1a; min-height: 100vh; }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .bg-animated {
-            background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 16px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .stat-card:hover {
-            transform: scale(1.02);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.1);
-        }
-
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .chart-container {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 20px;
-        }
-
-        .table-wrapper {
-            max-height: 70vh;
-            overflow: auto;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .table-wrapper table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.75rem;
-        }
-
-        .table-wrapper thead th {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            background: rgba(26, 16, 64, 0.95) !important;
-            backdrop-filter: blur(10px);
-            color: #c4b5fd !important;
-            font-weight: 600;
-            padding: 10px 8px;
-            text-transform: uppercase;
-            font-size: 0.6rem;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-        }
-
-        .table-wrapper tbody td {
-            padding: 8px 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            color: #e5e7eb;
-            font-size: 0.7rem;
-            vertical-align: middle;
-        }
-
-        .table-wrapper tbody tr {
-            transition: all 0.2s ease;
-        }
-
-        .table-wrapper tbody tr:hover {
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .table-wrapper tbody tr.deleted-row {
-            opacity: 0.4;
-            background: rgba(255, 0, 0, 0.05);
-        }
-
-        .table-wrapper tbody tr.deleted-row td {
-            text-decoration: line-through;
-        }
-
-        .badge-status {
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.6rem;
-            letter-spacing: 0.03em;
-            white-space: nowrap;
-        }
-
-        .badge-status.active {
-            background: rgba(52, 211, 153, 0.2);
-            color: #34d399;
-            border: 1px solid rgba(52, 211, 153, 0.2);
-        }
-
-        .badge-status.maintenance {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-            border: 1px solid rgba(251, 191, 36, 0.2);
-        }
-
-        .badge-status.broken {
-            background: rgba(251, 113, 133, 0.2);
-            color: #fb7185;
-            border: 1px solid rgba(251, 113, 133, 0.2);
-        }
-
-        .badge-status.deleted {
-            background: rgba(107, 114, 128, 0.2);
-            color: #9ca3af;
-            border: 1px solid rgba(107, 114, 128, 0.2);
-        }
-
-        .badge-license {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.6rem;
-            font-weight: 500;
-            background: rgba(96, 165, 250, 0.15);
-            color: #60a5fa;
-            border: 1px solid rgba(96, 165, 250, 0.15);
-            white-space: nowrap;
-        }
-
-        .badge-license.expired {
-            background: rgba(251, 113, 133, 0.2);
-            color: #fb7185;
-            border: 1px solid rgba(251, 113, 133, 0.2);
-        }
-
-        .badge-license.expiring-soon {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            animation: pulse-yellow 2s infinite;
-        }
-
-        @keyframes pulse-yellow {
-            0% { box-shadow: 0 0 0 0px rgba(251, 191, 36, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0); }
-            100% { box-shadow: 0 0 0 0px rgba(251, 191, 36, 0); }
-        }
-
-        .qr-code {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            background: white;
-            padding: 3px;
-            display: inline-block;
-        }
-
-        .btn-glow {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .btn-glow::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-glow:hover::before { opacity: 1; }
-
-        .login-box {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-box input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 12px;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .login-box input:focus {
-            outline: none;
-            border-color: #818cf8;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-        }
-
-        .login-box input::placeholder { color: rgba(255, 255, 255, 0.3); }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
-
-        .form-grid .form-control { min-width: 0; }
-
-        .form-grid label {
-            color: #9ca3af;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .form-grid input, .form-grid select {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: white;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 0.8rem;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .form-grid input:focus, .form-grid select:focus {
-            outline: none;
-            border-color: #818cf8;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .form-grid input::placeholder { color: rgba(255, 255, 255, 0.25); }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+        .glass-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; transition: all 0.4s ease; }
+        .gradient-text { background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .bg-animated { background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; transition: all 0.3s ease; cursor: pointer; }
+        .stat-card:hover { transform: scale(1.02); border-color: rgba(99, 102, 241, 0.3); }
+        .stat-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .table-wrapper { max-height: 65vh; overflow: auto; border-radius: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        .table-wrapper thead th { position: sticky; top: 0; z-index: 20; background: rgba(26, 16, 64, 0.95) !important; backdrop-filter: blur(10px); color: #c4b5fd !important; font-weight: 600; padding: 10px 8px; text-transform: uppercase; font-size: 0.6rem; }
+        .table-wrapper tbody td { padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #e5e7eb; font-size: 0.7rem; vertical-align: middle; }
+        .table-wrapper tbody tr:hover { background: rgba(99, 102, 241, 0.05); }
+        .badge-status { padding: 2px 10px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; }
+        .badge-status.active { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
+        .badge-status.maintenance { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); }
+        .badge-status.broken { background: rgba(251, 113, 133, 0.2); color: #fb7185; border: 1px solid rgba(251, 113, 133, 0.2); }
+        .login-box { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 40px; width: 100%; max-width: 400px; }
+        .login-box input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 12px 16px; width: 100%; }
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .form-grid label { color: #9ca3af; font-size: 0.6rem; text-transform: uppercase; font-weight: 600; }
+        .form-grid input, .form-grid select { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: white; border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; width: 100%; }
         .form-grid select option { background: #1a1040; color: white; }
-
-        .drop-zone {
-            border: 2px dashed rgba(99, 102, 241, 0.3);
-            border-radius: 16px;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.02);
-            cursor: pointer;
-        }
-
-        .drop-zone:hover {
-            border-color: rgba(99, 102, 241, 0.6);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .drop-zone.dragover {
-            border-color: #818cf8;
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        .progress-bar {
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.05);
-            overflow: hidden;
-        }
-
-        .progress-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, #818cf8, #c084fc);
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
-        /* Toast Notification */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 99999;
-            max-width: 400px;
-        }
-
-        .toast {
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            animation: slideIn 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            cursor: pointer;
-        }
-
-        .toast-success { background: rgba(52, 211, 153, 0.2); border-color: rgba(52, 211, 153, 0.3); }
-        .toast-warning { background: rgba(251, 191, 36, 0.2); border-color: rgba(251, 191, 36, 0.3); }
-        .toast-error { background: rgba(251, 113, 133, 0.2); border-color: rgba(251, 113, 133, 0.3); }
-        .toast-info { background: rgba(96, 165, 250, 0.2); border-color: rgba(96, 165, 250, 0.3); }
-
-        .toast .toast-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: white;
-        }
-
-        .toast .toast-message {
-            font-size: 0.8rem;
-            color: #d1d5db;
-            margin-top: 2px;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100px); opacity: 0; }
-        }
-
-        /* Department Stats */
-        .dept-stats {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 4px 0 12px 0;
-            margin-bottom: 12px;
-            scrollbar-width: thin;
-        }
-
-        .dept-stats .dept-item {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 10px 16px;
-            min-width: 80px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .dept-stats .dept-item:hover {
-            transform: translateY(-2px);
-            border-color: rgba(99, 102, 241, 0.3);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .dept-stats .dept-item .dept-name {
-            color: #9ca3af;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .dept-stats .dept-item .dept-count {
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-top: 2px;
-        }
-
-        /* User Role Badge */
-        .role-badge {
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .role-badge.superadmin { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.2); }
-        .role-badge.admin { background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.2); }
-        .role-badge.manager { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
-        .role-badge.viewer { background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.2); }
-
-        /* Print Styles */
-        @media print {
-            .no-print { display: none !important; }
-            body { 
-                background: white !important; 
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            .glass, .glass-card, .chart-container { 
-                background: white !important; 
-                border: 1px solid #ddd !important;
-            }
-            .table-wrapper thead th { 
-                background: #1f2937 !important; 
-                color: white !important;
-            }
-            .table-wrapper tbody td { color: #1f2937 !important; }
-            .qr-code {
-                border: 1px solid #d1d5db !important;
-                background: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            .badge-status { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .toast-container { display: none !important; }
-        }
-
-        @media (max-width: 1024px) {
-            .form-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        @media (max-width: 640px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .table-wrapper { font-size: 0.6rem; }
-            .table-wrapper thead th { font-size: 0.5rem; padding: 6px 4px; }
-            .table-wrapper tbody td { padding: 4px 4px; font-size: 0.6rem; }
-            .qr-code { width: 40px; height: 40px; }
-            .toast-container { max-width: 90%; right: 10px; }
-        }
-
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #818cf8, #c084fc); border-radius: 10px; }
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; max-width: 400px; }
+        .toast { padding: 16px 20px; border-radius: 12px; margin-bottom: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        .toast-success { background: rgba(52, 211, 153, 0.2); } .toast-error { background: rgba(251, 113, 133, 0.2); } .toast-info { background: rgba(96, 165, 250, 0.2); }
+        .tab-btn { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.05); color: #9ca3af; }
+        .tab-btn.active { background: linear-gradient(135deg, #818cf8, #c084fc); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.3); }
+        @media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
+        @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body class="bg-animated">
-
-    <!-- TOAST CONTAINER -->
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- LOGIN SECTION -->
-    <div id="loginSection" class="flex items-center justify-center min-h-screen no-print">
-        <div class="login-box">
-            <div class="text-center mb-8">
-                <div class="text-4xl mb-3">⚡</div>
-                <h1 class="text-3xl font-bold gradient-text">IT Asset Manager</h1>
-                <p class="text-gray-400 text-sm mt-2">Secure Enterprise Inventory System</p>
-            </div>
+    <div id="loginSection" class="flex items-center justify-center min-h-screen">
+        <div class="login-box text-center">
+            <div class="text-4xl mb-3">⚡</div>
+            <h1 class="text-2xl font-bold gradient-text">Enterprise Asset Manager</h1>
+            <p class="text-gray-400 text-sm mt-2 mb-6">IT & General Assets Control</p>
             <div class="space-y-4">
                 <input type="email" id="loginEmail" placeholder="Email Admin" />
                 <input type="password" id="loginPassword" placeholder="Password" />
-                <button onclick="handleLogin()" id="btnLogin" class="w-full btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:shadow-lg hover:shadow-indigo-500/25 transition-all">
-                    <span id="btnLoginText">Masuk Sistem</span>
-                </button>
+                <button onclick="handleLogin()" id="btnLogin" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl">Masuk Sistem</button>
             </div>
-            <p id="loginError" class="text-red-400 text-sm mt-4 text-center hidden font-semibold"></p>
+            <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
         </div>
     </div>
 
-    <!-- PILIH PT MODAL -->
-    <div id="pilihPTModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100] no-print">
+    <!-- PILIH PT / PERUSAHAAN -->
+    <div id="pilihPTModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
         <div class="glass-card p-10 text-center max-w-md w-full mx-4">
             <div class="text-5xl mb-4">🏢</div>
-            <h2 class="text-2xl font-bold text-white mb-2">Pilih Database</h2>
-            <p class="text-gray-400 text-sm mb-8">Select company database to manage assets</p>
+            <h2 class="text-2xl font-bold text-white mb-2">Pilih Perusahaan</h2>
+            <p class="text-gray-400 text-sm mb-8">Pilih database PT Magicase Group</p>
             <div class="grid gap-4">
-                <button onclick="setPT('inventaris_p1', 'history_aset')" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-4 rounded-xl hover:shadow-xl transition-all">
-                    PT Magicase (P1)
-                </button>
-                <button onclick="setPT('inventaris_p2', 'history_p2')" class="btn btn-glow bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-xl hover:shadow-xl transition-all">
-                    PT Panrama (P2)
-                </button>
+                <button onclick="setPT('inventaris_p1', 'history_aset')" class="btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-4 rounded-xl">PT Magicase (P1)</button>
+                <button onclick="setPT('inventaris_p2', 'history_p2')" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-xl">PT Panrama (P2)</button>
             </div>
         </div>
     </div>
 
-    <!-- PRINT LABEL AREA -->
-    <div id="print-label-area" class="print-only-label"></div>
-
     <!-- MAIN CONTENT -->
-    <div id="main-content" class="main-content hidden">
-        <!-- NAVBAR -->
-        <nav class="glass px-4 py-3 flex items-center justify-between no-print sticky top-0 z-50">
+    <div id="main-content" class="hidden">
+        <nav class="glass px-6 py-3 flex items-center justify-between sticky top-0 z-50">
             <div class="flex items-center gap-3">
-                <img src="logo-magicase.png" alt="Magicase Logo" style="height: 35px; width: auto;">
-                <div>
-                    <span class="text-white font-bold text-lg">IT Asset</span>
-                    <span class="text-indigo-400 font-bold text-lg">Manager</span>
-                </div>
-                <span id="userRoleBadge" class="role-badge admin ml-2">Admin</span>
+                <span class="text-xl">⚡</span>
+                <span class="text-white font-bold text-lg">Asset Manager <span id="currentCompanyName" class="text-indigo-400 font-normal text-sm"></span></span>
             </div>
             <div class="flex items-center gap-4">
-                <div id="notificationBell" class="relative cursor-pointer" onclick="showNotifications()">
-                    <span class="text-xl">🔔</span>
-                    <span id="notificationCount" class="absolute -top-1 -right-2 bg-rose-500 text-white text-[10px] font-bold rounded-full px-1.5 min-w-[18px] text-center hidden">0</span>
-                </div>
                 <div id="statusConnection" class="flex items-center gap-2 text-sm">
                     <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                     <span class="text-gray-300">Connected</span>
                 </div>
-                <button onclick="handleLogout()" class="text-sm text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5">
-                    Logout
-                </button>
+                <button onclick="handleLogout()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">Logout</button>
             </div>
         </nav>
 
-        <div class="max-w-full mx-auto p-4 print-container">
-
-            <!-- SCANNER -->
-            <div id="scannerSection" class="hidden no-print mb-6">
-                <div class="flex justify-center">
-                    <div class="glass-card p-4" style="width:100%;max-width:320px;">
-                        <div id="reader" style="width:100%;min-height:180px;" class="rounded-xl overflow-hidden"></div>
-                        <p class="text-center text-gray-400 text-xs mt-2">📷 Scan QR Code</p>
-                    </div>
-                </div>
+        <div class="max-w-7xl mx-auto p-4">
+            <!-- TAB SWITCHER: IT / GENERAL ASSETS -->
+            <div class="flex gap-3 mb-6">
+                <button onclick="switchModule('it')" id="btnTabIT" class="tab-btn active">💻 IT Computers & Hardware</button>
+                <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 General Assets / HRGA (Meja, AC, APAR)</button>
             </div>
 
             <!-- STATS GRID -->
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6 no-print">
-                <div class="stat-card" onclick="resetFilter()">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card">
                     <div class="flex items-center gap-3">
                         <div class="stat-icon bg-indigo-500/20 text-indigo-400">📦</div>
                         <div>
-                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Total Aset</p>
-                            <p id="totalAset" class="text-white text-xl font-bold">0</p>
+                            <p class="text-gray-400 text-[10px] uppercase">Total Item</p>
+                            <p id="statTotal" class="text-white text-xl font-bold">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="flex items-center gap-3">
-                        <div class="stat-icon bg-emerald-500/20 text-emerald-400">💻</div>
+                        <div class="stat-icon bg-emerald-500/20 text-emerald-400">✨</div>
                         <div>
-                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Laptop</p>
-                            <p id="totalLaptop" class="text-white text-xl font-bold">0</p>
+                            <p class="text-gray-400 text-[10px] uppercase">Active / Fixed Asset</p>
+                            <p id="statActive" class="text-white text-xl font-bold">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="flex items-center gap-3">
-                        <div class="stat-icon bg-amber-500/20 text-amber-400">🖥️</div>
+                        <div class="stat-icon bg-amber-500/20 text-amber-400">⚠️</div>
                         <div>
-                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Komputer</p>
-                            <p id="totalKomputer" class="text-white text-xl font-bold">0</p>
+                            <p class="text-gray-400 text-[10px] uppercase">Maintenance / Rusak</p>
+                            <p id="statMaint" class="text-white text-xl font-bold">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="flex items-center gap-3">
-                        <div class="stat-icon bg-rose-500/20 text-rose-400">⚠️</div>
+                        <div class="stat-icon bg-purple-500/20 text-purple-400">🏢</div>
                         <div>
-                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Maintenance</p>
-                            <p id="unitRusak" class="text-white text-xl font-bold">0</p>
+                            <p class="text-gray-400 text-[10px] uppercase">Department</p>
+                            <p id="statDept" class="text-white text-xl font-bold">0</p>
                         </div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="flex items-center gap-3">
-                        <div class="stat-icon bg-blue-500/20 text-blue-400">⌨️</div>
-                        <div>
-                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Mouse/KB</p>
-                            <p id="totalPeripheral" class="text-white text-xl font-bold">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="flex items-center gap-3">
-                        <div class="stat-icon bg-purple-500/20 text-purple-400">🖨️</div>
-                        <div>
-                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Printer</p>
-                            <p id="totalPrinter" class="text-white text-xl font-bold">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card" onclick="showLicenseNotifications()">
-                    <div class="flex items-center gap-3">
-                        <div class="stat-icon bg-red-500/20 text-red-400">⏰</div>
-                        <div>
-                            <p class="text-gray-400 text-[10px] uppercase tracking-wider">Expired License</p>
-                            <p id="totalExpiredLicense" class="text-red-400 text-xl font-bold">0</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CHARTS ROW -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 no-print">
-                <div class="chart-container">
-                    <h3 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider text-gray-400">📍 Status Distribution</h3>
-                    <canvas id="statusChart" height="180"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider text-gray-400">🏢 Department Distribution</h3>
-                    <canvas id="deptChart" height="180"></canvas>
                 </div>
             </div>
 
             <!-- ACTION BUTTONS -->
-            <div class="flex flex-wrap gap-2 mb-4 no-print">
-                <button onclick="toggleForm()" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold px-4 py-2 rounded-xl hover:shadow-xl transition-all text-sm flex items-center gap-2 btn-tambah">
-                    <span>+</span> Tambah Aset
-                </button>
-                <button onclick="openBulkImport()" class="btn btn-glow bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold px-4 py-2 rounded-xl hover:shadow-xl transition-all text-sm flex items-center gap-2">
-                    📤 Import Massal
-                </button>
-                <button onclick="printReport()" class="btn btn-glow bg-white/5 text-white font-semibold px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/10 text-sm flex items-center gap-2">
-                    🖨️ Cetak
-                </button>
-                <button onclick="exportToExcel()" class="btn btn-glow bg-emerald-500/20 text-emerald-400 font-semibold px-4 py-2 rounded-xl hover:bg-emerald-500/30 transition-all border border-emerald-500/20 text-sm flex items-center gap-2">
-                    📊 Excel
-                </button>
-                <button onclick="showDeletedAssets()" class="btn btn-glow bg-rose-500/20 text-rose-400 font-semibold px-4 py-2 rounded-xl hover:bg-rose-500/30 transition-all border border-rose-500/20 text-sm flex items-center gap-2">
-                    🗑️ Trash
-                </button>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button onclick="toggleForm()" class="btn bg-indigo-500 text-white font-semibold px-4 py-2 rounded-xl text-sm">+ Tambah Data</button>
+                <button onclick="exportToExcel()" class="btn bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-xl text-sm">📊 Export Excel</button>
             </div>
 
-            <!-- DEPARTMENT STATS -->
-            <div class="dept-stats no-print" id="deptStatsContainer">
-                <div class="dept-item" onclick="filterByDept('HRD')">
-                    <div class="dept-name">HRD</div>
-                    <div class="dept-count" id="totalHRD">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('PAJAK')">
-                    <div class="dept-name">PAJAK</div>
-                    <div class="dept-count" id="totalPAJAK">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('PPIC')">
-                    <div class="dept-name">PPIC</div>
-                    <div class="dept-count" id="totalPPIC">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('EXIM')">
-                    <div class="dept-name">EXIM</div>
-                    <div class="dept-count" id="totalEXIM">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('FINANCE')">
-                    <div class="dept-name">FINANCE</div>
-                    <div class="dept-count" id="totalFINANCE">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('IT')">
-                    <div class="dept-name">IT</div>
-                    <div class="dept-count" id="totalIT">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('INVENTORY')">
-                    <div class="dept-name">INVENTORY</div>
-                    <div class="dept-count" id="totalINVENTORY">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('CAD')">
-                    <div class="dept-name">CAD</div>
-                    <div class="dept-count" id="totalCAD">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('GUDANG ACC')">
-                    <div class="dept-name">GUDANG ACC</div>
-                    <div class="dept-count" id="totalGUDANG_ACC">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('GUDANG KAIN')">
-                    <div class="dept-name">GUDANG KAIN</div>
-                    <div class="dept-count" id="totalGUDANG_KAIN">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('PACKING')">
-                    <div class="dept-name">PACKING</div>
-                    <div class="dept-count" id="totalPACKING">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('SAMPLE PROD')">
-                    <div class="dept-name">SAMPLE PROD</div>
-                    <div class="dept-count" id="totalSAMPLE_PROD">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('SAMPLE ROOM')">
-                    <div class="dept-name">SAMPLE ROOM</div>
-                    <div class="dept-count" id="totalSAMPLE_ROOM">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('MD')">
-                    <div class="dept-name">MD</div>
-                    <div class="dept-count" id="totalMD">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('BC')">
-                    <div class="dept-name">BC</div>
-                    <div class="dept-count" id="totalBC">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('QA')">
-                    <div class="dept-name">QA</div>
-                    <div class="dept-count" id="totalQA">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('FACTORY MANAGER')">
-                    <div class="dept-name">FM</div>
-                    <div class="dept-count" id="totalFACTORY_MANAGER">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('GENERAL MANAGER')">
-                    <div class="dept-name">GM</div>
-                    <div class="dept-count" id="totalGENERAL_MANAGER">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('IE')">
-                    <div class="dept-name">IE</div>
-                    <div class="dept-count" id="totalIE">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('PRODUKSI')">
-                    <div class="dept-name">PRODUKSI</div>
-                    <div class="dept-count" id="totalPRODUKSI">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('CUTTING')">
-                    <div class="dept-name">CUTTING</div>
-                    <div class="dept-count" id="totalCUTTING">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('DIGITAL')">
-                    <div class="dept-name">DIGITAL</div>
-                    <div class="dept-count" id="totalDIGITAL">0</div>
-                </div>
-                <div class="dept-item" onclick="filterByDept('STAFF')">
-                    <div class="dept-name">STAFF</div>
-                    <div class="dept-count" id="totalSTAFF">0</div>
-                </div>
-            </div>
-
-            <!-- BULK IMPORT MODAL -->
-            <div id="bulkImportModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
-                <div class="glass-card p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-white">📤 Import Massal Aset</h2>
-                        <button onclick="closeBulkImport()" class="text-gray-400 hover:text-white transition-colors">✕</button>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <p class="text-gray-400 text-sm mb-2">Download template Excel, isi data, lalu upload kembali</p>
-                        <button onclick="downloadTemplate()" class="btn btn-glow bg-blue-500/20 text-blue-400 font-semibold px-4 py-2 rounded-xl text-sm border border-blue-500/20 hover:bg-blue-500/30 transition-all">
-                            📥 Download Template Excel
-                        </button>
-                    </div>
-
-                    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                        <div class="text-4xl mb-3">📁</div>
-                        <p class="text-gray-300 font-semibold">Drag & drop file Excel disini</p>
-                        <p class="text-gray-400 text-sm">atau klik untuk memilih file</p>
-                        <p class="text-gray-500 text-xs mt-2">Support: .xlsx, .xls</p>
-                        <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" onchange="handleFileUpload(event)" />
-                    </div>
-
-                    <div id="importProgress" class="hidden mt-4">
-                        <div class="flex justify-between text-sm text-gray-400 mb-1">
-                            <span>Mengimport data...</span>
-                            <span id="progressText">0%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="fill" id="progressFill"></div>
-                        </div>
-                        <p id="importStatus" class="text-sm text-gray-400 mt-2"></p>
-                    </div>
-
-                    <div id="importPreview" class="hidden mt-4">
-                        <h3 class="text-white font-semibold text-sm mb-2">Preview Data</h3>
-                        <div class="overflow-auto max-h-48 rounded-xl border border-white/10">
-                            <table class="w-full text-xs" id="previewTable">
-                                <thead class="bg-white/5 sticky top-0">
-                                    <tr id="previewHeader"></tr>
-                                </thead>
-                                <tbody id="previewBody"></tbody>
-                            </table>
-                        </div>
-                        <div class="flex gap-3 mt-4">
-                            <button onclick="confirmImport()" class="btn btn-glow bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold px-6 py-2 rounded-xl text-sm">
-                                ✅ Konfirmasi Import
-                            </button>
-                            <button onclick="closeBulkImport()" class="btn btn-glow bg-white/5 text-gray-300 font-semibold px-6 py-2 rounded-xl text-sm border border-white/10">
-                                Batal
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- EDIT MODAL -->
-            <div id="editModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
-                <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-white">✏️ Edit Aset: <span id="editIdDisplay" class="text-indigo-400"></span></h2>
-                        <button onclick="closeEditModal()" class="text-gray-400 hover:text-white transition-colors">✕</button>
-                    </div>
-                    <form id="editForm" class="form-grid">
-                        <input type="hidden" id="edit_id" />
-                        
-                        <div class="form-control">
-                            <label>User *</label>
-                            <input type="text" id="edit_user" required />
-                        </div>
-                        <div class="form-control">
-                            <label>Departemen *</label>
-                            <select id="edit_dept">
-                                <option value="HRD">HRD</option><option value="PAJAK">PAJAK</option>
-                                <option value="PPIC">PPIC</option><option value="EXIM">EXIM</option>
-                                <option value="FINANCE">FINANCE</option><option value="IT">IT</option>
-                                <option value="INVENTORY">INVENTORY</option><option value="CAD">CAD</option>
-                                <option value="GUDANG ACC">GUDANG ACC</option><option value="GUDANG KAIN">GUDANG KAIN</option>
-                                <option value="PACKING">PACKING</option><option value="SAMPLE PROD">SAMPLE PROD</option>
-                                <option value="SAMPLE ROOM">SAMPLE ROOM</option><option value="MD">MD</option>
-                                <option value="BC">BC</option><option value="QA">QA</option>
-                                <option value="FACTORY MANAGER">FACTORY MANAGER</option>
-                                <option value="GENERAL MANAGER">GENERAL MANAGER</option>
-                                <option value="IE">IE</option><option value="CUTTING">CUTTING</option>
-                                <option value="PRODUKSI">PRODUKSI</option><option value="DIGITAL">DIGITAL</option>
-                                <option value="STAFF">STAFF</option>
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            <label>Perangkat *</label>
-                            <select id="edit_device">
-                                <option value="KOMPUTER">KOMPUTER</option>
-                                <option value="LAPTOP">LAPTOP</option>
-                                <option value="PRINTER">PRINTER</option>
-                                <option value="MONITOR">MONITOR</option>
-                                <option value="MOUSE">MOUSE</option>
-                                <option value="KEYBOARD">KEYBOARD</option>
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            <label>Spesifikasi</label>
-                            <input type="text" id="edit_specs" placeholder="I5,8 GB / 24 inch" />
-                        </div>
-                        <div class="form-control">
-                            <label>Status *</label>
-                            <select id="edit_status">
-                                <option value="Active">Active</option>
-                                <option value="Maintenance">Maintenance</option>
-                                <option value="Broken">Broken</option>
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            <label>IP Address</label>
-                            <input type="text" id="edit_ip" placeholder="192.168.1.100" />
-                        </div>
-                        <div class="form-control">
-                            <label>MAC Address</label>
-                            <input type="text" id="edit_mac" placeholder="AA:BB:CC:DD:EE:FF" />
-                        </div>
-                        <div class="form-control">
-                            <label>Hostname</label>
-                            <input type="text" id="edit_hostname" placeholder="PC-IT-01" />
-                        </div>
-                        <div class="form-control">
-                            <label>License OS</label>
-                            <input type="text" id="edit_license_os" placeholder="Windows 11 Pro" />
-                        </div>
-                        <div class="form-control">
-                            <label>License Office</label>
-                            <input type="text" id="edit_license_office" placeholder="Microsoft 365" />
-                        </div>
-                        <div class="form-control">
-                            <label>License Antivirus</label>
-                            <input type="text" id="edit_license_av" placeholder="McAfee / Bitdefender" />
-                        </div>
-                        <div class="form-control">
-                            <label>License Expiry</label>
-                            <input type="date" id="edit_license_expiry" />
-                        </div>
-                        <div class="form-control">
-                            <label>Purchase Date</label>
-                            <input type="date" id="edit_purchase_date" />
-                        </div>
-                        <div class="form-control">
-                            <label>Warranty Expiry</label>
-                            <input type="date" id="edit_warranty_expiry" />
-                        </div>
-                        <div class="form-control">
-                            <label>Monitor Brand</label>
-                            <input type="text" id="edit_monitor_brand" placeholder="Dell / Samsung" />
-                        </div>
-                        <div class="form-control">
-                            <label>Monitor Size</label>
-                            <input type="text" id="edit_monitor_size" placeholder="24 inch / 27 inch" />
-                        </div>
-                        <div class="form-control">
-                            <label>Monitor Serial</label>
-                            <input type="text" id="edit_monitor_serial" placeholder="SN123456" />
-                        </div>
-                        <div class="form-control">
-                            <label>Printer Brand</label>
-                            <input type="text" id="edit_printer_brand" placeholder="HP / Epson" />
-                        </div>
-                        <div class="form-control">
-                            <label>Printer Model</label>
-                            <input type="text" id="edit_printer_model" placeholder="LaserJet MFP" />
-                        </div>
-                        <div class="form-control">
-                            <label>Printer Serial</label>
-                            <input type="text" id="edit_printer_serial" placeholder="SN789012" />
-                        </div>
-                        <div class="form-control">
-                            <label>Mouse Brand</label>
-                            <input type="text" id="edit_mouse_brand" placeholder="Logitech / Rexus" />
-                        </div>
-                        <div class="form-control">
-                            <label>Mouse Type</label>
-                            <select id="edit_mouse_type">
-                                <option value="">- Pilih -</option>
-                                <option value="Wired">Wired</option>
-                                <option value="Wireless">Wireless</option>
-                                <option value="Bluetooth">Bluetooth</option>
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            <label>Keyboard Brand</label>
-                            <input type="text" id="edit_keyboard_brand" placeholder="Logitech / Rexus" />
-                        </div>
-                        <div class="form-control">
-                            <label>Keyboard Type</label>
-                            <select id="edit_keyboard_type">
-                                <option value="">- Pilih -</option>
-                                <option value="Wired">Wired</option>
-                                <option value="Wireless">Wireless</option>
-                                <option value="Bluetooth">Bluetooth</option>
-                                <option value="Mechanical">Mechanical</option>
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            <label>Notes</label>
-                            <input type="text" id="edit_notes" placeholder="Catatan tambahan..." />
-                        </div>
-                        <div class="form-control flex items-end col-span-3">
-                            <button type="submit" id="btnUpdate" class="btn btn-glow bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold py-2 rounded-xl hover:shadow-xl transition-all w-full">
-                                💾 Update Aset
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- FORM TAMBAH -->
-            <div id="formContainer" class="glass-card p-4 mb-4 no-print hidden">
+            <!-- FORM INPUT DINAMIS -->
+            <div id="formContainer" class="glass-card p-4 mb-4 hidden">
                 <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-lg font-bold text-white">Input Aset Baru</h2>
+                    <h2 id="formTitle" class="text-lg font-bold text-white">Input Aset Baru</h2>
                     <button onclick="toggleForm()" class="text-gray-400 hover:text-white">✕</button>
                 </div>
-                <form id="assetForm" class="form-grid">
-                    <div class="form-control">
-                        <label>ID Aset *</label>
-                        <input type="text" id="in_id" placeholder="PC-001" required />
-                    </div>
-                    <div class="form-control">
-                        <label>User *</label>
-                        <input type="text" id="in_user" placeholder="Nama User" required />
-                    </div>
-                    <div class="form-control">
-                        <label>Departemen *</label>
-                        <select id="in_dept">
-                            <option value="HRD">HRD</option><option value="PAJAK">PAJAK</option>
-                            <option value="PPIC">PPIC</option><option value="EXIM">EXIM</option>
-                            <option value="FINANCE">FINANCE</option><option value="IT">IT</option>
-                            <option value="INVENTORY">INVENTORY</option><option value="CAD">CAD</option>
-                            <option value="GUDANG ACC">GUDANG ACC</option><option value="GUDANG KAIN">GUDANG KAIN</option>
-                            <option value="PACKING">PACKING</option><option value="SAMPLE PROD">SAMPLE PROD</option>
-                            <option value="SAMPLE ROOM">SAMPLE ROOM</option><option value="MD">MD</option>
-                            <option value="BC">BC</option><option value="QA">QA</option>
-                            <option value="FACTORY MANAGER">FACTORY MANAGER</option>
-                            <option value="GENERAL MANAGER">GENERAL MANAGER</option>
-                            <option value="IE">IE</option><option value="CUTTING">CUTTING</option>
-                            <option value="PRODUKSI">PRODUKSI</option><option value="DIGITAL">DIGITAL</option>
-                            <option value="STAFF">STAFF</option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label>Perangkat *</label>
-                        <select id="in_device">
-                            <option value="KOMPUTER">KOMPUTER</option>
-                            <option value="LAPTOP">LAPTOP</option>
-                            <option value="PRINTER">PRINTER</option>
-                            <option value="MONITOR">MONITOR</option>
-                            <option value="MOUSE">MOUSE</option>
-                            <option value="KEYBOARD">KEYBOARD</option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label>Spesifikasi</label>
-                        <input type="text" id="in_specs" placeholder="I5,8 GB / 24 inch" />
-                    </div>
-                    <div class="form-control">
-                        <label>Status *</label>
-                        <select id="in_status">
-                            <option value="Active">Active</option>
-                            <option value="Maintenance">Maintenance</option>
-                            <option value="Broken">Broken</option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label>IP Address</label>
-                        <input type="text" id="in_ip" placeholder="192.168.1.100" />
-                    </div>
-                    <div class="form-control">
-                        <label>MAC Address</label>
-                        <input type="text" id="in_mac" placeholder="AA:BB:CC:DD:EE:FF" />
-                    </div>
-                    <div class="form-control">
-                        <label>Hostname</label>
-                        <input type="text" id="in_hostname" placeholder="PC-IT-01" />
-                    </div>
-                    <div class="form-control">
-                        <label>License OS</label>
-                        <input type="text" id="in_license_os" placeholder="Windows 11 Pro" />
-                    </div>
-                    <div class="form-control">
-                        <label>License Office</label>
-                        <input type="text" id="in_license_office" placeholder="Microsoft 365" />
-                    </div>
-                    <div class="form-control">
-                        <label>License Antivirus</label>
-                        <input type="text" id="in_license_av" placeholder="McAfee / Bitdefender" />
-                    </div>
-                    <div class="form-control">
-                        <label>License Expiry</label>
-                        <input type="date" id="in_license_expiry" />
-                    </div>
-                    <div class="form-control">
-                        <label>Purchase Date</label>
-                        <input type="date" id="in_purchase_date" />
-                    </div>
-                    <div class="form-control">
-                        <label>Warranty Expiry</label>
-                        <input type="date" id="in_warranty_expiry" />
-                    </div>
-                    <div class="form-control">
-                        <label>Monitor Brand</label>
-                        <input type="text" id="in_monitor_brand" placeholder="Dell / Samsung" />
-                    </div>
-                    <div class="form-control">
-                        <label>Monitor Size</label>
-                        <input type="text" id="in_monitor_size" placeholder="24 inch / 27 inch" />
-                    </div>
-                    <div class="form-control">
-                        <label>Monitor Serial</label>
-                        <input type="text" id="in_monitor_serial" placeholder="SN123456" />
-                    </div>
-                    <div class="form-control">
-                        <label>Printer Brand</label>
-                        <input type="text" id="in_printer_brand" placeholder="HP / Epson" />
-                    </div>
-                    <div class="form-control">
-                        <label>Printer Model</label>
-                        <input type="text" id="in_printer_model" placeholder="LaserJet MFP" />
-                    </div>
-                    <div class="form-control">
-                        <label>Printer Serial</label>
-                        <input type="text" id="in_printer_serial" placeholder="SN789012" />
-                    </div>
-                    <div class="form-control">
-                        <label>Mouse Brand</label>
-                        <input type="text" id="in_mouse_brand" placeholder="Logitech / Rexus" />
-                    </div>
-                    <div class="form-control">
-                        <label>Mouse Type</label>
-                        <select id="in_mouse_type">
-                            <option value="">- Pilih -</option>
-                            <option value="Wired">Wired</option>
-                            <option value="Wireless">Wireless</option>
-                            <option value="Bluetooth">Bluetooth</option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label>Keyboard Brand</label>
-                        <input type="text" id="in_keyboard_brand" placeholder="Logitech / Rexus" />
-                    </div>
-                    <div class="form-control">
-                        <label>Keyboard Type</label>
-                        <select id="in_keyboard_type">
-                            <option value="">- Pilih -</option>
-                            <option value="Wired">Wired</option>
-                            <option value="Wireless">Wireless</option>
-                            <option value="Bluetooth">Bluetooth</option>
-                            <option value="Mechanical">Mechanical</option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label>Notes</label>
-                        <input type="text" id="in_notes" placeholder="Catatan tambahan..." />
-                    </div>
-                    <div class="form-control flex items-end">
-                        <button type="submit" id="btnSimpan" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-2 rounded-xl hover:shadow-xl transition-all w-full">
-                            Simpan ke Cloud
-                        </button>
-                    </div>
+                <form id="dynamicForm" class="form-grid">
+                    <!-- Fields akan dirender otomatis via JS berdasarkan tab yang aktif -->
                 </form>
             </div>
 
-            <!-- SEARCH -->
-            <div class="mb-3 no-print">
-                <input type="text" id="searchInput" placeholder="Cari ID, User, Dept, IP, License..." class="input input-bordered w-full max-w-md bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-400 rounded-xl text-sm" />
-                <div class="inline-flex gap-2 ml-2">
-                    <button onclick="showExpiredOnly()" class="text-xs bg-red-500/20 hover:bg-red-500/30 text-red-400 px-3 py-1.5 rounded-lg transition-all border border-red-500/20">⏰ Expired License</button>
-                    <button onclick="showExpiringSoon()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-3 py-1.5 rounded-lg transition-all border border-amber-500/20">⚠️ Expiring Soon</button>
-                </div>
+            <!-- SEARCH BAR -->
+            <div class="mb-4">
+                <input type="text" id="searchInput" placeholder="Cari nama material, user, departemen, atau lokasi..." class="input input-bordered w-full max-w-md bg-white/5 border-white/10 text-white text-sm rounded-xl" />
             </div>
 
-            <!-- TABLE -->
+            <!-- TABLE CONTAINER -->
             <div class="glass-card overflow-hidden">
-                <div class="table-wrapper" id="tableWrapper">
-                    <table id="inventoryTable">
-                        <thead>
-                            <tr class="text-center">
-                                <th style="min-width:70px;">QR</th>
-                                <th style="min-width:80px;">ID Aset</th>
-                                <th style="min-width:90px;">User</th>
-                                <th style="min-width:80px;">Dept</th>
-                                <th style="min-width:80px;">Device</th>
-                                <th style="min-width:60px;">Status</th>
-                                <th style="min-width:100px;">IP Address</th>
-                                <th style="min-width:90px;">License</th>
-                                <th style="min-width:80px;">Monitor</th>
-                                <th style="min-width:80px;">Printer</th>
-                                <th style="min-width:80px;">Mouse/KB</th>
-                                <th style="min-width:120px;" class="no-print">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryBody">
-                            <tr><td colspan="12" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
+                <div class="table-wrapper">
+                    <table id="mainTable">
+                        <thead id="tableHead"></thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="10" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1167,360 +177,27 @@
         </div>
     </div>
 
-    <!-- MODALS -->
-    <div id="modalTransfer" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
-        <div class="glass-card p-8 max-w-sm w-full mx-4 text-center">
-            <div class="text-3xl mb-3">🔄</div>
-            <h2 class="text-xl font-bold text-white mb-2">Transfer Aset</h2>
-            <p id="infoAset" class="text-gray-400 text-sm mb-6"></p>
-            <div class="grid gap-3">
-                <button id="btnKeP1" class="btn btn-glow bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl">PT Magicase (P1)</button>
-                <button id="btnKeP2" class="btn btn-glow bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 rounded-xl">PT Panrama (P2)</button>
-                <button onclick="tutupModalTransfer()" class="text-gray-400 hover:text-white transition-colors py-2">Batal</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="historyModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
-        <div class="glass-card p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h2 id="historyModalTitle" class="text-lg font-bold text-white">Riwayat Aset</h2>
-                    <p id="historyModalSource" class="text-sm text-gray-400"></p>
-                </div>
-                <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-white transition-colors">✕</button>
-            </div>
-            <div id="historyModalBody" class="space-y-3"></div>
-        </div>
-    </div>
-
-    <!-- TRASH MODAL -->
-    <div id="trashModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] no-print">
-        <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-white">🗑️ Trash - Aset Terhapus</h2>
-                <button onclick="closeTrashModal()" class="text-gray-400 hover:text-white transition-colors">✕</button>
-            </div>
-            <div id="trashBody" class="space-y-2">
-                <p class="text-gray-400 text-sm">Loading...</p>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // ============================================
-        // KONFIGURASI
-        // ============================================
         const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-        });
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentTable = '';
-        let currentHistory = '';
-        let data = [];
-        let deletedData = [];
-        let asetIdSedangDiproses = null;
-        let html5QrcodeScanner = null;
-        let statusChartInstance = null;
-        let deptChartInstance = null;
-        let importData = [];
-        let currentUserRole = 'viewer';
-        let notifications = [];
+        let currentPTTable = '';
+        let currentHistoryTable = '';
+        let activeModule = 'it'; // 'it' atau 'general'
+        let rawData = [];
 
-        // ============================================
-        // USER ROLES & AUTH
-        // ============================================
-        const USER_ROLES = {
-            'andri@panrama.com': { role: 'superadmin', label: 'Super Admin' },
-            'admin@panrama.com': { role: 'admin', label: 'Admin' },
-            'manager@panrama.com': { role: 'manager', label: 'Manager' },
-            'viewer@panrama.com': { role: 'viewer', label: 'Viewer' }
-        };
-
-        function getUserRole(email) {
-            return USER_ROLES[email] || { role: 'viewer', label: 'Viewer' };
-        }
-
-        function hasPermission(requiredRole) {
-            const roles = ['viewer', 'manager', 'admin', 'superadmin'];
-            const userRoleIndex = roles.indexOf(currentUserRole);
-            const requiredIndex = roles.indexOf(requiredRole);
-            return userRoleIndex >= requiredIndex;
-        }
-
-        // ============================================
-        // TOAST NOTIFICATIONS
-        // ============================================
-        function showToast(title, message, type = 'info', duration = 5000) {
+        function showToast(title, message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
-            toast.innerHTML = `
-                <div class="toast-title">${title}</div>
-                <div class="toast-message">${message}</div>
-            `;
+            toast.innerHTML = `<div class="font-semibold text-white">${title}</div><div class="text-xs text-gray-300">${message}</div>`;
             toast.onclick = () => toast.remove();
             container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, duration);
+            setTimeout(() => toast.remove(), 4000);
         }
 
-        // ============================================
-        // NOTIFICATION SYSTEM - LICENSE EXPIRY
-        // ============================================
-        function checkLicenseExpiry() {
-            const today = new Date();
-            const expiringSoon = [];
-            const expired = [];
-
-            data.forEach(item => {
-                if (!item.license_expiry) return;
-                const expiry = new Date(item.license_expiry);
-                const diff = (expiry - today) / (1000 * 60 * 60 * 24);
-                
-                if (diff < 0) {
-                    expired.push(item);
-                } else if (diff <= 30) {
-                    expiringSoon.push(item);
-                }
-            });
-
-            // Update badge count
-            const count = expired.length + expiringSoon.length;
-            const badge = document.getElementById('notificationCount');
-            if (count > 0) {
-                badge.classList.remove('hidden');
-                badge.innerText = count;
-            } else {
-                badge.classList.add('hidden');
-            }
-
-            // Update expired license stats
-            document.getElementById('totalExpiredLicense').innerText = expired.length;
-
-            // Show notifications
-            notifications = [];
-            if (expired.length > 0) {
-                notifications.push({
-                    title: '⚠️ License Expired!',
-                    message: `${expired.length} aset memiliki license yang sudah expired!`,
-                    type: 'error'
-                });
-                showToast('⚠️ License Expired!', `${expired.length} aset memiliki license expired!`, 'error');
-            }
-            
-            if (expiringSoon.length > 0) {
-                notifications.push({
-                    title: '⏰ License Expiring Soon',
-                    message: `${expiringSoon.length} aset akan expired dalam 30 hari!`,
-                    type: 'warning'
-                });
-                showToast('⏰ License Expiring Soon', `${expiringSoon.length} aset akan expired dalam 30 hari!`, 'warning');
-            }
-
-            return { expired, expiringSoon };
-        }
-
-        function showNotifications() {
-            if (notifications.length === 0) {
-                showToast('✅ Semua Aman!', 'Tidak ada notifikasi license expiry.', 'success');
-                return;
-            }
-
-            notifications.forEach(n => {
-                showToast(n.title, n.message, n.type);
-            });
-        }
-
-        function showLicenseNotifications() {
-            const { expired, expiringSoon } = checkLicenseExpiry();
-            
-            if (expired.length === 0 && expiringSoon.length === 0) {
-                showToast('✅ Semua License Aktif!', 'Tidak ada license yang expired atau akan expired.', 'success');
-                return;
-            }
-
-            let message = '';
-            if (expired.length > 0) {
-                message += `❌ ${expired.length} aset expired\n`;
-                expired.slice(0, 5).forEach(item => {
-                    message += `   - ${item.id_aset} (${item.user})\n`;
-                });
-                if (expired.length > 5) message += `   ... dan ${expired.length - 5} lainnya\n`;
-            }
-            
-            if (expiringSoon.length > 0) {
-                message += `\n⚠️ ${expiringSoon.length} aset akan expired dalam 30 hari\n`;
-                expiringSoon.slice(0, 5).forEach(item => {
-                    message += `   - ${item.id_aset} (${item.user}) - ${item.license_expiry}\n`;
-                });
-                if (expiringSoon.length > 5) message += `   ... dan ${expiringSoon.length - 5} lainnya`;
-            }
-
-            showToast('📋 License Report', message, 'info', 10000);
-        }
-
-        // ============================================
-        // SOFT DELETE FUNCTIONS
-        // ============================================
-        async function softDeleteAsset(id) {
-            if (!confirm(`Hapus aset ${id}? (Bisa dipulihkan dari Trash)`)) return;
-
-            const { error } = await supabaseClient
-                .from(currentTable)
-                .update({ 
-                    deleted_at: new Date().toISOString(),
-                    deleted_by: (await supabaseClient.auth.getUser()).data.user?.email || 'System'
-                })
-                .eq('id_aset', id);
-
-            if (error) {
-                alert('Gagal hapus: ' + error.message);
-            } else {
-                showToast('🗑️ Aset Terhapus', `Aset ${id} telah dipindahkan ke Trash.`, 'warning');
-                fetchData();
-            }
-        }
-
-        async function restoreAsset(id) {
-            if (!confirm(`Pulihkan aset ${id} dari Trash?`)) return;
-
-            const { error } = await supabaseClient
-                .from(currentTable)
-                .update({ 
-                    deleted_at: null,
-                    deleted_by: null
-                })
-                .eq('id_aset', id);
-
-            if (error) {
-                alert('Gagal pulihkan: ' + error.message);
-            } else {
-                showToast('✅ Aset Dipulihkan', `Aset ${id} berhasil dipulihkan.`, 'success');
-                fetchData();
-                closeTrashModal();
-            }
-        }
-
-        async function permanentDeleteAsset(id) {
-            if (!confirm(`⚠️ PERMANENT: Hapus aset ${id} selamanya? Tindakan ini tidak bisa dibatalkan!`)) return;
-
-            const { error } = await supabaseClient
-                .from(currentTable)
-                .delete()
-                .eq('id_aset', id);
-
-            if (error) {
-                alert('Gagal hapus permanen: ' + error.message);
-            } else {
-                showToast('💀 Aset Dihapus Permanen', `Aset ${id} telah dihapus selamanya.`, 'error');
-                fetchData();
-                closeTrashModal();
-            }
-        }
-
-        async function showDeletedAssets() {
-            const { data: trash, error } = await supabaseClient
-                .from(currentTable)
-                .select('*')
-                .not('deleted_at', 'is', null)
-                .order('deleted_at', { ascending: false });
-
-            if (error) {
-                alert('Error: ' + error.message);
-                return;
-            }
-
-            const modal = document.getElementById('trashModal');
-            const body = document.getElementById('trashBody');
-
-            if (!trash || trash.length === 0) {
-                body.innerHTML = `
-                    <div class="text-center py-10 text-gray-400">
-                        <div class="text-4xl mb-3">🗑️</div>
-                        <p>Trash kosong. Tidak ada aset yang terhapus.</p>
-                    </div>
-                `;
-            } else {
-                body.innerHTML = `
-                    <p class="text-gray-400 text-sm mb-3">${trash.length} aset di Trash. Klik Restore untuk memulihkan.</p>
-                    <div class="overflow-auto max-h-[60vh]">
-                        <table class="w-full text-xs">
-                            <thead class="bg-white/5 sticky top-0">
-                                <tr>
-                                    <th class="px-3 py-2 text-left text-gray-400">ID</th>
-                                    <th class="px-3 py-2 text-left text-gray-400">User</th>
-                                    <th class="px-3 py-2 text-left text-gray-400">Dept</th>
-                                    <th class="px-3 py-2 text-left text-gray-400">Device</th>
-                                    <th class="px-3 py-2 text-left text-gray-400">Dihapus</th>
-                                    <th class="px-3 py-2 text-left text-gray-400">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${trash.map(item => `
-                                    <tr class="border-t border-white/5">
-                                        <td class="px-3 py-2 text-indigo-300 font-mono">${item.id_aset}</td>
-                                        <td class="px-3 py-2">${item.user || '-'}</td>
-                                        <td class="px-3 py-2">${item.dept || item.dep || '-'}</td>
-                                        <td class="px-3 py-2">${item.device || '-'}</td>
-                                        <td class="px-3 py-2 text-gray-400 text-[10px]">${new Date(item.deleted_at).toLocaleString('id-ID')}</td>
-                                        <td class="px-3 py-2">
-                                            <button onclick="restoreAsset('${item.id_aset}')" class="text-[10px] bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 px-2 py-1 rounded transition-all">♻️ Restore</button>
-                                            <button onclick="permanentDeleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all">💀 Hapus</button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            }
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeTrashModal() {
-            document.getElementById('trashModal').classList.add('hidden');
-        }
-
-        // ============================================
-        // FILTER FUNCTIONS
-        // ============================================
-        function showExpiredOnly() {
-            const today = new Date();
-            const filtered = data.filter(item => {
-                if (!item.license_expiry) return false;
-                const expiry = new Date(item.license_expiry);
-                return (expiry - today) < 0;
-            });
-            renderTable(filtered);
-            updateStats(filtered);
-            updateDeptStats(filtered);
-            showToast('⏰ Filter', `${filtered.length} aset dengan license expired.`, 'info');
-        }
-
-        function showExpiringSoon() {
-            const today = new Date();
-            const filtered = data.filter(item => {
-                if (!item.license_expiry) return false;
-                const expiry = new Date(item.license_expiry);
-                const diff = (expiry - today) / (1000 * 60 * 60 * 24);
-                return diff <= 30 && diff >= 0;
-            });
-            renderTable(filtered);
-            updateStats(filtered);
-            updateDeptStats(filtered);
-            showToast('⚠️ Filter', `${filtered.length} aset akan expired dalam 30 hari.`, 'warning');
-        }
-
-        // ============================================
-        // AUTH
-        // ============================================
+        // AUTH & LOGIN
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (session) checkUser();
         });
@@ -1528,1407 +205,263 @@
 
         function checkUser() {
             supabaseClient.auth.getUser().then(({ data: { user } }) => {
-                const loginSec = document.getElementById('loginSection');
-                const pilihModal = document.getElementById('pilihPTModal');
-                const mainContent = document.getElementById('main-content');
-
                 if (user) {
-                    const roleInfo = getUserRole(user.email);
-                    currentUserRole = roleInfo.role;
-                    
-                    document.getElementById('userRoleBadge').innerText = roleInfo.label;
-                    document.getElementById('userRoleBadge').className = `role-badge ${roleInfo.role}`;
-                    
-                    if (loginSec) loginSec.classList.add('hidden');
-                    if (pilihModal) pilihModal.classList.remove('hidden');
-                    if (mainContent) mainContent.classList.add('hidden');
-                    updateAdminUI();
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('pilihPTModal').classList.remove('hidden');
                 } else {
-                    if (loginSec) loginSec.classList.remove('hidden');
-                    if (pilihModal) pilihModal.classList.add('hidden');
-                    if (mainContent) mainContent.classList.add('hidden');
+                    document.getElementById('loginSection').classList.remove('hidden');
+                    document.getElementById('pilihPTModal').classList.add('hidden');
+                    document.getElementById('main-content').classList.add('hidden');
                 }
             });
-        }
-
-        async function updateAdminUI() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            const user = session?.user;
-
-            // Hide/show berdasarkan role
-            const isAdmin = hasPermission('admin');
-            const isManager = hasPermission('manager');
-
-            // Admin-only buttons
-            document.querySelectorAll('.btn-tambah').forEach(el => {
-                el.style.display = isAdmin ? '' : 'none';
-            });
-            document.querySelectorAll('.btn-hapus').forEach(el => {
-                el.style.display = isAdmin ? '' : 'none';
-            });
-            document.querySelectorAll('.aksi-kolom-admin').forEach(el => {
-                el.style.display = isAdmin ? '' : 'none';
-            });
-
-            // Scanner hanya untuk superadmin
-            const scannerSection = document.getElementById('scannerSection');
-            if (user && user.email === 'andri@panrama.com') {
-                if (scannerSection) scannerSection.classList.remove('hidden');
-                initScanner();
-            } else {
-                if (scannerSection) scannerSection.classList.add('hidden');
-            }
         }
 
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('btnLogin');
             const err = document.getElementById('loginError');
-            const btnText = document.getElementById('btnLoginText');
-
-            btnText.innerText = "Memverifikasi...";
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
             if (error) {
                 err.innerText = "Email atau Password Salah!";
                 err.classList.remove('hidden');
-                btnText.innerText = "Masuk Sistem";
             } else {
                 err.classList.add('hidden');
-                btnText.innerText = "Masuk Sistem";
                 checkUser();
             }
         }
 
         async function handleLogout() {
             await supabaseClient.auth.signOut();
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.replace(window.location.pathname);
+            window.location.reload();
         }
 
-        // ============================================
-        // DATA FETCHING
-        // ============================================
-        async function fetchData() {
+        function setPT(table, history) {
+            currentPTTable = table;
+            currentHistoryTable = history;
+            document.getElementById('currentCompanyName').innerText = table === 'inventaris_p1' ? '(PT Magicase P1)' : '(PT Panrama P2)';
+            document.getElementById('pilihPTModal').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            loadData();
+        }
+
+        function switchModule(module) {
+            activeModule = module;
+            document.getElementById('btnTabIT').className = module === 'it' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('btnTabGeneral').className = module === 'general' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('formContainer').classList.add('hidden');
+            loadData();
+        }
+
+        // LOAD DATA BERDASARKAN MODUL (IT / GENERAL)
+        async function loadData() {
+            const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
             try {
-                // Fetch only non-deleted assets
-                const { data: result, error } = await supabaseClient
-                    .from(currentTable)
+                const { data, error } = await supabaseClient
+                    .from(tableName)
                     .select('*')
-                    .is('deleted_at', null)
-                    .order('id_aset', { ascending: true });
-                    
+                    .is('deleted_at', null);
+
                 if (error) throw error;
-                data = Array.isArray(result) ? result : [];
-                
-                document.getElementById('statusConnection').innerHTML = `
-                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    <span class="text-gray-300">Connected</span>
-                `;
-                renderTable(data);
-                updateStats(data);
-                updateCharts(data);
-                updateDeptStats(data);
-                checkLicenseExpiry();
+                rawData = data || [];
+                renderTable(rawData);
+                updateStats(rawData);
             } catch (err) {
                 console.error(err);
-                document.getElementById('statusConnection').innerHTML = `
-                    <span class="w-2 h-2 bg-red-400 rounded-full"></span>
-                    <span class="text-red-400">Disconnected</span>
-                `;
+                showToast('Error', 'Gagal memuat data dari database: ' + err.message, 'error');
             }
         }
 
         function renderTable(data) {
-            const tbody = document.getElementById('inventoryBody');
-            if (!tbody) return;
-            if (!Array.isArray(data) || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12" class="text-center py-10 text-gray-400">Data tidak tersedia.</td></tr>`;
-                return;
-            }
+            const thead = document.getElementById('tableHead');
+            const tbody = document.getElementById('tableBody');
 
-            const isUserAdmin = hasPermission('admin');
-
-            tbody.innerHTML = data.map(item => {
-                const statusClass = item.status?.toLowerCase() === 'active' ? 'active' : 
-                                   item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
-                
-                // Check license status
-                let licenseClass = 'badge-license';
-                let licenseText = [item.license_os, item.license_office, item.license_av].filter(Boolean).join(' | ') || '-';
-                
-                if (item.license_expiry) {
-                    const today = new Date();
-                    const expiry = new Date(item.license_expiry);
-                    const diff = (expiry - today) / (1000 * 60 * 60 * 24);
-                    if (diff < 0) {
-                        licenseClass += ' expired';
-                        licenseText += ' ⛔ EXPIRED';
-                    } else if (diff <= 30) {
-                        licenseClass += ' expiring-soon';
-                        licenseText += ` ⏰ ${Math.round(diff)} days`;
-                    }
-                }
-                
-                const monitorDisplay = [item.monitor_brand, item.monitor_size].filter(Boolean).join(' ') || '-';
-                const printerDisplay = [item.printer_brand, item.printer_model].filter(Boolean).join(' ') || '-';
-                
-                const mouseDisplay = [item.mouse_brand, item.mouse_type].filter(Boolean).join(' ') || '-';
-                const keyboardDisplay = [item.keyboard_brand, item.keyboard_type].filter(Boolean).join(' ') || '-';
-                const peripheralDisplay = mouseDisplay !== '-' || keyboardDisplay !== '-' ? 
-                    `${mouseDisplay !== '-' ? '🖱️'+mouseDisplay : ''} ${keyboardDisplay !== '-' ? '⌨️'+keyboardDisplay : ''}`.trim() : '-';
-
-                // Check if deleted
-                const isDeleted = item.deleted_at !== null;
-                const rowClass = isDeleted ? 'deleted-row' : '';
-
-                return `
-                <tr class="hover:bg-white/5 text-center ${rowClass}">
-                    <td>
-                        <canvas class="qr-code" data-value="${item.id_aset}" width="60" height="60"></canvas>
-                    </td>
-                    <td class="font-mono text-xs text-indigo-300">${item.id_aset}</td>
-                    <td class="editable font-medium" contenteditable="${isUserAdmin && !isDeleted}" onblur="updateField('${item.id_aset}', 'user', this.innerText.trim())">${item.user || '-'}</td>
-                    <td class="editable" contenteditable="${isUserAdmin && !isDeleted}" onblur="updateField('${item.id_aset}', 'dept', this.innerText.trim())">${item.dept || item.dep || '-'}</td>
-                    <td><span class="badge-license">${item.device || '-'}</span></td>
-                    <td><span class="badge-status ${statusClass}">${item.status || '-'}</span></td>
-                    <td class="font-mono text-xs text-blue-300">${item.ip_address || '-'}</td>
-                    <td><span class="${licenseClass}">${licenseText}</span></td>
-                    <td><span class="text-[10px] text-gray-300">${monitorDisplay}</span></td>
-                    <td><span class="text-[10px] text-gray-300">${printerDisplay}</span></td>
-                    <td><span class="text-[10px] text-gray-300">${peripheralDisplay}</span></td>
-                    <td class="no-print">
-                        <div class="flex gap-1 justify-center flex-wrap">
-                            ${isDeleted ? `
-                                <button onclick="restoreAsset('${item.id_aset}')" class="text-[10px] bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 px-2 py-1 rounded transition-all">♻️ Restore</button>
-                                <button onclick="permanentDeleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all">💀 Hapus</button>
-                            ` : `
-                                <button onclick="openEditModal('${item.id_aset}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all">✏️ Edit</button>
-                                <button onclick="printSingleLabel('${item.id_aset}', '${item.user}', '${item.device}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">Label</button>
-                                <button onclick="lihatHistory('${item.id_aset}')" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 px-2 py-1 rounded transition-all">📜</button>
-                                <button onclick="duplicateAsset('${item.id_aset}')" class="text-[10px] bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-2 py-1 rounded transition-all">📋 Clone</button>
-                                <button onclick="bukaModalTransfer('${item.id_aset}', '${item.user}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-2 py-1 rounded transition-all aksi-kolom-admin">Transfer</button>
-                                <button onclick="softDeleteAsset('${item.id_aset}')" class="text-[10px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 px-2 py-1 rounded transition-all btn-hapus aksi-kolom-admin">🗑️ Hapus</button>
-                            `}
-                        </div>
-                    </td>
-                </tr>
-            `}).join('');
-            generateQRCodes();
-        }
-
-        function generateQRCodes() {
-            document.querySelectorAll('canvas.qr-code').forEach(canvas => {
-                const value = canvas.dataset.value || '';
-                if (!value) return;
-                new QRious({
-                    element: canvas,
-                    value: value,
-                    size: 60,
-                    background: 'white',
-                    foreground: '#111827',
-                    level: 'H'
-                });
-            });
-        }
-
-        // ============================================
-        // STATS & CHARTS
-        // ============================================
-        function updateStats(items) {
-            const rows = Array.isArray(items) ? items : [];
-            document.getElementById('totalAset').innerText = rows.length;
-            document.getElementById('totalLaptop').innerText = rows.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
-            document.getElementById('totalKomputer').innerText = rows.filter(i => {
-                const d = String(i.device || '').toLowerCase();
-                return d.includes('komputer') || d.includes('pc');
-            }).length;
-            document.getElementById('unitRusak').innerText = rows.filter(i => {
-                const s = String(i.status || '').toLowerCase();
-                return s === 'maintenance' || s === 'broken' || s === 'rusak';
-            }).length;
-            document.getElementById('totalPeripheral').innerText = rows.filter(i => {
-                const d = String(i.device || '').toLowerCase();
-                return d.includes('mouse') || d.includes('keyboard');
-            }).length;
-            document.getElementById('totalPrinter').innerText = rows.filter(i => {
-                const d = String(i.device || '').toLowerCase();
-                return d.includes('printer');
-            }).length;
-        }
-
-        function updateDeptStats(items) {
-            const rows = Array.isArray(items) ? items : [];
-            
-            const deptMap = {
-                totalHRD: 'HRD',
-                totalPAJAK: 'PAJAK',
-                totalPPIC: 'PPIC',
-                totalEXIM: 'EXIM',
-                totalFINANCE: 'FINANCE',
-                totalIT: 'IT',
-                totalINVENTORY: 'INVENTORY',
-                totalCAD: 'CAD',
-                totalGUDANG_ACC: 'GUDANG ACC',
-                totalGUDANG_KAIN: 'GUDANG KAIN',
-                totalPACKING: 'PACKING',
-                totalSAMPLE_PROD: 'SAMPLE PROD',
-                totalSAMPLE_ROOM: 'SAMPLE ROOM',
-                totalMD: 'MD',
-                totalBC: 'BC',
-                totalQA: 'QA',
-                totalFACTORY_MANAGER: 'FACTORY MANAGER',
-                totalGENERAL_MANAGER: 'GENERAL MANAGER',
-                totalIE: 'IE',
-                totalPRODUKSI: 'PRODUKSI',
-                totalCUTTING: 'CUTTING',
-                totalDIGITAL: 'DIGITAL',
-                totalSTAFF: 'STAFF'
-            };
-
-            Object.entries(deptMap).forEach(([id, name]) => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.innerText = rows.filter(i => {
-                        const dept = String(i.dept || i.dep || '').toUpperCase().trim();
-                        return dept === name || dept.includes(name);
-                    }).length;
-                }
-            });
-        }
-
-        function updateCharts(items) {
-            const rows = Array.isArray(items) ? items : [];
-
-            const statusCounts = {
-                Active: rows.filter(i => String(i.status || '').toLowerCase() === 'active').length,
-                Maintenance: rows.filter(i => String(i.status || '').toLowerCase() === 'maintenance').length,
-                Broken: rows.filter(i => String(i.status || '').toLowerCase() === 'broken' || String(i.status || '').toLowerCase() === 'rusak').length
-            };
-
-            const statusCtx = document.getElementById('statusChart').getContext('2d');
-            if (statusChartInstance) statusChartInstance.destroy();
-            statusChartInstance = new Chart(statusCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Active', 'Maintenance', 'Broken'],
-                    datasets: [{
-                        data: [statusCounts.Active, statusCounts.Maintenance, statusCounts.Broken],
-                        backgroundColor: ['#34d399', '#fbbf24', '#fb7185'],
-                        borderColor: ['rgba(52,211,153,0.3)', 'rgba(251,191,36,0.3)', 'rgba(251,113,133,0.3)'],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#9ca3af', font: { size: 10 } }
-                        }
-                    },
-                    cutout: '65%'
-                }
-            });
-
-            const deptCounts = {};
-            rows.forEach(i => {
-                const d = String(i.dept || i.dep || 'Other').toUpperCase();
-                deptCounts[d] = (deptCounts[d] || 0) + 1;
-            });
-            const sorted = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
-            const colors = ['#818cf8', '#c084fc', '#f472b6', '#34d399', '#fbbf24', '#fb7185'];
-
-            const deptCtx = document.getElementById('deptChart').getContext('2d');
-            if (deptChartInstance) deptChartInstance.destroy();
-            deptChartInstance = new Chart(deptCtx, {
-                type: 'bar',
-                data: {
-                    labels: sorted.map(d => d[0]),
-                    datasets: [{
-                        label: 'Jumlah',
-                        data: sorted.map(d => d[1]),
-                        backgroundColor: sorted.map((_, i) => colors[i % colors.length] + '40'),
-                        borderColor: sorted.map((_, i) => colors[i % colors.length]),
-                        borderWidth: 2,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#6b7280', stepSize: 1, font: { size: 9 } }
-                        },
-                        x: {
-                            ticks: { color: '#6b7280', font: { size: 8 } }
-                        }
-                    }
-                }
-            });
-        }
-
-        // ============================================
-        // PRINT REPORT
-        // ============================================
-        function printReport() {
-            const printWin = window.open('', '_blank', 'width=1200,height=800');
-            if (!printWin) {
-                alert('Mohon izinkan popup untuk mencetak.');
-                return;
-            }
-
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-
-            let tableRows = '';
-            data.forEach((item, index) => {
-                const statusClass = item.status?.toLowerCase() === 'active' ? 'active' :
-                                   item.status?.toLowerCase() === 'maintenance' ? 'maintenance' : 'broken';
-                
-                const statusColor = statusClass === 'active' ? '#34d399' : 
-                                   statusClass === 'maintenance' ? '#fbbf24' : '#fb7185';
-                const statusTextColor = statusClass === 'maintenance' ? '#1f2937' : 'white';
-
-                const qrId = 'qr_print_' + index;
-                
-                tableRows += `
+            if (activeModule === 'it') {
+                thead.innerHTML = `
                     <tr>
-                        <td class="print-qr-cell" style="text-align:center;padding:4px 6px;border:1px solid #d1d5db;vertical-align:middle;width:70px;">
-                            <canvas id="${qrId}" width="50" height="50" style="width:50px;height:50px;border:1px solid #d1d5db;border-radius:4px;background:white;display:inline-block;"></canvas>
-                            <div style="font-size:7px;color:#6b7280;margin-top:2px;">${item.id_aset}</div>
-                        </td>
-                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:9px;font-weight:600;">${item.user || '-'}</td>
-                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:9px;">${item.dept || item.dep || '-'}</td>
-                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:9px;">${item.device || '-'}</td>
-                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:9px;text-align:center;">
-                            <span style="padding:2px 10px;border-radius:12px;font-weight:600;font-size:8px;display:inline-block;background:${statusColor};color:${statusTextColor};">${item.status || '-'}</span>
-                        </td>
-                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:8px;font-family:monospace;">${item.ip_address || '-'}</td>
-                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:8px;">${[item.license_os, item.license_office].filter(Boolean).join(' | ') || '-'}</td>
-                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:8px;">${[item.monitor_brand, item.monitor_size].filter(Boolean).join(' ') || '-'}</td>
-                        <td style="padding:4px 6px;border:1px solid #d1d5db;font-size:8px;">${[item.printer_brand, item.printer_model].filter(Boolean).join(' ') || '-'}</td>
+                        <th>ID Aset</th>
+                        <th>User</th>
+                        <th>Dept</th>
+                        <th>Device</th>
+                        <th>Status</th>
+                        <th>IP Address</th>
+                        <th>License / Spesifikasi</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 `;
-            });
-
-            const total = data.length;
-            const laptop = data.filter(i => String(i.device || '').toLowerCase().includes('laptop')).length;
-            const komputer = data.filter(i => { const d = String(i.device || '').toLowerCase(); return d.includes('komputer') || d.includes('pc'); }).length;
-            const maintenance = data.filter(i => { const s = String(i.status || '').toLowerCase(); return s === 'maintenance' || s === 'broken' || s === 'rusak'; }).length;
-            const expired = data.filter(i => {
-                if (!i.license_expiry) return false;
-                return (new Date(i.license_expiry) - new Date()) < 0;
-            }).length;
-
-            const html = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Laporan Inventaris IT</title>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
-                    <style>
-                        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-                        body { 
-                            background: white; 
-                            padding: 20px; 
-                            color: #1f2937;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
-                        .header { 
-                            text-align:center; 
-                            padding:15px 0; 
-                            border-bottom:3px solid #1f2937; 
-                            margin-bottom:15px; 
-                        }
-                        .header h1 { 
-                            font-size:22px; 
-                            font-weight:800; 
-                            letter-spacing:2px; 
-                            margin:0;
-                            color: #1f2937;
-                        }
-                        .header .sub { 
-                            font-size:12px; 
-                            color:#6b7280; 
-                            margin-top:2px;
-                        }
-                        .header .date { 
-                            font-size:10px; 
-                            color:#9ca3af; 
-                            margin-top:2px;
-                        }
-                        .summary {
-                            display: grid;
-                            grid-template-columns: repeat(5, 1fr);
-                            gap: 10px;
-                            margin-bottom: 15px;
-                        }
-                        .summary-item {
-                            background: #f3f4f6;
-                            padding: 8px;
-                            border-radius: 6px;
-                            text-align: center;
-                            border: 1px solid #e5e7eb;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
-                        .summary-item .label {
-                            font-size: 8px;
-                            text-transform: uppercase;
-                            color: #6b7280;
-                            font-weight: 600;
-                        }
-                        .summary-item .value {
-                            font-size: 18px;
-                            font-weight: 800;
-                            color: #1f2937;
-                            margin-top: 2px;
-                        }
-                        .summary-item .value.expired { color: #ef4444; }
-                        table { 
-                            width:100%; 
-                            border-collapse:collapse; 
-                            font-size:9px; 
-                        }
-                        thead th { 
-                            background:#1f2937 !important; 
-                            color:white !important; 
-                            padding:6px 8px; 
-                            text-align:left; 
-                            font-weight:700; 
-                            text-transform:uppercase; 
-                            font-size:7px; 
-                            border:1px solid #374151;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
-                        tbody td { 
-                            padding:4px 6px; 
-                            border:1px solid #d1d5db; 
-                            vertical-align:middle;
-                        }
-                        tbody tr:nth-child(even) { background:#f9fafb; }
-                        .footer { 
-                            margin-top:15px; 
-                            padding-top:10px; 
-                            border-top:2px solid #e5e7eb; 
-                            text-align:center; 
-                            font-size:9px; 
-                            color:#9ca3af; 
-                        }
-                        .print-qr-cell {
-                            text-align:center !important;
-                            vertical-align:middle !important;
-                        }
-                        .print-qr-cell canvas {
-                            display:inline-block !important;
-                            border:1px solid #d1d5db !important;
-                            border-radius:4px !important;
-                            background:white !important;
-                            width:50px !important;
-                            height:50px !important;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
-                        .expired-badge {
-                            color: #ef4444;
-                            font-weight: 700;
-                        }
-                        @page { 
-                            margin:10mm; 
-                            size: A4 landscape; 
-                        }
-                        @media print { 
-                            body { padding:0; }
-                            thead th { background:#1f2937 !important; color:white !important; }
-                            .summary-item { background:#f3f4f6 !important; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>IT ASSET INVENTORY REPORT</h1>
-                        <div class="sub">${currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)'}</div>
-                        <div class="date">Dicetak: ${dateStr}</div>
-                    </div>
-
-                    <div class="summary">
-                        <div class="summary-item">
-                            <div class="label">Total Aset</div>
-                            <div class="value">${total}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">Laptop</div>
-                            <div class="value">${laptop}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">Komputer</div>
-                            <div class="value">${komputer}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">Maintenance</div>
-                            <div class="value">${maintenance}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">⏰ Expired License</div>
-                            <div class="value expired">${expired}</div>
-                        </div>
-                    </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:center;width:70px;">QR Code</th>
-                                <th>User</th>
-                                <th>Dept</th>
-                                <th>Device</th>
-                                <th style="text-align:center;">Status</th>
-                                <th>IP</th>
-                                <th>License</th>
-                                <th>Monitor</th>
-                                <th>Printer</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows}
-                        </tbody>
-                    </table>
-
-                    <div class="footer">
-                        © IT Asset Manager Pro - Total Aset: ${total}
-                    </div>
-
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const data = ${JSON.stringify(data)};
-                            data.forEach((item, index) => {
-                                const canvasId = 'qr_print_' + index;
-                                const canvas = document.getElementById(canvasId);
-                                if (canvas && typeof QRious !== 'undefined') {
-                                    try {
-                                        new QRious({
-                                            element: canvas,
-                                            value: item.id_aset,
-                                            size: 50,
-                                            background: 'white',
-                                            foreground: '#111827',
-                                            level: 'H'
-                                        });
-                                    } catch(e) {}
-                                }
-                            });
-                        });
-                    <\/script>
-                </body>
-                </html>
-            `;
-
-            printWin.document.write(html);
-            printWin.document.close();
-            
-            setTimeout(() => {
-                printWin.focus();
-                printWin.print();
-            }, 1500);
-        }
-
-        // ============================================
-        // CRUD OPERATIONS
-        // ============================================
-        async function updateField(idRaw, kolom, nilaiBaru) {
-            if (!hasPermission('admin')) {
-                showToast('⛔ Access Denied', 'Hanya Admin yang bisa mengubah data!', 'error');
-                return;
-            }
-
-            const idAset = idRaw.trim();
-            const nilaiClean = nilaiBaru.trim();
-
-            if (kolom === 'user' || kolom === 'dept') {
-                const dataLama = data.find(item => item.id_aset === idAset);
-                const nilaiLama = dataLama ? String(dataLama[kolom] || dataLama['dep'] || '-') : '-';
-                if (nilaiLama.trim() !== nilaiClean) {
-                    await catatHistory(idAset, kolom, nilaiLama, nilaiClean);
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-gray-400">Belum ada data komputer/IT.</td></tr>`;
+                    return;
                 }
-            }
-
-            const { error } = await supabaseClient
-                .from(currentTable)
-                .update({ [kolom]: nilaiClean })
-                .eq('id_aset', idAset);
-
-            if (error) {
-                alert("Gagal update: " + error.message);
-                fetchData();
+                tbody.innerHTML = data.map(item => `
+                    <tr>
+                        <td class="font-mono text-indigo-300">${item.id_aset}</td>
+                        <td>${item.user || '-'}</td>
+                        <td>${item.dept || '-'}</td>
+                        <td>${item.device || '-'}</td>
+                        <td><span class="badge-status ${String(item.status).toLowerCase()}">${item.status || 'Active'}</span></td>
+                        <td class="font-mono text-blue-300">${item.ip_address || '-'}</td>
+                        <td>${[item.license_os, item.specs].filter(Boolean).join(' | ') || '-'}</td>
+                        <td class="text-center">
+                            <button onclick="deleteItem('${item.id_aset}')" class="text-rose-400 hover:text-rose-300 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button>
+                        </td>
+                    </tr>
+                `).join('');
             } else {
-                fetchData();
+                // Tabel General Assets (Sesuai gambar yang dikirim user)
+                thead.innerHTML = `
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Material (ID / 中文)</th>
+                        <th>Spesifikasi</th>
+                        <th>Jumlah</th>
+                        <th>Satuan</th>
+                        <th>Jenis Inventaris</th>
+                        <th>Department</th>
+                        <th>Lokasi</th>
+                        <th>Keterangan</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                `;
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-10 text-gray-400">Belum ada data General Assets / HRGA. Silakan tambah data baru.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = data.map((item, idx) => `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>
+                            <div class="font-semibold">${item.nama_material || '-'}</div>
+                            <div class="text-gray-400 text-[10px]">${item.nama_material_mandarin || ''}</div>
+                        </td>
+                        <td>${item.spesifikasi || '-'}</td>
+                        <td class="font-bold text-indigo-300">${item.jumlah || 1}</td>
+                        <td>${item.satuan || 'Buah'}</td>
+                        <td><span class="badge-status active">${item.jenis_inventaris || 'Fixed Asset'}</span></td>
+                        <td>${item.department || '-'}</td>
+                        <td>${item.lokasi || '-'}</td>
+                        <td>${item.keterangan || '-'}</td>
+                        <td class="text-center">
+                            <button onclick="deleteGeneralItem(${item.id})" class="text-rose-400 hover:text-rose-300 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button>
+                        </td>
+                    </tr>
+                `).join('');
             }
         }
 
-        document.getElementById('assetForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        function updateStats(data) {
+            document.getElementById('statTotal').innerText = data.length;
+            document.getElementById('statActive').innerText = data.filter(i => String(i.status || i.jenis_inventaris).toLowerCase().includes('active') || String(i.status || i.jenis_inventaris).toLowerCase().includes('fixed')).length;
+            document.getElementById('statMaint').innerText = data.filter(i => String(i.status).toLowerCase() === 'maintenance' || String(i.status).toLowerCase() === 'broken').length;
             
-            if (!hasPermission('admin')) {
-                showToast('⛔ Access Denied', 'Hanya Admin yang bisa menambah aset!', 'error');
-                return;
+            const depts = new Set(data.map(i => i.dept || i.department).filter(Boolean));
+            document.getElementById('statDept').innerText = depts.size;
+        }
+
+        function toggleForm() {
+            const formContainer = document.getElementById('formContainer');
+            formContainer.classList.toggle('hidden');
+            const form = document.getElementById('dynamicForm');
+            
+            if (activeModule === 'it') {
+                document.getElementById('formTitle').innerText = "Input Komputer / IT Aset Baru";
+                form.innerHTML = `
+                    <div><label>ID Aset *</label><input type="text" id="it_id" placeholder="PC-001" required /></div>
+                    <div><label>User *</label><input type="text" id="it_user" placeholder="Nama Karyawan" required /></div>
+                    <div><label>Departemen *</label><input type="text" id="it_dept" placeholder="IT / HRGA / Finance" required /></div>
+                    <div><label>Device *</label><select id="it_device"><option value="KOMPUTER">KOMPUTER</option><option value="LAPTOP">LAPTOP</option><option value="PRINTER">PRINTER</option></select></div>
+                    <div><label>Spesifikasi</label><input type="text" id="it_specs" placeholder="Core i5 / 8GB RAM" /></div>
+                    <div><label>Status</label><select id="it_status"><option value="Active">Active</option><option value="Maintenance">Maintenance</option></select></div>
+                    <div><label>IP Address</label><input type="text" id="it_ip" placeholder="192.168.10.x" /></div>
+                    <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveITAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan IT Aset</button></div>
+                `;
+            } else {
+                document.getElementById('formTitle').innerText = "Input General Asset / HRGA Baru";
+                form.innerHTML = `
+                    <div><label>Nama Material (ID) *</label><input type="text" id="gen_nama" placeholder="Meja Kerja / AC" required /></div>
+                    <div><label>Nama Material (Mandarin / 中文)</label><input type="text" id="gen_mandarin" placeholder="工作台 / 空调" /></div>
+                    <div><label>Spesifikasi / Merk</label><input type="text" id="gen_specs" placeholder="Acer / 1.5 PK" /></div>
+                    <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="1" min="1" required /></div>
+                    <div><label>Satuan</label><input type="text" id="gen_satuan" value="Buah" /></div>
+                    <div><label>Jenis Inventaris</label><select id="gen_jenis"><option value="Fixed Asset">Fixed Asset</option><option value="Consumable">Consumable</option></select></div>
+                    <div><label>Department *</label><input type="text" id="gen_dept" placeholder="IT / HRGA / PRODUKSI" required /></div>
+                    <div><label>Lokasi Penempatan</label><input type="text" id="gen_lokasi" placeholder="Ruang Kantor Administrasi" /></div>
+                    <div><label>Keterangan</label><input type="text" id="gen_keterangan" placeholder="Catatan tambahan" /></div>
+                    <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveGeneralAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan General Asset</button></div>
+                `;
             }
+        }
 
-            const btn = document.getElementById('btnSimpan');
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
-
-            const newData = {
-                id_aset: document.getElementById('in_id').value,
-                user: document.getElementById('in_user').value,
-                dept: document.getElementById('in_dept').value,
-                device: document.getElementById('in_device').value,
-                specs: document.getElementById('in_specs').value,
-                status: document.getElementById('in_status').value,
-                ip_address: document.getElementById('in_ip').value,
-                mac_address: document.getElementById('in_mac').value,
-                hostname: document.getElementById('in_hostname').value,
-                license_os: document.getElementById('in_license_os').value,
-                license_office: document.getElementById('in_license_office').value,
-                license_av: document.getElementById('in_license_av').value,
-                license_expiry: document.getElementById('in_license_expiry').value || null,
-                purchase_date: document.getElementById('in_purchase_date').value || null,
-                warranty_expiry: document.getElementById('in_warranty_expiry').value || null,
-                monitor_brand: document.getElementById('in_monitor_brand').value,
-                monitor_size: document.getElementById('in_monitor_size').value,
-                monitor_serial: document.getElementById('in_monitor_serial').value,
-                printer_brand: document.getElementById('in_printer_brand').value,
-                printer_model: document.getElementById('in_printer_model').value,
-                printer_serial: document.getElementById('in_printer_serial').value,
-                mouse_brand: document.getElementById('in_mouse_brand').value,
-                mouse_type: document.getElementById('in_mouse_type').value,
-                keyboard_brand: document.getElementById('in_keyboard_brand').value,
-                keyboard_type: document.getElementById('in_keyboard_type').value,
-                notes: document.getElementById('in_notes').value,
+        async function saveITAsset() {
+            const payload = {
+                id_aset: document.getElementById('it_id').value,
+                user: document.getElementById('it_user').value,
+                dept: document.getElementById('it_dept').value,
+                device: document.getElementById('it_device').value,
+                specs: document.getElementById('it_specs').value,
+                status: document.getElementById('it_status').value,
+                ip_address: document.getElementById('it_ip').value,
                 deleted_at: null
             };
-
-            const { error } = await supabaseClient.from(currentTable).insert([newData]);
-            if (error) {
-                alert("Gagal: " + error.message);
-            } else {
-                e.target.reset();
-                showToast('✅ Aset Ditambahkan', `Aset ${newData.id_aset} berhasil ditambahkan.`, 'success');
-                fetchData();
+            const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
+            if (error) alert('Gagal: ' + error.message);
+            else {
+                showToast('Sukses', 'IT Aset berhasil disimpan!', 'success');
                 toggleForm();
-            }
-            btn.innerText = "Simpan ke Cloud";
-            btn.disabled = false;
-        });
-
-        // ============================================
-        // HISTORY
-        // ============================================
-        async function catatHistory(idAset, kolom, lama, baru) {
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                const historyTable = currentHistory || 'history_aset';
-                await supabaseClient.from(historyTable).insert([{
-                    id_aset: idAset,
-                    user_lama: lama,
-                    user_baru: baru,
-                    aksi: kolom === 'dept' ? 'Ubah Departemen' : 'Ubah ' + kolom,
-                    keterangan: `${kolom.toUpperCase()} diubah dari "${lama}" menjadi "${baru}"`,
-                    tgl_perubahan: new Date().toISOString(),
-                    admin_eksekusi: user ? user.email : 'System'
-                }]);
-            } catch (err) {
-                console.error("Gagal simpan history:", err.message);
+                loadData();
             }
         }
 
-        async function lihatHistory(idAset) {
-            const historyTable = currentHistory || 'history_aset';
-            const { data: logs } = await supabaseClient
-                .from(historyTable)
-                .select('*')
-                .eq('id_aset', idAset)
-                .order('tgl_perubahan', { ascending: false });
-
-            if (!logs || logs.length === 0) {
-                showToast('📜 History', `Belum ada riwayat untuk aset ${idAset}`, 'info');
-                return;
-            }
-
-            renderHistoryModal(idAset, logs, historyTable);
-        }
-
-        function renderHistoryModal(idAset, logs, sourceTable) {
-            const modal = document.getElementById('historyModal');
-            document.getElementById('historyModalTitle').innerText = `Riwayat: ${idAset}`;
-            document.getElementById('historyModalSource').innerText = `Sumber: ${sourceTable}`;
-            const body = document.getElementById('historyModalBody');
-            body.innerHTML = '';
-
-            logs.forEach(log => {
-                const tgl = new Date(log.tgl_perubahan).toLocaleString('id-ID');
-                body.innerHTML += `
-                    <div class="glass-card p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <div class="text-white font-semibold text-sm">${log.aksi || 'Update'}</div>
-                                <div class="text-xs text-gray-400">${tgl}</div>
-                            </div>
-                            <span class="text-xs text-gray-400">${log.jenis_mutasi || 'Perubahan'}</span>
-                        </div>
-                        <p class="text-sm text-gray-300 mt-2">${log.keterangan || '-'}</p>
-                        <div class="text-xs text-gray-400 mt-2">Admin: ${log.admin_eksekusi || '-'}</div>
-                    </div>
-                `;
-            });
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeHistoryModal() {
-            document.getElementById('historyModal').classList.add('hidden');
-        }
-
-        // ============================================
-        // TRANSFER
-        // ============================================
-        function bukaModalTransfer(id, nama) {
-            asetIdSedangDiproses = id;
-            document.getElementById('infoAset').innerText = `Aset: ${nama}`;
-            document.getElementById('modalTransfer').classList.remove('hidden');
-
-            const btnP1 = document.getElementById('btnKeP1');
-            const btnP2 = document.getElementById('btnKeP2');
-            btnP1.onclick = () => prosesMutasi('inventaris_p1');
-            btnP2.onclick = () => prosesMutasi('inventaris_p2');
-            btnP1.style.display = currentTable === 'inventaris_p1' ? 'none' : 'block';
-            btnP2.style.display = currentTable === 'inventaris_p2' ? 'none' : 'block';
-        }
-
-        function tutupModalTransfer() {
-            document.getElementById('modalTransfer').classList.add('hidden');
-            asetIdSedangDiproses = null;
-        }
-
-        async function prosesMutasi(tabelTujuan) {
-            if (!confirm(`Yakin pindahkan aset ini ke ${tabelTujuan}?`)) return;
-
-            try {
-                const { data: aset } = await supabaseClient
-                    .from(currentTable)
-                    .select('*')
-                    .eq('id_aset', asetIdSedangDiproses)
-                    .single();
-
-                if (!aset) throw new Error("Data aset tidak ditemukan!");
-
-                const namaPTAsal = currentTable === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)';
-                const namaPTTujuan = tabelTujuan === 'inventaris_p1' ? 'PT Magicase (P1)' : 'PT Panrama (P2)';
-                const tabelHistoryTujuan = tabelTujuan === 'inventaris_p1' ? 'history_aset' : 'history_p2';
-
-                await supabaseClient.from(tabelTujuan).delete().eq('id_aset', aset.id_aset);
-                await supabaseClient.from(tabelTujuan).insert([{
-                    id_aset: aset.id_aset,
-                    user: aset.user,
-                    dept: aset.dept || aset.dep || '-',
-                    device: aset.device,
-                    specs: aset.specs,
-                    status: 'Active',
-                    ip_address: aset.ip_address,
-                    mac_address: aset.mac_address,
-                    hostname: aset.hostname,
-                    license_os: aset.license_os,
-                    license_office: aset.license_office,
-                    license_av: aset.license_av,
-                    license_expiry: aset.license_expiry,
-                    purchase_date: aset.purchase_date,
-                    warranty_expiry: aset.warranty_expiry,
-                    monitor_brand: aset.monitor_brand,
-                    monitor_size: aset.monitor_size,
-                    monitor_serial: aset.monitor_serial,
-                    printer_brand: aset.printer_brand,
-                    printer_model: aset.printer_model,
-                    printer_serial: aset.printer_serial,
-                    mouse_brand: aset.mouse_brand,
-                    mouse_type: aset.mouse_type,
-                    keyboard_brand: aset.keyboard_brand,
-                    keyboard_type: aset.keyboard_type,
-                    notes: aset.notes,
-                    created_at: new Date().toISOString()
-                }]);
-
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                await supabaseClient.from(tabelHistoryTujuan).insert([{
-                    id_aset: aset.id_aset,
-                    user: aset.user,
-                    user_lama: aset.user,
-                    user_baru: aset.user,
-                    aksi: 'Mutasi',
-                    jenis_mutasi: 'Transfer',
-                    asal_pt: namaPTAsal,
-                    tujuan_pt: namaPTTujuan,
-                    keterangan: `Pindahan dari ${namaPTAsal} ke ${namaPTTujuan}`,
-                    tgl_perubahan: new Date().toISOString(),
-                    admin_eksekusi: user ? user.email : 'System'
-                }]);
-
-                await supabaseClient.from(currentTable).delete().eq('id_aset', asetIdSedangDiproses);
-                showToast('🔄 Transfer Berhasil', `Aset ${aset.id_aset} dipindahkan ke ${namaPTTujuan}`, 'success');
-                tutupModalTransfer();
-                fetchData();
-            } catch (err) {
-                alert("Error: " + err.message);
-            }
-        }
-
-        // ============================================
-        // DUPLICATE / CLONE
-        // ============================================
-        async function duplicateAsset(id) {
-            if (!hasPermission('admin')) {
-                showToast('⛔ Access Denied', 'Hanya Admin yang bisa clone aset!', 'error');
-                return;
-            }
-
-            const original = data.find(item => item.id_aset === id);
-            if (!original) {
-                alert('Data tidak ditemukan!');
-                return;
-            }
-
-            const newId = prompt('Masukkan ID baru untuk clone:', original.id_aset + '-copy');
-            if (!newId) return;
-
-            const existing = data.find(item => item.id_aset === newId);
-            if (existing) {
-                alert(`ID '${newId}' sudah ada!`);
-                return;
-            }
-
-            const cloneData = { ...original };
-            cloneData.id_aset = newId;
-            delete cloneData.created_at;
-            delete cloneData.updated_at;
-            delete cloneData.deleted_at;
-            delete cloneData.deleted_by;
-
-            const { error } = await supabaseClient
-                .from(currentTable)
-                .insert([cloneData]);
-
-            if (error) {
-                alert('Gagal clone: ' + error.message);
-            } else {
-                showToast('📋 Clone Berhasil', `Aset ${id} -> ${newId}`, 'success');
-                fetchData();
-            }
-        }
-
-        // ============================================
-        // BULK IMPORT
-        // ============================================
-        function openBulkImport() {
-            if (!hasPermission('admin')) {
-                showToast('⛔ Access Denied', 'Hanya Admin yang bisa import massal!', 'error');
-                return;
-            }
-            document.getElementById('bulkImportModal').classList.remove('hidden');
-            document.getElementById('importPreview').classList.add('hidden');
-            document.getElementById('importProgress').classList.add('hidden');
-            document.getElementById('fileInput').value = '';
-            importData = [];
-        }
-
-        function closeBulkImport() {
-            document.getElementById('bulkImportModal').classList.add('hidden');
-        }
-
-        function downloadTemplate() {
-            const headers = [
-                'id_aset', 'user', 'dept', 'device', 'specs', 'status',
-                'ip_address', 'mac_address', 'hostname',
-                'license_os', 'license_office', 'license_av', 'license_expiry',
-                'purchase_date', 'warranty_expiry',
-                'monitor_brand', 'monitor_size', 'monitor_serial',
-                'printer_brand', 'printer_model', 'printer_serial',
-                'mouse_brand', 'mouse_type', 'keyboard_brand', 'keyboard_type',
-                'notes'
-            ];
-
-            const sampleData = {
-                id_aset: 'PC-001',
-                user: 'Budi Santoso',
-                dept: 'IT',
-                device: 'KOMPUTER',
-                specs: 'I5,8 GB',
-                status: 'Active',
-                ip_address: '192.168.1.100',
-                mac_address: 'AA:BB:CC:DD:EE:FF',
-                hostname: 'PC-IT-01',
-                license_os: 'Windows 11 Pro',
-                license_office: 'Microsoft 365',
-                license_av: 'McAfee',
-                license_expiry: '2026-12-31',
-                purchase_date: '2025-01-15',
-                warranty_expiry: '2027-01-15',
-                monitor_brand: 'Dell',
-                monitor_size: '24 inch',
-                monitor_serial: 'SN123456',
-                printer_brand: 'HP',
-                printer_model: 'LaserJet MFP',
-                printer_serial: 'SN789012',
-                mouse_brand: 'Logitech',
-                mouse_type: 'Wireless',
-                keyboard_brand: 'Logitech',
-                keyboard_type: 'Wireless',
-                notes: 'PC untuk staff IT'
+        async function saveGeneralAsset() {
+            const payload = {
+                nama_material: document.getElementById('gen_nama').value,
+                nama_material_mandarin: document.getElementById('gen_mandarin').value,
+                spesifikasi: document.getElementById('gen_specs').value,
+                jumlah: parseInt(document.getElementById('gen_jumlah').value) || 1,
+                satuan: document.getElementById('gen_satuan').value,
+                jenis_inventaris: document.getElementById('gen_jenis').value,
+                department: document.getElementById('gen_dept').value,
+                lokasi: document.getElementById('gen_lokasi').value,
+                keterangan: document.getElementById('gen_keterangan').value,
+                deleted_at: null
             };
-
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet([sampleData], { headers });
-            ws['!cols'] = headers.map(h => ({ wch: Math.max(h.length, 15) }));
-            XLSX.utils.book_append_sheet(wb, ws, 'Template');
-            XLSX.writeFile(wb, 'Template_Import_Aset_IT.xlsx');
-        }
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-                    if (jsonData.length === 0) {
-                        alert('File kosong!');
-                        return;
-                    }
-
-                    importData = jsonData;
-                    showPreview(jsonData);
-                } catch (err) {
-                    alert('Error membaca file: ' + err.message);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function showPreview(data) {
-            const previewDiv = document.getElementById('importPreview');
-            const headerRow = document.getElementById('previewHeader');
-            const bodyRow = document.getElementById('previewBody');
-
-            const headers = Object.keys(data[0]);
-            headerRow.innerHTML = headers.map(h => 
-                `<th class="px-3 py-2 text-left text-gray-400 font-semibold text-[10px]">${h}</th>`
-            ).join('');
-
-            const previewData = data.slice(0, 5);
-            bodyRow.innerHTML = previewData.map(row => 
-                `<tr>${headers.map(h => 
-                    `<td class="px-3 py-2 border-t border-white/5 text-gray-300 text-[10px]">${row[h] || '-'}</td>`
-                ).join('')}</tr>`
-            ).join('');
-
-            document.getElementById('importStatus').innerText = `📊 ${data.length} data siap diimport`;
-            previewDiv.classList.remove('hidden');
-        }
-
-        async function confirmImport() {
-            if (importData.length === 0) {
-                alert('Tidak ada data untuk diimport!');
-                return;
+            const { error } = await supabaseClient.from('general_assets').insert([payload]);
+            if (error) alert('Gagal: ' + error.message);
+            else {
+                showToast('Sukses', 'General Asset berhasil disimpan!', 'success');
+                toggleForm();
+                loadData();
             }
-
-            if (!confirm(`Yakin import ${importData.length} data ke database?`)) return;
-
-            const progressDiv = document.getElementById('importProgress');
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-            const statusText = document.getElementById('importStatus');
-            
-            progressDiv.classList.remove('hidden');
-            progressFill.style.width = '0%';
-            progressText.innerText = '0%';
-
-            let success = 0;
-            let failed = 0;
-            const errors = [];
-
-            for (let i = 0; i < importData.length; i++) {
-                const row = importData[i];
-                
-                if (!row.id_aset) {
-                    failed++;
-                    errors.push(`Baris ${i+1}: ID Aset kosong`);
-                    continue;
-                }
-
-                try {
-                    const asset = {
-                        id_aset: String(row.id_aset).trim(),
-                        user: String(row.user || '').trim(),
-                        dept: String(row.dept || '').trim(),
-                        device: String(row.device || '').trim(),
-                        specs: String(row.specs || '').trim(),
-                        status: String(row.status || 'Active').trim(),
-                        ip_address: String(row.ip_address || '').trim(),
-                        mac_address: String(row.mac_address || '').trim(),
-                        hostname: String(row.hostname || '').trim(),
-                        license_os: String(row.license_os || '').trim(),
-                        license_office: String(row.license_office || '').trim(),
-                        license_av: String(row.license_av || '').trim(),
-                        license_expiry: row.license_expiry || null,
-                        purchase_date: row.purchase_date || null,
-                        warranty_expiry: row.warranty_expiry || null,
-                        monitor_brand: String(row.monitor_brand || '').trim(),
-                        monitor_size: String(row.monitor_size || '').trim(),
-                        monitor_serial: String(row.monitor_serial || '').trim(),
-                        printer_brand: String(row.printer_brand || '').trim(),
-                        printer_model: String(row.printer_model || '').trim(),
-                        printer_serial: String(row.printer_serial || '').trim(),
-                        mouse_brand: String(row.mouse_brand || '').trim(),
-                        mouse_type: String(row.mouse_type || '').trim(),
-                        keyboard_brand: String(row.keyboard_brand || '').trim(),
-                        keyboard_type: String(row.keyboard_type || '').trim(),
-                        notes: String(row.notes || '').trim(),
-                        deleted_at: null
-                    };
-
-                    const { data: existing } = await supabaseClient
-                        .from(currentTable)
-                        .select('id_aset')
-                        .eq('id_aset', asset.id_aset);
-
-                    if (existing && existing.length > 0) {
-                        failed++;
-                        errors.push(`Baris ${i+1}: ID '${asset.id_aset}' sudah ada`);
-                        continue;
-                    }
-
-                    const { error } = await supabaseClient
-                        .from(currentTable)
-                        .insert([asset]);
-
-                    if (error) {
-                        failed++;
-                        errors.push(`Baris ${i+1}: ${error.message}`);
-                    } else {
-                        success++;
-                    }
-                } catch (err) {
-                    failed++;
-                    errors.push(`Baris ${i+1}: ${err.message}`);
-                }
-
-                const progress = ((i + 1) / importData.length) * 100;
-                progressFill.style.width = progress + '%';
-                progressText.innerText = Math.round(progress) + '%';
-                statusText.innerText = `📊 ${success} berhasil, ${failed} gagal...`;
-            }
-
-            statusText.innerText = `✅ Selesai! ${success} data berhasil diimport, ${failed} gagal.`;
-            
-            if (errors.length > 0) {
-                console.log('Error details:', errors);
-                if (failed > 0) {
-                    alert(`⚠️ ${failed} data gagal diimport.\nCek console untuk detail error.`);
-                }
-            }
-
-            fetchData();
-            
-            setTimeout(() => {
-                closeBulkImport();
-            }, 3000);
         }
 
-        // ============================================
-        // UTILITY FUNCTIONS
-        // ============================================
-        function toggleForm() {
-            document.getElementById('formContainer').classList.toggle('hidden');
+        async function deleteItem(id) {
+            if (!confirm(`Hapus aset ${id}?`)) return;
+            const { error } = await supabaseClient.from(currentPTTable).update({ deleted_at: new Date().toISOString() }).eq('id_aset', id);
+            if (error) alert('Gagal: ' + error.message);
+            else { loadData(); showToast('Terhapus', 'Aset dipindahkan ke trash', 'info'); }
         }
 
-        function filterByDept(namaDept) {
-            const rows = document.querySelectorAll('#inventoryBody tr');
-            rows.forEach(row => {
-                const deptCell = row.cells[3];
-                if (deptCell) {
-                    const deptText = deptCell.innerText.trim().toUpperCase();
-                    row.style.display = deptText.includes(namaDept.toUpperCase()) ? '' : 'none';
-                }
-            });
+        async function deleteGeneralItem(id) {
+            if (!confirm(`Hapus data aset ini?`)) return;
+            const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+            if (error) alert('Gagal: ' + error.message);
+            else { loadData(); showToast('Terhapus', 'Data dipindahkan ke trash', 'info'); }
         }
 
-        function resetFilter() {
-            document.querySelectorAll('#inventoryBody tr').forEach(row => row.style.display = '');
-            document.getElementById('searchInput').value = '';
-        }
-
-        function exportToExcel() {
-            const exportData = data.map(item => ({
-                'ID Aset': item.id_aset,
-                'User': item.user || '-',
-                'Departemen': item.dept || item.dep || '-',
-                'Device': item.device || '-',
-                'Spesifikasi': item.specs || '-',
-                'Status': item.status || '-',
-                'IP Address': item.ip_address || '-',
-                'MAC Address': item.mac_address || '-',
-                'Hostname': item.hostname || '-',
-                'License OS': item.license_os || '-',
-                'License Office': item.license_office || '-',
-                'License Antivirus': item.license_av || '-',
-                'License Expiry': item.license_expiry || '-',
-                'Purchase Date': item.purchase_date || '-',
-                'Warranty Expiry': item.warranty_expiry || '-',
-                'Monitor Brand': item.monitor_brand || '-',
-                'Monitor Size': item.monitor_size || '-',
-                'Monitor Serial': item.monitor_serial || '-',
-                'Printer Brand': item.printer_brand || '-',
-                'Printer Model': item.printer_model || '-',
-                'Printer Serial': item.printer_serial || '-',
-                'Mouse Brand': item.mouse_brand || '-',
-                'Mouse Type': item.mouse_type || '-',
-                'Keyboard Brand': item.keyboard_brand || '-',
-                'Keyboard Type': item.keyboard_type || '-',
-                'Notes': item.notes || '-'
-            }));
-
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            XLSX.utils.book_append_sheet(wb, ws, "Inventaris");
-            XLSX.writeFile(wb, `Inventaris_IT_${new Date().toISOString().slice(0,10)}.xlsx`);
-        }
-
-        function printSingleLabel(id, user, device) {
-            const printArea = document.getElementById('print-label-area');
-            printArea.innerHTML = `
-                <div style="padding:30px;text-align:center;background:white;border:2px solid #1f2937;border-radius:12px;width:300px;margin:auto;">
-                    <div style="font-weight:800;font-size:16px;margin-bottom:12px;color:#1f2937;">ASSET: ${device}</div>
-                    <canvas id="singleQRCode" width="200" height="200" style="margin:0 auto;display:block;border:2px solid #1f2937;border-radius:8px;background:white;"></canvas>
-                    <div style="margin-top:12px;font-size:13px;font-weight:600;color:#1f2937;">User: ${user}</div>
-                    <div style="margin-top:4px;font-size:11px;color:#6b7280;">${id}</div>
-                </div>
-            `;
-            new QRious({
-                element: document.getElementById('singleQRCode'),
-                value: id,
-                size: 200,
-                background: 'white',
-                foreground: '#111827',
-                level: 'H'
-            });
-            document.body.classList.add('printing-label');
-            setTimeout(() => { window.print(); document.body.classList.remove('printing-label'); }, 500);
-        }
-
-        function setPT(tabel, history) {
-            currentTable = tabel;
-            currentHistory = history;
-            document.getElementById('pilihPTModal').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('hidden');
-            fetchData();
-        }
-
-        function initScanner() {
-            if (html5QrcodeScanner) return;
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 200, aspectRatio: 1.0 });
-            html5QrcodeScanner.render((decodedText) => {
-                const code = decodedText.trim().toUpperCase();
-                const ditemukan = data.find(item => (item.id_aset || "").toString().toUpperCase() === code);
-                if (ditemukan) {
-                    showToast('✅ QR Ditemukan', 
-                        `ID: ${ditemukan.id_aset}\nUser: ${ditemukan.user || '-'}\nDept: ${ditemukan.dept || ditemukan.dep || '-'}`, 
-                        'success'
-                    );
-                } else {
-                    showToast('❌ QR Tidak Ditemukan', `Data ${code} tidak ada di database.`, 'error');
-                }
-            });
-        }
-
-        // ============================================
-        // SEARCH
-        // ============================================
         document.getElementById('searchInput').addEventListener('input', (e) => {
-            const kw = e.target.value.toLowerCase();
-            const filtered = data.filter(i => {
-                const searchFields = [
-                    i.id_aset, i.user, i.dept, i.dep, i.device,
-                    i.ip_address, i.license_os, i.license_office,
-                    i.monitor_brand, i.printer_brand, i.mouse_brand, i.keyboard_brand,
-                    i.hostname, i.notes
-                ].filter(Boolean).join(' ').toLowerCase();
-                return searchFields.includes(kw);
+            const keyword = e.target.value.toLowerCase();
+            const filtered = rawData.filter(item => {
+                const text = Object.values(item).filter(Boolean).join(' ').toLowerCase();
+                return text.includes(keyword);
             });
             renderTable(filtered);
-            updateStats(filtered);
-            updateCharts(filtered);
-            updateDeptStats(filtered);
         });
 
-        // ============================================
-        // EDIT MODAL
-        // ============================================
-        function openEditModal(id) {
-            if (!hasPermission('admin')) {
-                showToast('⛔ Access Denied', 'Hanya Admin yang bisa edit aset!', 'error');
-                return;
-            }
-
-            const asset = data.find(item => item.id_aset === id);
-            if (!asset) {
-                alert('Data tidak ditemukan!');
-                return;
-            }
-
-            document.getElementById('editIdDisplay').innerText = id;
-            document.getElementById('edit_id').value = id;
-            document.getElementById('edit_user').value = asset.user || '';
-            document.getElementById('edit_dept').value = asset.dept || asset.dep || '';
-            document.getElementById('edit_device').value = asset.device || '';
-            document.getElementById('edit_specs').value = asset.specs || '';
-            document.getElementById('edit_status').value = asset.status || 'Active';
-            document.getElementById('edit_ip').value = asset.ip_address || '';
-            document.getElementById('edit_mac').value = asset.mac_address || '';
-            document.getElementById('edit_hostname').value = asset.hostname || '';
-            document.getElementById('edit_license_os').value = asset.license_os || '';
-            document.getElementById('edit_license_office').value = asset.license_office || '';
-            document.getElementById('edit_license_av').value = asset.license_av || '';
-            document.getElementById('edit_license_expiry').value = asset.license_expiry || '';
-            document.getElementById('edit_purchase_date').value = asset.purchase_date || '';
-            document.getElementById('edit_warranty_expiry').value = asset.warranty_expiry || '';
-            document.getElementById('edit_monitor_brand').value = asset.monitor_brand || '';
-            document.getElementById('edit_monitor_size').value = asset.monitor_size || '';
-            document.getElementById('edit_monitor_serial').value = asset.monitor_serial || '';
-            document.getElementById('edit_printer_brand').value = asset.printer_brand || '';
-            document.getElementById('edit_printer_model').value = asset.printer_model || '';
-            document.getElementById('edit_printer_serial').value = asset.printer_serial || '';
-            document.getElementById('edit_mouse_brand').value = asset.mouse_brand || '';
-            document.getElementById('edit_mouse_type').value = asset.mouse_type || '';
-            document.getElementById('edit_keyboard_brand').value = asset.keyboard_brand || '';
-            document.getElementById('edit_keyboard_type').value = asset.keyboard_type || '';
-            document.getElementById('edit_notes').value = asset.notes || '';
-
-            document.getElementById('editModal').classList.remove('hidden');
+        function exportToExcel() {
+            const ws = XLSX.utils.json_to_sheet(rawData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, activeModule === 'it' ? 'IT_Assets' : 'General_Assets');
+            XLSX.writeFile(wb, `Export_${activeModule.toUpperCase()}_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnUpdate');
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
-
-            const id = document.getElementById('edit_id').value;
-            
-            const updateData = {
-                user: document.getElementById('edit_user').value,
-                dept: document.getElementById('edit_dept').value,
-                device: document.getElementById('edit_device').value,
-                specs: document.getElementById('edit_specs').value,
-                status: document.getElementById('edit_status').value,
-                ip_address: document.getElementById('edit_ip').value,
-                mac_address: document.getElementById('edit_mac').value,
-                hostname: document.getElementById('edit_hostname').value,
-                license_os: document.getElementById('edit_license_os').value,
-                license_office: document.getElementById('edit_license_office').value,
-                license_av: document.getElementById('edit_license_av').value,
-                license_expiry: document.getElementById('edit_license_expiry').value || null,
-                purchase_date: document.getElementById('edit_purchase_date').value || null,
-                warranty_expiry: document.getElementById('edit_warranty_expiry').value || null,
-                monitor_brand: document.getElementById('edit_monitor_brand').value,
-                monitor_size: document.getElementById('edit_monitor_size').value,
-                monitor_serial: document.getElementById('edit_monitor_serial').value,
-                printer_brand: document.getElementById('edit_printer_brand').value,
-                printer_model: document.getElementById('edit_printer_model').value,
-                printer_serial: document.getElementById('edit_printer_serial').value,
-                mouse_brand: document.getElementById('edit_mouse_brand').value,
-                mouse_type: document.getElementById('edit_mouse_type').value,
-                keyboard_brand: document.getElementById('edit_keyboard_brand').value,
-                keyboard_type: document.getElementById('edit_keyboard_type').value,
-                notes: document.getElementById('edit_notes').value
-            };
-
-            const oldData = data.find(item => item.id_aset === id);
-            if (oldData) {
-                if (oldData.user !== updateData.user) {
-                    await catatHistory(id, 'user', oldData.user || '-', updateData.user);
-                }
-                if ((oldData.dept || oldData.dep) !== updateData.dept) {
-                    await catatHistory(id, 'dept', oldData.dept || oldData.dep || '-', updateData.dept);
-                }
-            }
-
-            const { error } = await supabaseClient
-                .from(currentTable)
-                .update(updateData)
-                .eq('id_aset', id);
-
-            if (error) {
-                alert('Gagal update: ' + error.message);
-            } else {
-                showToast('✅ Aset Diupdate', `Aset ${id} berhasil diupdate.`, 'success');
-                closeEditModal();
-                fetchData();
-            }
-
-            btn.innerText = "💾 Update Aset";
-            btn.disabled = false;
-        });
-
-        // ============================================
-        // DRAG & DROP
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropZone = document.getElementById('dropZone');
-            
-            if (dropZone) {
-                dropZone.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    this.classList.add('dragover');
-                });
-
-                dropZone.addEventListener('dragleave', function(e) {
-                    e.preventDefault();
-                    this.classList.remove('dragover');
-                });
-
-                dropZone.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    this.classList.remove('dragover');
-                    
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        const fileInput = document.getElementById('fileInput');
-                        fileInput.files = files;
-                        handleFileUpload({ target: fileInput });
-                    }
-                });
-            }
-        });
-
-        console.log('🚀 IT Asset Manager Pro v6.0 - Premium Edition');
-        console.log('📋 Fitur: Notifikasi License, Multi-Role, Soft Delete');
-        console.log('👤 User Roles: Super Admin | Admin | Manager | Viewer');
-        console.log('🔔 Auto-check license expiry setiap load data');
-        console.log('🗑️ Soft delete dengan restore & permanent delete');
     </script>
 </body>
 </html>
