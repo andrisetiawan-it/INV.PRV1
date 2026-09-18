@@ -508,16 +508,28 @@
         function closeBulkImport() { document.getElementById('bulkImportModal').classList.add('hidden'); }
 
         function downloadTemplate() {
-            let sampleData, headers;
+            let sampleData, ws;
             if (activeModule === 'it') {
-                headers = ['id_aset', 'user', 'dept', 'device', 'specs', 'status', 'ip_address'];
+                const headers = ['id_aset', 'user', 'dept', 'device', 'specs', 'status', 'ip_address'];
                 sampleData = { id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10' };
+                ws = XLSX.utils.json_to_sheet([sampleData], { headers });
             } else {
-                headers = ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'keterangan', 'jenis_inventaris', 'department', 'lokasi'];
-                sampleData = { nama_material: 'Meja Kerja', nama_material_mandarin: '工作台', spesifikasi: 'Standard', jumlah: 15, satuan: 'Buah', keterangan: '', jenis_inventaris: 'Fixed Asset', department: 'HRGA', lokasi: 'Ruang Kantor Administrasi' };
+                // Urutan kolom template persis seperti tabel di gambar
+                const headers = ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'keterangan', 'jenis_inventaris', 'department', 'lokasi'];
+                sampleData = { 
+                    nama_material: 'Meja Kerja', 
+                    nama_material_mandarin: '工作台', 
+                    spesifikasi: 'Standard', 
+                    jumlah: 15, 
+                    satuan: 'Buah', 
+                    keterangan: '', 
+                    jenis_inventaris: 'Fixed Asset', 
+                    department: 'HRGA', 
+                    lokasi: 'Ruang Kantor Administrasi' 
+                };
+                ws = XLSX.utils.json_to_sheet([sampleData], { header: headers });
             }
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet([sampleData], { headers });
             XLSX.utils.book_append_sheet(wb, ws, 'Template');
             XLSX.writeFile(wb, `Template_Import_${activeModule.toUpperCase()}.xlsx`);
         }
