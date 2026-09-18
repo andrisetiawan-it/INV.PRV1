@@ -27,14 +27,13 @@
         .chart-container { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 20px; }
         .table-wrapper { max-height: 65vh; overflow: auto; border-radius: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); }
         .table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        .table-wrapper thead th { position: sticky; top: 0; z-index: 20; background: rgba(26, 16, 64, 0.95) !important; backdrop-filter: blur(10px); color: #c4b5fd !important; font-weight: 600; padding: 10px 8px; text-transform: uppercase; font-size: 0.6rem; }
-        .table-wrapper tbody td { padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #e5e7eb; font-size: 0.7rem; vertical-align: middle; }
+        .table-wrapper thead th { position: sticky; top: 0; z-index: 20; background: rgba(26, 16, 64, 0.95) !important; backdrop-filter: blur(10px); color: #c4b5fd !important; font-weight: 600; padding: 10px 8px; text-transform: uppercase; font-size: 0.6rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .table-wrapper tbody td { padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #e5e7eb; font-size: 0.7rem; vertical-align: middle; text-align: center; }
+        .table-wrapper tbody td:nth-child(2) { text-align: left; }
         .table-wrapper tbody tr:hover { background: rgba(99, 102, 241, 0.05); }
         .badge-status { padding: 2px 10px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; }
         .badge-status.active { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
-        .badge-status.maintenance { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); }
-        .badge-status.broken { background: rgba(251, 113, 133, 0.2); color: #fb7185; border: 1px solid rgba(251, 113, 133, 0.2); }
-        .qr-code { width: 50px; height: 50px; border-radius: 6px; background: white; padding: 2px; display: inline-block; }
+        .qr-code { width: 40px; height: 40px; border-radius: 6px; background: white; padding: 2px; display: inline-block; }
         .login-box { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 40px; width: 100%; max-width: 400px; }
         .login-box input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 12px 16px; width: 100%; }
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -92,29 +91,15 @@
                 <h2 class="text-xl font-bold text-white">📤 Import Massal (<span id="importModalTitle">IT</span>)</h2>
                 <button onclick="closeBulkImport()" class="text-gray-400 hover:text-white">✕</button>
             </div>
-            
             <div class="mb-4">
                 <p class="text-gray-400 text-sm mb-2">Download template Excel sesuai modul yang aktif, isi data, lalu upload kembali</p>
-                <button onclick="downloadTemplate()" class="btn bg-blue-500/20 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-xl text-sm">
-                    📥 Download Template Excel
-                </button>
+                <button onclick="downloadTemplate()" class="btn bg-blue-500/20 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-xl text-sm">📥 Download Template Excel</button>
             </div>
-
             <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
                 <div class="text-4xl mb-3">📁</div>
                 <p class="text-gray-300 font-semibold">Drag & drop file Excel disini atau klik untuk memilih file</p>
                 <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" onchange="handleFileUpload(event)" />
             </div>
-
-            <div id="importProgress" class="hidden mt-4">
-                <div class="flex justify-between text-sm text-gray-400 mb-1">
-                    <span>Mengimport data...</span>
-                    <span id="progressText">0%</span>
-                </div>
-                <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
-                <p id="importStatus" class="text-sm text-gray-400 mt-2"></p>
-            </div>
-
             <div id="importPreview" class="hidden mt-4">
                 <h3 class="text-white font-semibold text-sm mb-2">Preview Data</h3>
                 <div class="overflow-auto max-h-48 rounded-xl border border-white/10">
@@ -165,7 +150,7 @@
             <!-- TAB SWITCHER -->
             <div class="flex gap-3 mb-6">
                 <button onclick="switchModule('it')" id="btnTabIT" class="tab-btn active">💻 IT Computers & Hardware</button>
-                <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 General Assets / HRGA (Meja, AC, APAR)</button>
+                <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 Aset PT Magicase Group Indonesia (General Assets)</button>
             </div>
 
             <!-- SCANNER -->
@@ -183,37 +168,25 @@
                 <div class="stat-card" onclick="resetFilter()">
                     <div class="flex items-center gap-3">
                         <div class="stat-icon bg-indigo-500/20 text-indigo-400">📦</div>
-                        <div>
-                            <p class="text-gray-400 text-[10px] uppercase">Total Item</p>
-                            <p id="statTotal" class="text-white text-xl font-bold">0</p>
-                        </div>
+                        <div><p class="text-gray-400 text-[10px] uppercase">Total Item</p><p id="statTotal" class="text-white text-xl font-bold">0</p></div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="flex items-center gap-3">
                         <div class="stat-icon bg-emerald-500/20 text-emerald-400">✨</div>
-                        <div>
-                            <p class="text-gray-400 text-[10px] uppercase">Active / Fixed Asset</p>
-                            <p id="statActive" class="text-white text-xl font-bold">0</p>
-                        </div>
+                        <div><p class="text-gray-400 text-[10px] uppercase">Active / Fixed Asset</p><p id="statActive" class="text-white text-xl font-bold">0</p></div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="flex items-center gap-3">
                         <div class="stat-icon bg-amber-500/20 text-amber-400">⚠️</div>
-                        <div>
-                            <p class="text-gray-400 text-[10px] uppercase">Maintenance / Rusak</p>
-                            <p id="statMaint" class="text-white text-xl font-bold">0</p>
-                        </div>
+                        <div><p class="text-gray-400 text-[10px] uppercase">Maintenance / Rusak</p><p id="statMaint" class="text-white text-xl font-bold">0</p></div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="flex items-center gap-3">
                         <div class="stat-icon bg-purple-500/20 text-purple-400">🏢</div>
-                        <div>
-                            <p class="text-gray-400 text-[10px] uppercase">Department</p>
-                            <p id="statDept" class="text-white text-xl font-bold">0</p>
-                        </div>
+                        <div><p class="text-gray-400 text-[10px] uppercase">Department</p><p id="statDept" class="text-white text-xl font-bold">0</p></div>
                     </div>
                 </div>
             </div>
@@ -249,7 +222,7 @@
 
             <!-- SEARCH BAR -->
             <div class="mb-4">
-                <input type="text" id="searchInput" placeholder="Cari data berdasarkan ID, User, Dept, Material, atau Lokasi..." class="input input-bordered w-full max-w-md bg-white/5 border-white/10 text-white text-sm rounded-xl" />
+                <input type="text" id="searchInput" placeholder="Cari data berdasarkan Nama Material, Department, atau Lokasi..." class="input input-bordered w-full max-w-md bg-white/5 border-white/10 text-white text-sm rounded-xl" />
             </div>
 
             <!-- TABLE CONTAINER -->
@@ -258,7 +231,7 @@
                     <table id="mainTable">
                         <thead id="tableHead"></thead>
                         <tbody id="tableBody">
-                            <tr><td colspan="10" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
+                            <tr><td colspan="11" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -360,34 +333,49 @@
                 if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="9" class="text-center py-10 text-gray-400">Belum ada data komputer/IT.</td></tr>`; return; }
                 tbody.innerHTML = data.map(item => `
                     <tr>
-                        <td><canvas class="qr-code" data-value="${item.id_aset}" width="50" height="50"></canvas></td>
+                        <td><canvas class="qr-code" data-value="${item.id_aset}" width="40" height="40"></canvas></td>
                         <td class="font-mono text-indigo-300">${item.id_aset}</td>
                         <td>${item.user || '-'}</td>
                         <td>${item.dept || '-'}</td>
                         <td>${item.device || '-'}</td>
-                        <td><span class="badge-status ${String(item.status).toLowerCase()}">${item.status || 'Active'}</span></td>
+                        <td><span class="badge-status active">${item.status || 'Active'}</span></td>
                         <td class="font-mono text-blue-300">${item.ip_address || '-'}</td>
                         <td>${[item.license_os, item.specs].filter(Boolean).join(' | ') || '-'}</td>
                         <td class="text-center"><button onclick="deleteItem('${item.id_aset}')" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button></td>
                     </tr>
                 `).join('');
                 document.querySelectorAll('canvas.qr-code').forEach(c => {
-                    new QRious({ element: c, value: c.dataset.value, size: 50, background: 'white', foreground: '#111827' });
+                    new QRious({ element: c, value: c.dataset.value, size: 40, background: 'white', foreground: '#111827' });
                 });
             } else {
-                thead.innerHTML = `<tr><th>No</th><th>Nama Material (ID / 中文)</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Lokasi</th><th>Keterangan</th><th class="text-center">Aksi</th></tr>`;
-                if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="10" class="text-center py-10 text-gray-400">Belum ada data General Assets.</td></tr>`; return; }
+                thead.innerHTML = `
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Material</th>
+                        <th>材料名称</th>
+                        <th>Spesifikasi</th>
+                        <th>Jumlah</th>
+                        <th>Satuan</th>
+                        <th>Keterangan</th>
+                        <th>Jenis Inventaris</th>
+                        <th>Department</th>
+                        <th>Lokasi</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                `;
+                if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="11" class="text-center py-10 text-gray-400">Belum ada data General Assets.</td></tr>`; return; }
                 tbody.innerHTML = data.map((item, idx) => `
                     <tr>
                         <td>${idx + 1}</td>
-                        <td><div class="font-semibold">${item.nama_material || '-'}</div><div class="text-gray-400 text-[10px]">${item.nama_material_mandarin || ''}</div></td>
+                        <td class="font-semibold text-left">${item.nama_material || '-'}</td>
+                        <td class="text-gray-400 text-left">${item.nama_material_mandarin || '-'}</td>
                         <td>${item.spesifikasi || '-'}</td>
                         <td class="font-bold text-indigo-300">${item.jumlah || 1}</td>
                         <td>${item.satuan || 'Buah'}</td>
+                        <td>${item.keterangan || '-'}</td>
                         <td><span class="badge-status active">${item.jenis_inventaris || 'Fixed Asset'}</span></td>
                         <td>${item.department || '-'}</td>
                         <td>${item.lokasi || '-'}</td>
-                        <td>${item.keterangan || '-'}</td>
                         <td class="text-center"><button onclick="deleteGeneralItem(${item.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button></td>
                     </tr>
                 `).join('');
@@ -446,18 +434,18 @@
                     <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveITAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan IT Aset</button></div>
                 `;
             } else {
-                document.getElementById('formTitle').innerText = "Input General Asset / HRGA Baru";
+                document.getElementById('formTitle').innerText = "Input Aset PT Magicase Group Indonesia";
                 form.innerHTML = `
-                    <div><label>Nama Material (ID) *</label><input type="text" id="gen_nama" placeholder="Meja Kerja / AC" required /></div>
-                    <div><label>Nama Material (Mandarin / 中文)</label><input type="text" id="gen_mandarin" placeholder="工作台 / 空调" /></div>
-                    <div><label>Spesifikasi / Merk</label><input type="text" id="gen_specs" placeholder="Acer / 1.5 PK" /></div>
+                    <div><label>Nama Material *</label><input type="text" id="gen_nama" placeholder="Meja Kerja" required /></div>
+                    <div><label>材料名称 (Mandarin)</label><input type="text" id="gen_mandarin" placeholder="工作台" /></div>
+                    <div><label>Spesifikasi</label><input type="text" id="gen_specs" placeholder="Acer / 1.5 PK" /></div>
                     <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="1" min="1" required /></div>
                     <div><label>Satuan</label><input type="text" id="gen_satuan" value="Buah" /></div>
+                    <div><label>Keterangan</label><input type="text" id="gen_keterangan" placeholder="Catatan" /></div>
                     <div><label>Jenis Inventaris</label><select id="gen_jenis"><option value="Fixed Asset">Fixed Asset</option><option value="Consumable">Consumable</option></select></div>
                     <div><label>Department *</label><input type="text" id="gen_dept" placeholder="IT / HRGA" required /></div>
-                    <div><label>Lokasi Penempatan</label><input type="text" id="gen_lokasi" placeholder="Ruang Kantor Administrasi" /></div>
-                    <div><label>Keterangan</label><input type="text" id="gen_keterangan" placeholder="Catatan" /></div>
-                    <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveGeneralAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan General Asset</button></div>
+                    <div><label>Lokasi</label><input type="text" id="gen_lokasi" placeholder="Ruang Kantor Administrasi" /></div>
+                    <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveGeneralAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan Data</button></div>
                 `;
             }
         }
@@ -485,15 +473,15 @@
                 spesifikasi: document.getElementById('gen_specs').value,
                 jumlah: parseInt(document.getElementById('gen_jumlah').value) || 1,
                 satuan: document.getElementById('gen_satuan').value,
+                keterangan: document.getElementById('gen_keterangan').value,
                 jenis_inventaris: document.getElementById('gen_jenis').value,
                 department: document.getElementById('gen_dept').value,
                 lokasi: document.getElementById('gen_lokasi').value,
-                keterangan: document.getElementById('gen_keterangan').value,
                 deleted_at: null
             };
             const { error } = await supabaseClient.from('general_assets').insert([payload]);
             if (error) alert('Gagal: ' + error.message);
-            else { showToast('Sukses', 'General Asset disimpan!', 'success'); toggleForm(); loadData(); }
+            else { showToast('Sukses', 'Data disimpan!', 'success'); toggleForm(); loadData(); }
         }
 
         async function deleteItem(id) {
@@ -510,12 +498,10 @@
             else { loadData(); showToast('Terhapus', 'Data masuk ke trash', 'info'); }
         }
 
-        // BULK IMPORT & TRASH FUNCTIONS
         function openBulkImport() {
-            document.getElementById('importModalTitle').innerText = activeModule === 'it' ? 'IT Computers' : 'General Assets';
+            document.getElementById('importModalTitle').innerText = activeModule === 'it' ? 'IT Computers' : 'Aset PT Magicase';
             document.getElementById('bulkImportModal').classList.remove('hidden');
             document.getElementById('importPreview').classList.add('hidden');
-            document.getElementById('importProgress').classList.add('hidden');
             document.getElementById('fileInput').value = '';
             importData = [];
         }
@@ -527,8 +513,8 @@
                 headers = ['id_aset', 'user', 'dept', 'device', 'specs', 'status', 'ip_address'];
                 sampleData = { id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10' };
             } else {
-                headers = ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'jenis_inventaris', 'department', 'lokasi', 'keterangan'];
-                sampleData = { nama_material: 'Meja Kerja', nama_material_mandarin: '工作台', spesifikasi: 'Standard', jumlah: 5, satuan: 'Buah', jenis_inventaris: 'Fixed Asset', department: 'HRGA', lokasi: 'Ruang Kantor', keterangan: 'Baru' };
+                headers = ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'keterangan', 'jenis_inventaris', 'department', 'lokasi'];
+                sampleData = { nama_material: 'Meja Kerja', nama_material_mandarin: '工作台', spesifikasi: 'Standard', jumlah: 15, satuan: 'Buah', keterangan: '', jenis_inventaris: 'Fixed Asset', department: 'HRGA', lokasi: 'Ruang Kantor Administrasi' };
             }
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet([sampleData], { headers });
@@ -587,7 +573,7 @@
             } else {
                 body.innerHTML = `
                     <table class="w-full text-xs">
-                        <thead><tr class="text-left text-gray-400"><th>ID / Nama</th><th>Dept</th><th>Aksi</th></tr></thead>
+                        <thead><tr class="text-left text-gray-400"><th>ID / Nama Material</th><th>Dept</th><th>Aksi</th></tr></thead>
                         <tbody>
                             ${trash.map(item => `
                                 <tr class="border-t border-white/5">
@@ -608,7 +594,7 @@
             const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
             const queryKey = activeModule === 'it' ? 'id_aset' : 'id';
             const { error } = await supabaseClient.from(targetTable).update({ deleted_at: null }).eq(queryKey, id);
-            if (!error) { showToast('Dipulihkan', 'Aset berhasil dikembalikan', 'success'); closeTrashModal(); loadData(); }
+            if (!error) { showToast('Dipulihkan', 'Data berhasil dikembalikan', 'success'); closeTrashModal(); loadData(); }
         }
 
         function resetFilter() { renderTable(rawData); }
