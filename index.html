@@ -231,7 +231,7 @@
                     <table id="mainTable">
                         <thead id="tableHead"></thead>
                         <tbody id="tableBody">
-                            <tr><td colspan="11" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
+                            <tr><td colspan="12" class="text-center py-10 text-gray-400">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -515,31 +515,31 @@
         function closeBulkImport() { document.getElementById('bulkImportModal').classList.add('hidden'); }
 
         function downloadTemplate() {
-            let sampleData, ws;
             if (activeModule === 'it') {
-                const headers = ['id_aset', 'user', 'dept', 'device', 'specs', 'status', 'ip_address'];
-                sampleData = { id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10' };
-                ws = XLSX.utils.json_to_sheet([sampleData], { headers });
+                const sampleData = [{
+                    id_aset: 'PC-001',
+                    user: 'Budi',
+                    dept: 'IT',
+                    device: 'KOMPUTER',
+                    specs: 'Core i5',
+                    status: 'Active',
+                    ip_address: '192.168.1.10'
+                }];
+                const ws = XLSX.utils.json_to_sheet(sampleData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Template_IT');
+                XLSX.writeFile(wb, 'Template_Import_IT.xlsx');
             } else {
-                // Sesuai urutan kolom persis gambar
-                const headers = ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'keterangan', 'jenis_inventaris', 'department', 'gambar', 'lokasi'];
-                sampleData = { 
-                    nama_material: 'Meja Kerja', 
-                    nama_material_mandarin: '工作台', 
-                    spesifikasi: 'Standard', 
-                    jumlah: 15, 
-                    satuan: 'Buah', 
-                    keterangan: '', 
-                    jenis_inventaris: 'Fixed Asset', 
-                    department: 'HRGA', 
-                    gambar: '',
-                    lokasi: 'Ruang Kantor Administrasi' 
-                };
-                ws = XLSX.utils.json_to_sheet([sampleData], { header: headers });
+                // Header template Excel persis seperti gambar referensi
+                const excelRows = [
+                    ["No", "Nama Material", "材料名称", "Spesifikasi", "Jumlah", "Satuan", "Keterangan", "Jenis Inventaris", "Department", "Gambar", "Lokasi"],
+                    [1, "Meja Kerja", "工作台", "Standard", 15, "Buah", "", "Fixed Asset", "HRGA", "", "Ruang Kantor Administrasi"]
+                ];
+                const ws = XLSX.utils.aoa_to_sheet(excelRows);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Aset PT Magicase');
+                XLSX.writeFile(wb, 'Template_Import_General_Assets.xlsx');
             }
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Template');
-            XLSX.writeFile(wb, `Template_Import_${activeModule.toUpperCase()}.xlsx`);
         }
 
         function handleFileUpload(event) {
@@ -573,8 +573,34 @@
             
             let success = 0;
             for (let item of importData) {
-                item.deleted_at = null;
-                const { error } = await supabaseClient.from(targetTable).insert([item]);
+                let payload = {};
+                if (activeModule === 'it') {
+                    payload = {
+                        id_aset: item.id_aset || item['ID Aset'],
+                        user: item.user || item.User,
+                        dept: item.dept || item.Department,
+                        device: item.device || item.Device,
+                        specs: item.specs || item.Spesifikasi,
+                        status: item.status || item.Status || 'Active',
+                        ip_address: item.ip_address || item['IP Address'],
+                        deleted_at: null
+                    };
+                } else {
+                    payload = {
+                        nama_material: item.nama_material || item['Nama Material'],
+                        nama_material_mandarin: item.nama_material_mandarin || item['材料名称'],
+                        spesifikasi: item.spesifikasi || item['Spesifikasi'],
+                        jumlah: parseInt(item.jumlah || item['Jumlah']) || 1,
+                        satuan: item.satuan || item['Satuan'] || 'Buah',
+                        keterangan: item.keterangan || item['Keterangan'] || '',
+                        jenis_inventaris: item.jenis_inventaris || item['Jenis Inventaris'] || 'Fixed Asset',
+                        department: item.department || item['Department'] || '',
+                        gambar: item.gambar || item['Gambar'] || '',
+                        lokasi: item.lokasi || item['Lokasi'] || '',
+                        deleted_at: null
+                    };
+                }
+                const { error } = await supabaseClient.from(targetTable).insert([payload]);
                 if (!error) success++;
             }
             showToast('Sukses', `${success} data berhasil diimport!`, 'success');
