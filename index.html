@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Asset & IT Manager</title>
+    <title>Enterprise Asset & IT Manager Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -17,6 +17,7 @@
         body { background: #0a0e1a; min-height: 100vh; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
         .glass-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; transition: all 0.4s ease; }
+        .glass-card:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.3); }
         .gradient-text { background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .bg-animated { background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -41,8 +42,11 @@
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; max-width: 400px; }
         .toast { padding: 16px 20px; border-radius: 12px; margin-bottom: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
         .toast-success { background: rgba(52, 211, 153, 0.2); } .toast-error { background: rgba(251, 113, 133, 0.2); } .toast-info { background: rgba(96, 165, 250, 0.2); }
-        .tab-btn { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.05); color: #9ca3af; }
-        .tab-btn.active { background: linear-gradient(135deg, #818cf8, #c084fc); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.3); }
+        .tab-btn { padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #9ca3af; }
+        .tab-btn.active { background: linear-gradient(135deg, #818cf8, #c084fc); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.3); border-color: transparent; }
+        .dept-stats { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 12px 0; margin-bottom: 12px; scrollbar-width: thin; }
+        .dept-item { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 10px 16px; min-width: 80px; text-align: center; cursor: pointer; transition: all 0.3s ease; flex-shrink: 0; }
+        .dept-item:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.05); }
         @media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
         @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
     </style>
@@ -101,9 +105,19 @@
                 <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 General Assets / HRGA (Meja, AC, APAR)</button>
             </div>
 
+            <!-- SCANNER SECTION (Khusus IT) -->
+            <div id="scannerSection" class="mb-6">
+                <div class="flex justify-center">
+                    <div class="glass-card p-4" style="width:100%;max-width:320px;">
+                        <div id="reader" style="width:100%;min-height:160px;" class="rounded-xl overflow-hidden"></div>
+                        <p class="text-center text-gray-400 text-xs mt-2">📷 Scan QR Code Aset</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- STATS GRID -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="stat-card">
+                <div class="stat-card" onclick="resetFilter()">
                     <div class="flex items-center gap-3">
                         <div class="stat-icon bg-indigo-500/20 text-indigo-400">📦</div>
                         <div>
@@ -147,6 +161,15 @@
                 <button onclick="exportToExcel()" class="btn bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-xl text-sm">📊 Export Excel</button>
             </div>
 
+            <!-- DEPARTMENT STATS QUICK FILTER -->
+            <div class="dept-stats" id="deptStatsContainer">
+                <div class="dept-item" onclick="filterByDept('IT')"><div class="text-[10px] text-gray-400">IT</div><div id="cnt_IT" class="text-white font-bold text-sm">0</div></div>
+                <div class="dept-item" onclick="filterByDept('HRD')"><div class="text-[10px] text-gray-400">HRD</div><div id="cnt_HRD" class="text-white font-bold text-sm">0</div></div>
+                <div class="dept-item" onclick="filterByDept('HRGA')"><div class="text-[10px] text-gray-400">HRGA</div><div id="cnt_HRGA" class="text-white font-bold text-sm">0</div></div>
+                <div class="dept-item" onclick="filterByDept('FINANCE')"><div class="text-[10px] text-gray-400">FINANCE</div><div id="cnt_FINANCE" class="text-white font-bold text-sm">0</div></div>
+                <div class="dept-item" onclick="filterByDept('PRODUKSI')"><div class="text-[10px] text-gray-400">PRODUKSI</div><div id="cnt_PRODUKSI" class="text-white font-bold text-sm">0</div></div>
+            </div>
+
             <!-- FORM INPUT DINAMIS -->
             <div id="formContainer" class="glass-card p-4 mb-4 hidden">
                 <div class="flex justify-between items-center mb-3">
@@ -154,7 +177,7 @@
                     <button onclick="toggleForm()" class="text-gray-400 hover:text-white">✕</button>
                 </div>
                 <form id="dynamicForm" class="form-grid">
-                    <!-- Fields akan dirender otomatis via JS berdasarkan tab yang aktif -->
+                    <!-- Fields akan dirender otomatis via JS -->
                 </form>
             </div>
 
@@ -184,8 +207,9 @@
 
         let currentPTTable = '';
         let currentHistoryTable = '';
-        let activeModule = 'it'; // 'it' atau 'general'
+        let activeModule = 'it';
         let rawData = [];
+        let html5QrcodeScanner = null;
 
         function showToast(title, message, type = 'info') {
             const container = document.getElementById('toastContainer');
@@ -242,6 +266,7 @@
             document.getElementById('pilihPTModal').classList.add('hidden');
             document.getElementById('main-content').classList.remove('hidden');
             loadData();
+            initScanner();
         }
 
         function switchModule(module) {
@@ -249,10 +274,10 @@
             document.getElementById('btnTabIT').className = module === 'it' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('btnTabGeneral').className = module === 'general' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('formContainer').classList.add('hidden');
+            document.getElementById('scannerSection').style.display = module === 'it' ? 'block' : 'none';
             loadData();
         }
 
-        // LOAD DATA BERDASARKAN MODUL (IT / GENERAL)
         async function loadData() {
             const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
             try {
@@ -267,7 +292,7 @@
                 updateStats(rawData);
             } catch (err) {
                 console.error(err);
-                showToast('Error', 'Gagal memuat data dari database: ' + err.message, 'error');
+                showToast('Error', 'Gagal memuat data: ' + err.message, 'error');
             }
         }
 
@@ -284,7 +309,7 @@
                         <th>Device</th>
                         <th>Status</th>
                         <th>IP Address</th>
-                        <th>License / Spesifikasi</th>
+                        <th>Spesifikasi / License</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 `;
@@ -307,7 +332,6 @@
                     </tr>
                 `).join('');
             } else {
-                // Tabel General Assets (Sesuai gambar yang dikirim user)
                 thead.innerHTML = `
                     <tr>
                         <th>No</th>
@@ -355,6 +379,14 @@
             
             const depts = new Set(data.map(i => i.dept || i.department).filter(Boolean));
             document.getElementById('statDept').innerText = depts.size;
+
+            // Quick counters
+            ['IT', 'HRD', 'HRGA', 'FINANCE', 'PRODUKSI'].forEach(d => {
+                const el = document.getElementById(`cnt_${d}`);
+                if(el) {
+                    el.innerText = data.filter(i => String(i.dept || i.department || '').toUpperCase().includes(d)).length;
+                }
+            });
         }
 
         function toggleForm() {
@@ -447,6 +479,16 @@
             else { loadData(); showToast('Terhapus', 'Data dipindahkan ke trash', 'info'); }
         }
 
+        function filterByDept(deptName) {
+            const filtered = rawData.filter(i => String(i.dept || i.department || '').toUpperCase().includes(deptName));
+            renderTable(filtered);
+            showToast('Filter', `Menampilkan departemen: ${deptName}`, 'info');
+        }
+
+        function resetFilter() {
+            renderTable(rawData);
+        }
+
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = rawData.filter(item => {
@@ -461,6 +503,22 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, activeModule === 'it' ? 'IT_Assets' : 'General_Assets');
             XLSX.writeFile(wb, `Export_${activeModule.toUpperCase()}_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        function initScanner() {
+            if (html5QrcodeScanner) return;
+            try {
+                html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 180 });
+                html5QrcodeScanner.render((decodedText) => {
+                    const code = decodedText.trim().toUpperCase();
+                    const found = rawData.find(item => String(item.id_aset || '').toUpperCase() === code);
+                    if (found) {
+                        showToast('QR Ditemukan', `ID: ${found.id_aset} | User: ${found.user || '-'}`, 'success');
+                    } else {
+                        showToast('Tidak Ditemukan', `QR Code ${code} tidak ada di tabel ini.`, 'error');
+                    }
+                }, () => {});
+            } catch(e) {}
         }
     </script>
 </body>
