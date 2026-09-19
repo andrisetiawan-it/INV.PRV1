@@ -260,7 +260,7 @@
             toast.innerHTML = `<div class="font-semibold text-white">${title}</div><div class="text-xs text-gray-300">${message}</div>`;
             toast.onclick = () => toast.remove();
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 5000);
+            setTimeout(() => toast.remove(), 6000);
         }
 
         /* ============ AUTH ============ */
@@ -524,7 +524,7 @@
             else { loadData(); showToast('Terhapus', 'Data masuk ke trash', 'info'); }
         }
 
-        /* ============ BULK IMPORT (FIXED) ============ */
+        /* ============ BULK IMPORT (FIX TOTAL) ============ */
         function openBulkImport() {
             document.getElementById('importModalTitle').innerText = activeModule === 'it' ? 'IT Computers' : 'Aset PT Magicase';
             document.getElementById('bulkImportModal').classList.remove('hidden');
@@ -537,13 +537,8 @@
         function downloadTemplate() {
             if (activeModule === 'it') {
                 const sampleData = [{
-                    id_aset: 'PC-001',
-                    user: 'Budi',
-                    dept: 'IT',
-                    device: 'KOMPUTER',
-                    specs: 'Core i5 / 8GB',
-                    status: 'Active',
-                    ip_address: '192.168.1.10'
+                    id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER',
+                    specs: 'Core i5 / 8GB', status: 'Active', ip_address: '192.168.1.10'
                 }];
                 const ws = XLSX.utils.json_to_sheet(sampleData);
                 ws['!cols'] = [{wch:15},{wch:20},{wch:10},{wch:12},{wch:20},{wch:10},{wch:18}];
@@ -551,7 +546,6 @@
                 XLSX.utils.book_append_sheet(wb, ws, 'Template_IT');
                 XLSX.writeFile(wb, 'Template_Import_IT.xlsx');
             } else {
-                // ✅ Template TANPA kolom "No" biar mapping tidak geser
                 const sampleData = [{
                     nama_material: 'Komputer / PC',
                     nama_material_mandarin: '电脑/PC',
@@ -565,16 +559,14 @@
                     lokasi: 'Ruang Kantor Administrasi'
                 }];
                 const ws = XLSX.utils.json_to_sheet(sampleData);
-                ws['!cols'] = [
-                    {wch:25},{wch:22},{wch:18},{wch:8},{wch:10},
-                    {wch:20},{wch:16},{wch:12},{wch:35},{wch:30}
-                ];
+                ws['!cols'] = [{wch:25},{wch:22},{wch:18},{wch:8},{wch:10},{wch:20},{wch:16},{wch:12},{wch:35},{wch:30}];
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'Aset_PT_Magicase');
                 XLSX.writeFile(wb, 'Template_Import_General_Assets.xlsx');
             }
         }
 
+        // ✅ HANDLE FILE — pakai AOA (array of arrays) biar bisa detect header row otomatis
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -585,39 +577,69 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-                    let rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false });
-                    console.log('🔍 Raw rows dari Excel:', rows);
+                    // Baca sebagai array of arrays (biar bisa detect header row)
+                    const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false, blankrows: false });
+                    console.log('🔍 Raw AOA:', aoa);
 
-                    // ✅ Normalize header
-                    rows = rows.map(row => {
-                        const clean = {};
-                        Object.keys(row).forEach(k => {
-                            const key = String(k).toLowerCase().trim()
-                                .replace(/\s+/g, '_')
-                                .replace(/[^\w\u4e00-\u9fa5]/g, '');
-                            clean[key] = row[k];
-                        });
-                        return clean;
-                    });
-
-                    // ✅ Buang baris kosong & header row (kalau ada "No")
-                    rows = rows.filter(r => {
-                        const values = Object.values(r).map(v => String(v).trim()).filter(Boolean);
-                        if (values.length === 0) return false;
-                        const nama = String(r.nama_material || r.no || '').trim().toLowerCase();
-                        if (nama === 'no' || nama === 'nama material') return false;
-                        return true;
-                    });
-
-                    if (rows.length === 0) {
+                    if (aoa.length < 2) {
                         showToast('Error', 'File Excel kosong atau hanya berisi header!', 'error');
                         return;
                     }
 
-                    console.log('✅ Data bersih siap import:', rows);
-                    importData = rows;
-                    showPreview(importData);
-                    showToast('Info', `${importData.length} baris siap diimport. Cek preview lalu Konfirmasi.`, 'info');
+                    // ✅ Cari baris header — baris yang isinya ada "nama material" / "nama_material" / "id_aset"
+                    let headerIdx = 0;
+                    for (let i = 0; i < Math.min(aoa.length, 10); i++) {
+                        const rowText = aoa[i].map(c => String(c).toLowerCase()).join('|');
+                        if (rowText.includes('nama') && (rowText.includes('material') || rowText.includes('material'))) {
+                            headerIdx = i;
+                            break;
+                        }
+                        if (rowText.includes('id_aset') || rowText.includes('id aset')) {
+                            headerIdx = i;
+                            break;
+                        }
+                    }
+                    console.log(`📍 Header detected di baris index: ${headerIdx}`);
+
+                    const headers = aoa[headerIdx].map(h => String(h).trim());
+                    const dataRows = aoa.slice(headerIdx + 1);
+
+                    console.log('📋 Headers:', headers);
+                    console.log('📊 Data rows:', dataRows.length);
+
+                    // ✅ Convert ke object dengan header normalized
+                    const normalized = [];
+                    dataRows.forEach((row, idx) => {
+                        if (row.length === 0) return;
+                        const obj = {};
+                        let hasValue = false;
+                        headers.forEach((h, i) => {
+                            const key = h.toLowerCase().trim()
+                                .replace(/\s+/g, '_')
+                                .replace(/[^\w\u4e00-\u9fa5]/g, '');
+                            obj[key] = row[i] !== undefined ? row[i] : '';
+                            if (String(row[i]).trim()) hasValue = true;
+                        });
+                        obj.___row = idx + headerIdx + 2; // untuk info di toast
+                        if (hasValue) normalized.push(obj);
+                    });
+
+                    // ✅ Buang baris header yang ke-include (kalau ada)
+                    const filtered = normalized.filter(r => {
+                        const nama = String(r.nama_material || r.no || '').trim().toLowerCase();
+                        return nama !== 'no' && nama !== 'nama material' && nama !== '';
+                    });
+
+                    if (filtered.length === 0) {
+                        showToast('Error', 'Tidak ada data valid di file Excel!', 'error');
+                        return;
+                    }
+
+                    console.log(`✅ ${filtered.length} baris siap import`);
+                    console.log('Sample row:', filtered[0]);
+                    importData = filtered;
+                    showPreview(filtered);
+                    showToast('Info', `${filtered.length} baris siap diimport. Cek preview lalu klik Konfirmasi.`, 'info');
                 } catch (err) {
                     console.error(err);
                     showToast('Error', 'Gagal baca file: ' + err.message, 'error');
@@ -630,7 +652,7 @@
             const previewDiv = document.getElementById('importPreview');
             const headerRow = document.getElementById('previewHeader');
             const bodyRow = document.getElementById('previewBody');
-            const headers = Object.keys(data[0]);
+            const headers = Object.keys(data[0]).filter(k => k !== '___row');
             headerRow.innerHTML = headers.map(h => `<th class="px-2 py-1 text-left text-gray-400 text-[10px]">${h}</th>`).join('');
             bodyRow.innerHTML = data.slice(0, 5).map(row =>
                 `<tr>${headers.map(h => `<td class="px-2 py-1 border-t border-white/5 text-gray-300 text-[10px]">${String(row[h] || '-').substring(0,40)}</td>`).join('')}</tr>`
@@ -651,22 +673,11 @@
 
             for (let i = 0; i < importData.length; i++) {
                 const item = importData[i];
+                const rowNum = item.___row || (i + 2);
                 let payload = {};
 
                 if (activeModule === 'it') {
-                    payload = {
-                        id_aset:    String(item.id_aset || item.id || '').trim(),
-                        user:       String(item.user || '').trim(),
-                        dept:       String(item.dept || item.department || '').trim(),
-                        device:     String(item.device || 'KOMPUTER').trim().toUpperCase(),
-                        specs:      String(item.specs || item.spesifikasi || '').trim(),
-                        status:     String(item.status || 'Active').trim(),
-                        ip_address: String(item.ip_address || item.ip || '').trim(),
-                        deleted_at: null
-                    };
-                    if (!payload.id_aset) { skipped++; continue; }
-                } else {
-                    // ✅ HELPER: ambil value dari multiple kemungkinan key
+                    // Helper pick
                     const pick = (...keys) => {
                         for (const k of keys) {
                             if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== '') {
@@ -675,29 +686,47 @@
                         }
                         return '';
                     };
-
                     payload = {
-                        nama_material:          pick('nama_material', 'nama', 'material'),
-                        nama_material_mandarin: pick('nama_material_mandarin', '材料名称', '材料名稱', 'mandarin'),
+                        id_aset:    pick('id_aset', 'id', 'idaset'),
+                        user:       pick('user', 'nama_user', 'pengguna'),
+                        dept:       pick('dept', 'department', 'departemen'),
+                        device:     (pick('device', 'perangkat') || 'KOMPUTER').toUpperCase(),
+                        specs:      pick('specs', 'spesifikasi', 'spec'),
+                        status:     pick('status') || 'Active',
+                        ip_address: pick('ip_address', 'ip', 'ipaddress'),
+                        deleted_at: null
+                    };
+                    if (!payload.id_aset) { skipped++; continue; }
+                } else {
+                    const pick = (...keys) => {
+                        for (const k of keys) {
+                            if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== '') {
+                                return String(item[k]).trim();
+                            }
+                        }
+                        return '';
+                    };
+                    payload = {
+                        nama_material:          pick('nama_material', 'nama', 'material', 'namamaterial'),
+                        nama_material_mandarin: pick('nama_material_mandarin', '材料名称', '材料名稱', 'mandarin', 'namamaterialmandarin'),
                         spesifikasi:            pick('spesifikasi', 'specs', 'spec'),
                         jumlah:                 parseInt(pick('jumlah', 'qty', 'quantity')) || 1,
                         satuan:                 pick('satuan', 'unit') || 'Buah',
                         keterangan:             pick('keterangan', 'notes', 'remark'),
-                        jenis_inventaris:       pick('jenis_inventaris', 'jenis', 'type') || 'Fixed Asset',
+                        jenis_inventaris:       pick('jenis_inventaris', 'jenis', 'type', 'jenisinventaris') || 'Fixed Asset',
                         department:             pick('department', 'dept', 'divisi'),
                         gambar:                 pick('gambar', 'image', 'foto', 'url_gambar'),
                         lokasi:                 pick('lokasi', 'location', 'ruang'),
                         deleted_at:             null
                     };
 
-                    // Skip baris header / kosong
-                    const namaLower = payload.nama_material.toLowerCase();
+                    const namaLower = String(payload.nama_material || '').toLowerCase();
                     if (!payload.nama_material || namaLower === 'no' || namaLower === 'nama material') {
                         skipped++;
+                        console.warn(`⏭️ Baris ${rowNum} di-skip:`, item);
                         continue;
                     }
-
-                    console.log(`📝 Baris ${i+2} → payload:`, payload);
+                    console.log(`📝 Baris ${rowNum} → payload:`, payload);
                 }
 
                 const { error } = await supabaseClient.from(targetTable).insert([payload]);
@@ -705,8 +734,8 @@
                     success++;
                 } else {
                     failed++;
-                    errors.push(`Baris ${i+2}: ${error.message}`);
-                    console.error(`❌ Baris ${i+2} GAGAL:`, error, payload);
+                    errors.push(`Baris ${rowNum}: ${error.message}`);
+                    console.error(`❌ Baris ${rowNum} GAGAL:`, error, payload);
                 }
             }
 
