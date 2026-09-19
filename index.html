@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v5</title>
+<title>Enterprise Asset Manager Pro v6</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -151,12 +151,12 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <h1 class="text-2xl font-bold gradient-text">Enterprise Asset Manager</h1>
 <p class="text-gray-400 text-sm mt-2 mb-6">Secure Enterprise Inventory System</p>
 <div class="space-y-4">
-<input type="email" id="loginEmail" placeholder="Email Admin" />
+<input type="email" id="loginEmail" placeholder="Email" />
 <input type="password" id="loginPassword" placeholder="Password" onkeypress="if(event.key==='Enter')handleLogin()" />
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v5.0 • Enterprise Edition</p>
+<p class="text-gray-500 text-xs mt-6">v6.0 • Enterprise Edition</p>
 </div>
 </div>
 
@@ -165,8 +165,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div class="glass-card p-10 text-center max-w-md w-full mx-4">
 <div class="text-5xl mb-4">🏢</div>
 <h2 class="text-2xl font-bold text-white mb-2">Pilih Database PT</h2>
-<p class="text-gray-400 text-sm mb-8">Select company database</p>
-<div class="grid gap-4">
+<div class="grid gap-4 mt-6">
 <button onclick="setPT('inventaris_p1', 'PT Magicase (P1)')" class="btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-4 rounded-xl border-none">PT Magicase (P1)</button>
 <button onclick="setPT('inventaris_p2', 'PT Panrama (P2)')" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-xl border-none">PT Panrama (P2)</button>
 </div>
@@ -181,7 +180,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="closeBulkImport()" class="text-gray-400 hover:text-white text-xl">✕</button>
 </div>
 <div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-<p class="text-blue-300 text-sm mb-2">💡 Download template, isi, upload kembali.</p>
 <button onclick="downloadTemplate()" class="btn bg-blue-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 Download Template</button>
 </div>
 <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
@@ -235,9 +233,9 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="closeUserMgmt()" class="text-gray-400 hover:text-white text-xl">✕</button>
 </div>
 <div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-<p class="text-blue-300 text-sm">💡 <strong>Info:</strong> User login dibuat di <a href="https://supabase.com/dashboard" target="_blank" class="underline font-bold">Supabase → Authentication → Users</a>. Setelah itu, atur role disini.</p>
+<p class="text-blue-300 text-sm">💡 Bikin user dulu di Supabase → Authentication → Users. Setelah itu atur role disini.</p>
 </div>
-<button onclick="showAddUserForm()" class="btn bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah User Baru</button>
+<button onclick="showAddUserForm()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah User Baru</button>
 <div id="addUserForm"></div>
 <div id="userList" class="space-y-2"></div>
 </div>
@@ -260,7 +258,8 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <span id="userRoleBadge" class="role-badge role-staff">STAFF</span>
 </div>
 <button onclick="openCommandPalette()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Ctrl+K">🔍</button>
-<button onclick="showApprovalQueue()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">✅<span id="approvalBadge" class="badge-notif hidden">0</span></button>
+<button onclick="showApprovalQueue()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Approval Queue">✅<span id="approvalBadge" class="badge-notif hidden">0</span></button>
+<button onclick="showMyRequests()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Request Saya">📤<span id="myReqBadge" class="badge-notif hidden">0</span></button>
 <button onclick="showNotifications()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">🔔<span id="notifBadge" class="badge-notif hidden">0</span></button>
 <button onclick="showLogModal()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">📝</button>
 <button onclick="showUserManagement()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Kelola User">👥</button>
@@ -368,7 +367,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 
 <div class="flex flex-wrap gap-3 mb-4 items-center">
-<input type="text" id="searchInput" placeholder="🔍 Cari ID, User, Dept, IP..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] focus:border-indigo-500 outline-none" />
+<input type="text" id="searchInput" placeholder="🔍 Cari..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] focus:border-indigo-500 outline-none" />
 <select id="filterDept" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)"><option value="">Semua Dept</option></select>
 <select id="filterDevice" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)"><option value="">Semua Device</option></select>
 <button onclick="toggleFilter('expiring')" id="btnFilterExpiring" class="filter-btn warning">⚠️ Expiring</button>
@@ -388,6 +387,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 
 </div>
 </div>
+
 <script>
 /* ═══════════════════════════════════════════════════════════
    CONFIG & STATE
@@ -425,9 +425,7 @@ document.documentElement.setAttribute('data-theme', currentTheme);
 const themeBtnEl = document.getElementById('themeBtn');
 if (themeBtnEl) themeBtnEl.innerText = currentTheme === 'dark' ? '🌙' : '☀️';
 
-/* ═══════════════════════════════════════════════════════════
-   TOAST & CONFETTI
-   ═══════════════════════════════════════════════════════════ */
+/* TOAST & CONFETTI */
 function showToast(title, message, type = 'info') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -437,7 +435,6 @@ function showToast(title, message, type = 'info') {
     container.appendChild(toast);
     setTimeout(() => toast.remove(), 5000);
 }
-
 function showConfetti() {
     for (let i = 0; i < 30; i++) {
         setTimeout(() => {
@@ -452,9 +449,7 @@ function showConfetti() {
     }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   THEME & LANGUAGE
-   ═══════════════════════════════════════════════════════════ */
+/* THEME & LANGUAGE */
 function toggleTheme() {
     currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', currentTheme);
@@ -462,7 +457,6 @@ function toggleTheme() {
     localStorage.setItem('theme', currentTheme);
     showToast('Theme', `Mode ${currentTheme === 'dark' ? 'Gelap' : 'Terang'}`, 'info');
 }
-
 function toggleLanguage() {
     const langs = ['id', 'en', 'zh'];
     const idx = (langs.indexOf(currentLang) + 1) % langs.length;
@@ -472,9 +466,7 @@ function toggleLanguage() {
     showToast('Bahasa', `Language: ${currentLang.toUpperCase()}`, 'info');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   AUTH
-   ═══════════════════════════════════════════════════════════ */
+/* AUTH */
 supabaseClient.auth.onAuthStateChange((event, session) => { if (session) checkUser(); });
 checkUser();
 
@@ -491,7 +483,6 @@ async function checkUser() {
         document.getElementById('main-content').classList.add('hidden');
     }
 }
-
 async function handleLogin() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
@@ -500,7 +491,6 @@ async function handleLogin() {
     if (error) { err.innerText = "❌ Email atau Password Salah!"; err.classList.remove('hidden'); }
     else { err.classList.add('hidden'); checkUser(); }
 }
-
 async function handleLogout() {
     if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
@@ -509,14 +499,11 @@ async function handleLogout() {
     window.location.reload();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   USER PROFILE & ROLE
-   ═══════════════════════════════════════════════════════════ */
+/* USER PROFILE */
 async function loadUserProfile() {
     if (!currentUser?.email) return;
     const { data, error } = await supabaseClient.from('user_profiles').select('*').eq('email', currentUser.email).maybeSingle();
     if (error) console.warn('Load profile err:', error);
-    
     if (data) {
         userProfile = data;
         userRole = data.role || 'staff';
@@ -526,24 +513,17 @@ async function loadUserProfile() {
             window.location.reload();
             return;
         }
-        // Update last login
         await supabaseClient.from('user_profiles').update({ last_login: new Date().toISOString() }).eq('email', currentUser.email);
     } else {
-        // Auto-register user baru
         const defaultRole = currentUser.email.includes('admin') ? 'super-admin' : 'staff';
         userRole = defaultRole;
-        const { error: regErr } = await supabaseClient.from('user_profiles').insert([{
-            email: currentUser.email,
-            full_name: currentUser.email.split('@')[0],
-            role: defaultRole,
-            is_active: true
-        }]);
-        if (regErr) console.warn('Auto-register err:', regErr);
-        else console.log('✅ Auto-registered:', defaultRole);
+        await supabaseClient.from('user_profiles').insert([{
+            email: currentUser.email, full_name: currentUser.email.split('@')[0], role: defaultRole, is_active: true
+        }]).then(({ error }) => { if (error) console.warn(error); });
     }
     updateUserUI();
+    setTimeout(() => { updateMyReqBadge(); updateApprovalBadge(); }, 1000);
 }
-
 function updateUserUI() {
     const emailEl = document.getElementById('userEmail');
     const badge = document.getElementById('userRoleBadge');
@@ -553,7 +533,6 @@ function updateUserUI() {
         badge.className = `role-badge role-${userRole}`;
     }
 }
-
 function hasPermission(action) {
     const perms = {
         'super-admin': ['view','create','edit','delete','approve','manage_user','export'],
@@ -566,9 +545,7 @@ function hasPermission(action) {
     return (perms[userRole] || perms.staff).includes(action);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PT & MODULE
-   ═══════════════════════════════════════════════════════════ */
+/* PT & MODULE */
 function setPT(table, name) {
     currentPTTable = table;
     currentPTName = name;
@@ -580,7 +557,6 @@ function setPT(table, name) {
     setupRealtime(table);
     setupAutoRefresh();
 }
-
 function switchModule(module) {
     activeModule = module;
     document.getElementById('btnTabIT').className = module === 'it' ? 'tab-btn active' : 'tab-btn';
@@ -598,35 +574,28 @@ function switchModule(module) {
     loadData();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ACTIVITY LOG
-   ═══════════════════════════════════════════════════════════ */
+/* LOG ACTIVITY */
 async function logActivity(action, tableName, recordId, detail) {
     try {
         await supabaseClient.from('activity_log').insert([{
-            user_email: currentUser?.email || 'unknown',
-            action, table_name: tableName, record_id: recordId, detail
+            user_email: currentUser?.email || 'unknown', action, table_name: tableName, record_id: recordId, detail
         }]);
     } catch (err) { console.warn('Log fail:', err); }
 }
-
 async function showLogModal() {
     const { data, error } = await supabaseClient.from('activity_log').select('*').order('created_at', { ascending: false }).limit(100);
     const modal = document.getElementById('logModal');
     const body = document.getElementById('logBody');
     if (error) { showToast('Error', error.message, 'error'); return; }
-    if (!data || data.length === 0) {
-        body.innerHTML = '<p class="text-center py-6 text-gray-400">Belum ada log.</p>';
-    } else {
+    if (!data || data.length === 0) { body.innerHTML = '<p class="text-center py-6 text-gray-400">Belum ada log.</p>'; }
+    else {
         body.innerHTML = `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Aksi</th><th class="p-2">Detail</th></tr></thead><tbody>${data.map(l => `<tr class="border-t border-white/5"><td class="p-2 text-gray-400">${new Date(l.created_at).toLocaleString('id-ID')}</td><td class="p-2 text-indigo-300">${l.user_email}</td><td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${l.action}</span></td><td class="p-2 text-gray-300">${l.detail || l.record_id || '-'}</td></tr>`).join('')}</tbody></table>`;
     }
     modal.classList.remove('hidden');
 }
 function closeLogModal() { document.getElementById('logModal').classList.add('hidden'); }
 
-/* ═══════════════════════════════════════════════════════════
-   NOTIFICATIONS
-   ═══════════════════════════════════════════════════════════ */
+/* NOTIFICATIONS */
 function checkNotifications(data) {
     const today = new Date();
     const notifications = [];
@@ -645,13 +614,9 @@ function checkNotifications(data) {
         }
     });
     const badge = document.getElementById('notifBadge');
-    if (badge) {
-        if (notifications.length > 0) { badge.innerText = notifications.length; badge.classList.remove('hidden'); }
-        else badge.classList.add('hidden');
-    }
+    if (badge) { if (notifications.length > 0) { badge.innerText = notifications.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
     return notifications;
 }
-
 function showNotifications() {
     const notifs = checkNotifications(rawData);
     if (notifs.length === 0) { showToast('🔔', 'Tidak ada notifikasi', 'info'); return; }
@@ -662,9 +627,7 @@ function showNotifications() {
     document.body.appendChild(modal);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   REFRESH
-   ═══════════════════════════════════════════════════════════ */
+/* REFRESH */
 async function refreshAll(silent = false) {
     const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
     try {
@@ -691,7 +654,6 @@ async function refreshAll(silent = false) {
         if (!silent) showToast('Error', err.message, 'error');
     }
 }
-
 async function loadData() { await refreshAll(true); }
 function manualRefresh() { showToast('Refresh', 'Memuat ulang...', 'info'); refreshAll(); }
 
@@ -703,7 +665,6 @@ function updateFilterOptions() {
     if (deptSelect) deptSelect.innerHTML = '<option value="">Semua Dept</option>' + [...depts].sort().map(d => `<option value="${d}">${d}</option>`).join('');
     if (devSelect) devSelect.innerHTML = '<option value="">Semua Device</option>' + [...devices].sort().map(d => `<option value="${d}">${d}</option>`).join('');
 }
-
 function setupRealtime(table) {
     if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
     try {
@@ -715,7 +676,6 @@ function setupRealtime(table) {
             }).subscribe();
     } catch (err) { console.warn('Realtime err:', err); }
 }
-
 function setupAutoRefresh() {
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
     autoRefreshTimer = setInterval(() => {
@@ -724,21 +684,12 @@ function setupAutoRefresh() {
     }, 15000);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FILTER
-   ═══════════════════════════════════════════════════════════ */
+/* FILTER */
 function applyFilters(data) {
     let filtered = data;
-    if (activeFilter === 'expired') {
-        const today = new Date();
-        filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) < today);
-    } else if (activeFilter === 'expiring') {
-        const today = new Date();
-        const next30 = new Date(); next30.setDate(next30.getDate() + 30);
-        filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) >= today && new Date(i.license_expiry) <= next30);
-    } else if (activeFilter === 'maintenance') {
-        filtered = filtered.filter(i => String(i.status || '').toLowerCase() === 'maintenance');
-    }
+    if (activeFilter === 'expired') { const today = new Date(); filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) < today); }
+    else if (activeFilter === 'expiring') { const today = new Date(); const next30 = new Date(); next30.setDate(next30.getDate() + 30); filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) >= today && new Date(i.license_expiry) <= next30); }
+    else if (activeFilter === 'maintenance') { filtered = filtered.filter(i => String(i.status || '').toLowerCase() === 'maintenance'); }
     const deptFilter = document.getElementById('filterDept')?.value;
     if (deptFilter) filtered = filtered.filter(i => (i.dept || i.department) === deptFilter);
     const devFilter = document.getElementById('filterDevice')?.value;
@@ -747,54 +698,27 @@ function applyFilters(data) {
     if (kw) filtered = filtered.filter(item => Object.values(item).filter(Boolean).join(' ').toLowerCase().includes(kw));
     return filtered;
 }
-
-function toggleFilter(type) {
-    activeFilter = activeFilter === type ? null : type;
-    updateFilterButtons();
-    renderTable(rawData);
-}
-function clearFilters() {
-    activeFilter = null;
-    document.getElementById('searchInput').value = '';
-    document.getElementById('filterDept').value = '';
-    document.getElementById('filterDevice').value = '';
-    updateFilterButtons();
-    renderTable(rawData);
-}
+function toggleFilter(type) { activeFilter = activeFilter === type ? null : type; updateFilterButtons(); renderTable(rawData); }
+function clearFilters() { activeFilter = null; document.getElementById('searchInput').value = ''; document.getElementById('filterDept').value = ''; document.getElementById('filterDevice').value = ''; updateFilterButtons(); renderTable(rawData); }
 function updateFilterButtons() {
-    const e = document.getElementById('btnFilterExpired');
-    const x = document.getElementById('btnFilterExpiring');
-    const m = document.getElementById('btnFilterMaintenance');
+    const e = document.getElementById('btnFilterExpired'); const x = document.getElementById('btnFilterExpiring'); const m = document.getElementById('btnFilterMaintenance');
     if (e) e.classList.toggle('active', activeFilter === 'expired');
     if (x) x.classList.toggle('active', activeFilter === 'expiring');
     if (m) m.classList.toggle('active', activeFilter === 'maintenance');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   RENDER TABLE
-   ═══════════════════════════════════════════════════════════ */
+/* RENDER TABLE */
 function renderTable(data) {
     const thead = document.getElementById('tableHead');
     const tbody = document.getElementById('tableBody');
     const filtered = applyFilters(data);
-
     if (activeModule === 'it') {
-        thead.innerHTML = `<tr>
-            <th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th>
-            <th>QR</th><th>ID Aset</th><th>User</th><th>Dept</th><th>Device</th>
-            <th>Status</th><th>IP</th><th>License</th>
-            <th>Gambar</th><th>Nilai</th><th class="text-center">Aksi</th>
-        </tr>`;
+        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>QR</th><th>ID Aset</th><th>User</th><th>Dept</th><th>Device</th><th>Status</th><th>IP</th><th>License</th><th>Gambar</th><th>Nilai</th><th class="text-center">Aksi</th></tr>`;
         if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="12" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
         tbody.innerHTML = filtered.map(item => {
             const statusClass = String(item.status || 'active').toLowerCase();
             let licBadge = [item.license_os, item.license_office, item.license_av].filter(Boolean).join(' · ') || '-';
-            if (item.license_expiry) {
-                const exp = new Date(item.license_expiry);
-                const days = Math.ceil((exp - new Date()) / 86400000);
-                if (days < 0) licBadge += ` <span style="color:#fb7185">🔴</span>`;
-                else if (days <= 30) licBadge += ` <span style="color:#fbbf24">⚠️</span>`;
-            }
+            if (item.license_expiry) { const exp = new Date(item.license_expiry); const days = Math.ceil((exp - new Date()) / 86400000); if (days < 0) licBadge += ` 🔴`; else if (days <= 30) licBadge += ` ⚠️`; }
             const imgUrl = item.gambar_url ? (item.gambar_url.startsWith('http') ? item.gambar_url : STORAGE_BUCKET_URL + item.gambar_url) : '';
             const imgCell = imgUrl ? `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.style.display='none'">` : '-';
             const nilai = item.nilai_sekarang || 0;
@@ -814,31 +738,18 @@ function renderTable(data) {
                 <td><div class="flex gap-1 justify-center flex-wrap">
                     <button onclick="editITAsset('${item.id_aset}')" class="btn-action edit">✏️</button>
                     <button onclick="printQR('${item.id_aset}')" class="btn-action label">🏷️</button>
-                    <button onclick="cloneITAsset('${item.id_aset}')" class="btn-action clone">📋</button>
-                    <button onclick="transferITAsset('${item.id_aset}')" class="btn-action transfer">🔄</button>
                     <button onclick="showTimeline('${item.id_aset}', currentPTTable)" class="btn-action" style="background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.3)">⏱️</button>
                     <button onclick="deleteItem('${item.id_aset}')" class="btn-action delete">🗑️</button>
                 </div></td>
             </tr>`;
         }).join('');
-        document.querySelectorAll('canvas.qr-code').forEach(c => {
-            try { new QRious({ element: c, value: c.dataset.value || 'N/A', size: 42, background: 'white', foreground: '#111827' }); } catch(e){}
-        });
+        document.querySelectorAll('canvas.qr-code').forEach(c => { try { new QRious({ element: c, value: c.dataset.value || 'N/A', size: 42, background: 'white', foreground: '#111827' }); } catch(e){} });
     } else {
-        thead.innerHTML = `<tr>
-            <th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th>
-            <th>No</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th>
-            <th>Jumlah</th><th>Satuan</th><th>Jenis</th>
-            <th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th>
-        </tr>`;
+        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>No</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
         if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="13" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
         tbody.innerHTML = filtered.map((item, idx) => {
             let gambarCell = '-';
-            if (item.gambar) {
-                const g = String(item.gambar).trim();
-                const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g);
-                gambarCell = `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.parentElement.innerHTML='-'">`;
-            }
+            if (item.gambar) { const g = String(item.gambar).trim(); const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); gambarCell = `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.parentElement.innerHTML='-'">`; }
             const nilai = item.nilai_sekarang || 0;
             const nilaiFmt = nilai > 0 ? `Rp ${(nilai/1000000).toFixed(1)}Jt` : '-';
             return `<tr>
@@ -867,38 +778,17 @@ function renderTable(data) {
     updateBulkBar();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   BULK SELECT
-   ═══════════════════════════════════════════════════════════ */
-function toggleSelectAll(el) {
-    document.querySelectorAll('.row-check').forEach(c => {
-        c.checked = el.checked;
-        if (el.checked) selectedRows.add(c.dataset.id); else selectedRows.delete(c.dataset.id);
-    });
-    updateBulkBar();
-}
+/* BULK SELECT */
+function toggleSelectAll(el) { document.querySelectorAll('.row-check').forEach(c => { c.checked = el.checked; if (el.checked) selectedRows.add(c.dataset.id); else selectedRows.delete(c.dataset.id); }); updateBulkBar(); }
 function toggleRow(el, id) { if (el.checked) selectedRows.add(String(id)); else selectedRows.delete(String(id)); updateBulkBar(); }
-function updateBulkBar() {
-    const bar = document.getElementById('bulkActionBar');
-    const cnt = document.getElementById('selectedCount');
-    if (cnt) cnt.innerText = selectedRows.size;
-    if (bar) bar.classList.toggle('hidden', selectedRows.size === 0);
-}
-function clearSelection() {
-    selectedRows.clear();
-    document.querySelectorAll('.row-check').forEach(c => c.checked = false);
-    const ca = document.getElementById('checkAll'); if (ca) ca.checked = false;
-    updateBulkBar();
-}
+function updateBulkBar() { const bar = document.getElementById('bulkActionBar'); const cnt = document.getElementById('selectedCount'); if (cnt) cnt.innerText = selectedRows.size; if (bar) bar.classList.toggle('hidden', selectedRows.size === 0); }
+function clearSelection() { selectedRows.clear(); document.querySelectorAll('.row-check').forEach(c => c.checked = false); const ca = document.getElementById('checkAll'); if (ca) ca.checked = false; updateBulkBar(); }
 async function bulkDelete() {
     if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm(`Hapus ${selectedRows.size} item?`)) return;
     const table = activeModule === 'it' ? currentPTTable : 'general_assets';
     const key = activeModule === 'it' ? 'id_aset' : 'id';
-    for (const id of [...selectedRows]) {
-        const val = isNaN(id) ? id : parseInt(id);
-        await supabaseClient.from(table).update({ deleted_at: new Date().toISOString() }).eq(key, val);
-    }
+    for (const id of [...selectedRows]) { const val = isNaN(id) ? id : parseInt(id); await supabaseClient.from(table).update({ deleted_at: new Date().toISOString() }).eq(key, val); }
     await logActivity('bulk_delete', table, '', `${selectedRows.size} item`);
     showToast('Bulk Delete', `${selectedRows.size} item dihapus`, 'success');
     clearSelection();
@@ -919,48 +809,29 @@ async function bulkTransfer() {
     const table = activeModule === 'it' ? currentPTTable : 'general_assets';
     const key = activeModule === 'it' ? 'id_aset' : 'id';
     const deptField = activeModule === 'it' ? 'dept' : 'department';
-    for (const id of [...selectedRows]) {
-        const val = isNaN(id) ? id : parseInt(id);
-        await supabaseClient.from(table).update({ [deptField]: newDept }).eq(key, val);
-    }
+    for (const id of [...selectedRows]) { const val = isNaN(id) ? id : parseInt(id); await supabaseClient.from(table).update({ [deptField]: newDept }).eq(key, val); }
     showToast('Transfer', `${selectedRows.size} → ${newDept}`, 'success');
     clearSelection();
     await refreshAll(true);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STATS
-   ═══════════════════════════════════════════════════════════ */
+/* STATS */
 function updateStats(data) {
     document.getElementById('statTotal').innerText = data.length;
-    document.getElementById('statActive').innerText = data.filter(i => {
-        const s = String(i.status || i.jenis_inventaris || '').toLowerCase();
-        return s.includes('active') || s.includes('fixed');
-    }).length;
-    document.getElementById('statMaint').innerText = data.filter(i => {
-        const s = String(i.status || '').toLowerCase();
-        return s === 'maintenance' || s === 'broken';
-    }).length;
+    document.getElementById('statActive').innerText = data.filter(i => { const s = String(i.status || i.jenis_inventaris || '').toLowerCase(); return s.includes('active') || s.includes('fixed'); }).length;
+    document.getElementById('statMaint').innerText = data.filter(i => { const s = String(i.status || '').toLowerCase(); return s === 'maintenance' || s === 'broken'; }).length;
     const depts = new Set(data.map(i => i.dept || i.department).filter(Boolean));
     document.getElementById('statDept').innerText = depts.size;
 }
-
 function renderDeptSummary(data) {
     const counts = {};
     data.forEach(i => { const d = (i.dept || 'LAINNYA').toUpperCase().trim(); counts[d] = (counts[d] || 0) + 1; });
     const sorted = Object.entries(counts).sort((a, b) => { if (b[1] !== a[1]) return b[1] - a[1]; return a[0].localeCompare(b[0]); });
-    document.getElementById('deptSummaryGrid').innerHTML = sorted.map(([dept, count]) => `
-        <div class="stat-card" data-dept="${dept}" onclick="filterByDept('${dept}')">
-            <div class="stat-label">${dept}</div>
-            <div class="stat-count">${count}</div>
-        </div>
-    `).join('');
+    document.getElementById('deptSummaryGrid').innerHTML = sorted.map(([dept, count]) => `<div class="stat-card" data-dept="${dept}" onclick="filterByDept('${dept}')"><div class="stat-label">${dept}</div><div class="stat-count">${count}</div></div>`).join('');
 }
 function filterByDept(dept) { document.getElementById('searchInput').value = dept; renderTable(rawData); showToast('Filter', `Dept: ${dept}`, 'info'); }
 
-/* ═══════════════════════════════════════════════════════════
-   CHARTS
-   ═══════════════════════════════════════════════════════════ */
+/* CHARTS */
 function renderCharts(data) {
     Object.keys(charts).forEach(key => { if (charts[key]) { try { charts[key].destroy(); } catch(e) {} charts[key] = null; } });
     const commonOpts = {
@@ -973,7 +844,6 @@ function renderCharts(data) {
     if (activeModule === 'it') renderITCharts(data, commonOpts);
     else renderGeneralCharts(data, commonOpts);
 }
-
 function renderITCharts(data, commonOpts) {
     const cStatus = document.getElementById('chartStatus');
     if (cStatus) {
@@ -1003,11 +873,7 @@ function renderITCharts(data, commonOpts) {
         const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
         const growth = {};
         const now = new Date();
-        for (let i = 11; i >= 0; i--) {
-            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-            growth[key] = { label: `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 };
-        }
+        for (let i = 11; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; growth[key] = { label: `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 }; }
         data.forEach(i => { if (!i.created_at) return; const d = new Date(i.created_at); const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; if (growth[key]) growth[key].count++; });
         const ga = Object.values(growth);
         const ctx = cGrowth.getContext('2d');
@@ -1031,7 +897,6 @@ function renderITCharts(data, commonOpts) {
     }
     renderHeatmap(data, commonOpts);
 }
-
 function renderGeneralCharts(data, commonOpts) {
     const cStatus = document.getElementById('chartStatus');
     if (cStatus) {
@@ -1062,11 +927,7 @@ function renderGeneralCharts(data, commonOpts) {
         const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
         const growth = {};
         const now = new Date();
-        for (let i = 11; i >= 0; i--) {
-            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-            growth[key] = { label: `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 };
-        }
+        for (let i = 11; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; growth[key] = { label: `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 }; }
         data.forEach(i => { if (!i.created_at) return; const d = new Date(i.created_at); const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; if (growth[key]) growth[key].count++; });
         const ga = Object.values(growth);
         const ctx = cGrowth.getContext('2d');
@@ -1084,7 +945,6 @@ function renderGeneralCharts(data, commonOpts) {
     }
     renderHeatmap(data, commonOpts);
 }
-
 function renderHeatmap(data, commonOpts) {
     const cHeat = document.getElementById('chartHeatmap');
     if (!cHeat) return;
@@ -1097,12 +957,9 @@ function renderHeatmap(data, commonOpts) {
     charts.heatmap = new Chart(cHeat, { type: 'bar', data: { labels: hourLabels, datasets }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'top', labels: { ...commonOpts.plugins.legend.labels, boxWidth: 10, font: { size: 9 } } } }, scales: { y: { beginAtZero: true, stacked: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { stacked: true, ticks: { color: '#6b7280', font: { size: 8 } }, grid: { display: false } } } } });
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FORM - Helper
-   ═══════════════════════════════════════════════════════════ */
+/* HELPERS */
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 function calcDepreciation(harga, umur) { return harga || 0; }
-
 async function uploadImage(file, prefix = 'img') {
     if (!file) return null;
     const ext = file.name.split('.').pop();
@@ -1112,7 +969,6 @@ async function uploadImage(file, prefix = 'img') {
     const { data: urlData } = supabaseClient.storage.from('aset-images').getPublicUrl(fileName);
     return urlData.publicUrl;
 }
-
 function handleImageSelect(event, previewId) {
     const file = event.target.files[0];
     if (!file) return;
@@ -1123,7 +979,6 @@ function handleImageSelect(event, previewId) {
     };
     reader.readAsDataURL(file);
 }
-
 function viewImage(url) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
@@ -1132,13 +987,13 @@ function viewImage(url) {
     document.body.appendChild(modal);
 }
 
+/* ═══ FORM ═══ */
 function toggleForm() {
     const fc = document.getElementById('formContainer');
     if (!fc.classList.contains('hidden')) { fc.classList.add('hidden'); return; }
     if (!hasPermission('create')) { showToast('Denied', 'Anda tidak punya akses tambah', 'error'); return; }
     fc.classList.remove('hidden');
     const form = document.getElementById('dynamicForm');
-
     if (activeModule === 'it') {
         document.getElementById('formTitle').innerText = "➕ Input IT Aset Baru";
         form.innerHTML = `
@@ -1213,29 +1068,39 @@ function toggleForm() {
     fc.scrollIntoView({ behavior: 'smooth' });
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SAVE - IT & GENERAL
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ SAVE — DENGAN APPROVAL ═══ */
 async function saveITAsset() {
-    if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses tambah', 'error'); return; }
+    if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     const imgInput = document.getElementById('it_img_input');
     let imgUrl = null;
     if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], v('it_id') || 'img'); }
     const harga = parseFloat(v('it_harga')) || 0;
     const umur = parseInt(v('it_umur')) || 5;
     const payload = {
-        id_aset: v('it_id'), user: v('it_user') || '-', dept: v('it_dept'),
-        device: v('it_device'), specs: v('it_specs') || '-', status: v('it_status') || 'Active',
+        id_aset: v('it_id'), user: v('it_user') || '-', dept: v('it_dept'), device: v('it_device'),
+        specs: v('it_specs') || '-', status: v('it_status') || 'Active',
         ip_address: v('it_ip'), mac_address: v('it_mac'), hostname: v('it_host'),
         license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
         license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
         monitor_brand: v('it_mb'), printer_brand: v('it_pb'), mouse_brand: v('it_mob'), keyboard_brand: v('it_kb'),
-        notes: v('it_notes'),
-        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+        notes: v('it_notes'), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
         maintenance_next_date: v('it_mnext') || null, maintenance_interval_days: parseInt(v('it_mint')) || 180,
         gambar_url: imgUrl, deleted_at: null
     };
     if (!payload.id_aset) { showToast('Error', 'ID Aset wajib!', 'error'); return; }
+    const needsApproval = !hasPermission('approve');
+    if (needsApproval) {
+        const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{
+            table_name: currentPTTable, record_data: payload, action_type: 'CREATE',
+            requested_by: currentUser.email, status: 'pending'
+        }]);
+        if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
+        await logActivity('request_approval', currentPTTable, payload.id_aset, `Request: ${payload.id_aset}`);
+        showToast('⏳ Menunggu Approval', 'Data dikirim ke manager', 'info');
+        toggleForm();
+        updateMyReqBadge();
+        return;
+    }
     const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
     if (error) showToast('Gagal', error.message, 'error');
     else {
@@ -1248,7 +1113,6 @@ async function saveITAsset() {
         await refreshAll(true);
     }
 }
-
 async function saveGeneralAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     const imgInput = document.getElementById('gen_img_input');
@@ -1260,13 +1124,24 @@ async function saveGeneralAsset() {
         nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
         spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
         satuan: v('gen_satuan') || 'Buah', keterangan: v('gen_keterangan'),
-        jenis_inventaris: v('gen_jenis'), department: v('gen_dept'),
-        lokasi: v('gen_lokasi'),
+        jenis_inventaris: v('gen_jenis'), department: v('gen_dept'), lokasi: v('gen_lokasi'),
         harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
-        maintenance_next_date: v('gen_mnext') || null,
-        gambar: imgUrl, deleted_at: null
+        maintenance_next_date: v('gen_mnext') || null, gambar: imgUrl, deleted_at: null
     };
     if (!payload.nama_material) { showToast('Error', 'Nama Material wajib!', 'error'); return; }
+    const needsApproval = !hasPermission('approve');
+    if (needsApproval) {
+        const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{
+            table_name: 'general_assets', record_data: payload, action_type: 'CREATE',
+            requested_by: currentUser.email, status: 'pending'
+        }]);
+        if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
+        await logActivity('request_approval', 'general_assets', '', `Request: ${payload.nama_material}`);
+        showToast('⏳ Menunggu Approval', 'Data dikirim ke manager', 'info');
+        toggleForm();
+        updateMyReqBadge();
+        return;
+    }
     const { error } = await supabaseClient.from('general_assets').insert([payload]);
     if (error) showToast('Gagal', error.message, 'error');
     else {
@@ -1280,9 +1155,7 @@ async function saveGeneralAsset() {
     }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   EDIT & UPDATE - IT
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ EDIT & UPDATE ═══ */
 function editITAsset(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1318,8 +1191,7 @@ function editITAsset(id_aset) {
         <div><label>Mouse</label><input type="text" id="it_mob" value="${item.mouse_brand || ''}" /></div>
         <div><label>Keyboard</label><input type="text" id="it_kb" value="${item.keyboard_brand || ''}" /></div>
         <div class="form-section"><label>Notes</label><textarea id="it_notes" rows="2">${item.notes || ''}</textarea></div>
-        <div class="form-section">
-            <label>📸 Upload Gambar Baru</label>
+        <div class="form-section"><label>📸 Upload Gambar Baru</label>
             <div class="upload-box" onclick="document.getElementById('it_img_input').click()">
                 <div class="text-3xl mb-1">📸</div>
                 <p class="text-gray-400 text-xs">Klik untuk upload gambar baru</p>
@@ -1335,9 +1207,8 @@ function editITAsset(id_aset) {
     `;
     fc.scrollIntoView({ behavior: 'smooth' });
 }
-
 async function updateITAsset(id_aset) {
-    if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses edit', 'error'); return; }
+    if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     const imgInput = document.getElementById('it_img_input');
     let imgUrl = undefined;
     if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], 'it_' + id_aset); }
@@ -1349,8 +1220,7 @@ async function updateITAsset(id_aset) {
         license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
         license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
         monitor_brand: v('it_mb'), printer_brand: v('it_pb'), mouse_brand: v('it_mob'), keyboard_brand: v('it_kb'),
-        notes: v('it_notes'),
-        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+        notes: v('it_notes'), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
         maintenance_next_date: v('it_mnext') || null, maintenance_interval_days: parseInt(v('it_mint')) || 180
     };
     if (imgUrl) payload.gambar_url = imgUrl;
@@ -1359,16 +1229,11 @@ async function updateITAsset(id_aset) {
     else {
         await logActivity('update', currentPTTable, id_aset, `Update: ${id_aset}`);
         await logLifecycle(id_aset, currentPTTable, 'Asset Updated', payload);
-        await triggerWebhooks('asset.updated', payload);
-        showToast('Sukses', imgUrl ? 'Aset + gambar diupdate!' : 'Aset diupdate!', 'success');
+        showToast('Sukses', 'Aset diupdate!', 'success');
         toggleForm();
         await refreshAll(true);
     }
 }
-
-/* ═══════════════════════════════════════════════════════════
-   EDIT & UPDATE - GENERAL
-   ═══════════════════════════════════════════════════════════ */
 function editGeneralAsset(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
@@ -1391,8 +1256,7 @@ function editGeneralAsset(id) {
         <div><label>Harga Beli</label><input type="number" id="gen_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="gen_umur" value="${item.umur_ekonomis || 5}" /></div>
         <div><label>Maintenance Next</label><input type="date" id="gen_mnext" value="${item.maintenance_next_date || ''}" /></div>
-        <div class="form-section">
-            <label>📸 Upload Gambar Baru</label>
+        <div class="form-section"><label>📸 Upload Gambar Baru</label>
             <div class="upload-box" onclick="document.getElementById('gen_img_input').click()">
                 <div class="text-3xl mb-1">📸</div>
                 <p class="text-gray-400 text-xs">Klik untuk upload gambar baru</p>
@@ -1408,7 +1272,6 @@ function editGeneralAsset(id) {
     `;
     fc.scrollIntoView({ behavior: 'smooth' });
 }
-
 async function updateGeneralAsset(id) {
     if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     const imgInput = document.getElementById('gen_img_input');
@@ -1420,8 +1283,7 @@ async function updateGeneralAsset(id) {
         nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
         spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
         satuan: v('gen_satuan'), keterangan: v('gen_keterangan'),
-        jenis_inventaris: v('gen_jenis'), department: v('gen_dept'),
-        lokasi: v('gen_lokasi'),
+        jenis_inventaris: v('gen_jenis'), department: v('gen_dept'), lokasi: v('gen_lokasi'),
         harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
         maintenance_next_date: v('gen_mnext') || null
     };
@@ -1430,71 +1292,32 @@ async function updateGeneralAsset(id) {
     if (error) showToast('Gagal', error.message, 'error');
     else {
         await logActivity('update', 'general_assets', String(id), `Update: ${payload.nama_material}`);
-        await logLifecycle(String(id), 'general_assets', 'Asset Updated', payload);
-        await triggerWebhooks('asset.updated', payload);
-        showToast('Sukses', imgUrl ? 'Data + gambar diupdate!' : 'Data diupdate!', 'success');
+        showToast('Sukses', 'Data diupdate!', 'success');
         toggleForm();
         await refreshAll(true);
     }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CLONE / TRANSFER / DELETE / DETAIL
-   ═══════════════════════════════════════════════════════════ */
-function cloneITAsset(id_aset) {
-    const item = rawData.find(x => String(x.id_aset) === String(id_aset));
-    if (!item) return;
-    toggleForm();
-    setTimeout(() => {
-        document.getElementById('it_id').value = item.id_aset + '-COPY';
-        document.getElementById('it_user').value = item.user || '';
-        document.getElementById('it_dept').value = item.dept || '';
-        document.getElementById('it_specs').value = item.specs || '';
-    }, 100);
-    showToast('Clone', `Copy dari ${id_aset}`, 'info');
-}
-
-function transferITAsset(id_aset) {
-    const item = rawData.find(x => String(x.id_aset) === String(id_aset));
-    if (!item) return;
-    const newUser = prompt(`Transfer ${id_aset}\nUser baru:`, item.user);
-    if (!newUser) return;
-    const newDept = prompt(`Dept baru:`, item.dept);
-    if (!newDept) return;
-    supabaseClient.from(currentPTTable).update({ user: newUser, dept: newDept }).eq('id_aset', id_aset).then(async ({ error }) => {
-        if (error) showToast('Gagal', error.message, 'error');
-        else {
-            await logActivity('transfer', currentPTTable, id_aset, `${id_aset} → ${newUser}`);
-            await logLifecycle(id_aset, currentPTTable, `Transfer to ${newUser}`, { dept: newDept });
-            showToast('Sukses', `Ditransfer ke ${newUser}`, 'success');
-            refreshAll(true);
-        }
-    });
-}
-
+/* DELETE */
 async function deleteItem(id_aset) {
     if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses hapus', 'error'); return; }
     if (!confirm(`Hapus aset ${id_aset}?`)) return;
     const { error } = await supabaseClient.from(currentPTTable).update({ deleted_at: new Date().toISOString() }).eq('id_aset', id_aset);
     if (error) showToast('Gagal', error.message, 'error');
-    else {
-        await logActivity('delete', currentPTTable, id_aset, `Hapus: ${id_aset}`);
-        await logLifecycle(id_aset, currentPTTable, 'Asset Deleted');
-        await triggerWebhooks('asset.deleted', { id_aset });
-        showToast('Terhapus', 'Masuk trash', 'info');
-        await refreshAll(true);
-    }
+    else { await logActivity('delete', currentPTTable, id_aset, `Hapus: ${id_aset}`); showToast('Terhapus', 'Masuk trash', 'info'); await refreshAll(true); }
 }
-
+async function deleteGeneralItem(id) {
+    if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
+    if (!confirm('Hapus data ini?')) return;
+    const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+    if (error) showToast('Gagal', error.message, 'error');
+    else { await logActivity('delete', 'general_assets', String(id), 'Hapus General'); showToast('Terhapus', 'Masuk trash', 'info'); await refreshAll(true); }
+}
 function showDetailGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
     let imgHtml = '';
-    if (item.gambar) {
-        const g = String(item.gambar).trim();
-        const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g);
-        imgHtml = `<div class="mt-4"><img src="${imgUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'" /></div>`;
-    }
+    if (item.gambar) { const g = String(item.gambar).trim(); const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); imgHtml = `<div class="mt-4"><img src="${imgUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'" /></div>`; }
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
@@ -1505,37 +1328,18 @@ function showDetailGeneral(id) {
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">材料名称</span><span class="text-white">${item.nama_material_mandarin || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Spesifikasi</span><span class="text-white">${item.spesifikasi || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jumlah</span><span class="text-white font-bold">${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jenis</span><span class="text-white">${item.jenis_inventaris || 'Fixed Asset'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Department</span><span class="text-white">${item.department || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Lokasi</span><span class="text-white">${item.lokasi || '-'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Harga Beli</span><span class="text-emerald-300">Rp ${(item.harga_beli || 0).toLocaleString('id-ID')}</span></div>
-            <div class="flex justify-between pb-2"><span class="text-gray-400">Nilai Sekarang</span><span class="text-emerald-300 font-bold">Rp ${(item.nilai_sekarang || 0).toLocaleString('id-ID')}</span></div>
         </div>
         ${imgHtml}
         <div class="flex gap-2 justify-center mt-4">
             <button onclick="this.closest('.modal-overlay').remove(); editGeneralAsset(${item.id})" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">✏️ Edit</button>
-            <button onclick="this.closest('.modal-overlay').remove(); showTimeline('${item.id}', 'general_assets')" class="btn bg-purple-500 text-white px-4 py-2 rounded-xl text-sm border-none">⏱️ Timeline</button>
         </div>
     </div>`;
     document.body.appendChild(modal);
 }
 
-async function deleteGeneralItem(id) {
-    if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
-    if (!confirm('Hapus data ini?')) return;
-    const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
-    if (error) showToast('Gagal', error.message, 'error');
-    else {
-        await logActivity('delete', 'general_assets', String(id), `Hapus General`);
-        await logLifecycle(String(id), 'general_assets', 'Asset Deleted');
-        showToast('Terhapus', 'Masuk trash', 'info');
-        await refreshAll(true);
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   BULK IMPORT
-   ═══════════════════════════════════════════════════════════ */
+/* IMPORT */
 function openBulkImport() {
     document.getElementById('importModalTitle').innerText = activeModule === 'it' ? '(IT)' : '(General)';
     document.getElementById('bulkImportModal').classList.remove('hidden');
@@ -1544,23 +1348,17 @@ function openBulkImport() {
     importData = [];
 }
 function closeBulkImport() { document.getElementById('bulkImportModal').classList.add('hidden'); }
-
 function downloadTemplate() {
     if (activeModule === 'it') {
         const sample = [{ id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10', harga_beli: 5000000, umur_ekonomis: 5 }];
-        const ws = XLSX.utils.json_to_sheet(sample);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'IT');
-        XLSX.writeFile(wb, 'Template_IT.xlsx');
+        const ws = XLSX.utils.json_to_sheet(sample); const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'IT'); XLSX.writeFile(wb, 'Template_IT.xlsx');
     } else {
         const sample = [{ nama_material: 'Meja', nama_material_mandarin: '工作台', spesifikasi: 'Standard', jumlah: 15, satuan: 'Buah', jenis_inventaris: 'Fixed Asset', department: 'HRGA', lokasi: 'Ruang A', harga_beli: 500000, umur_ekonomis: 5 }];
-        const ws = XLSX.utils.json_to_sheet(sample);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'General');
-        XLSX.writeFile(wb, 'Template_General.xlsx');
+        const ws = XLSX.utils.json_to_sheet(sample); const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'General'); XLSX.writeFile(wb, 'Template_General.xlsx');
     }
 }
-
 function handleFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -1573,22 +1371,14 @@ function handleFileUpload(event) {
             const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false, blankrows: false });
             if (aoa.length < 2) { showToast('Error', 'File kosong!', 'error'); return; }
             let headerIdx = 0;
-            for (let i = 0; i < Math.min(aoa.length, 10); i++) {
-                const rowText = aoa[i].map(c => String(c).toLowerCase()).join('|');
-                if (rowText.includes('nama_material') || rowText.includes('nama material') || rowText.includes('id_aset') || rowText.includes('id aset')) { headerIdx = i; break; }
-            }
+            for (let i = 0; i < Math.min(aoa.length, 10); i++) { const rt = aoa[i].map(c => String(c).toLowerCase()).join('|'); if (rt.includes('nama_material') || rt.includes('id_aset')) { headerIdx = i; break; } }
             const headers = aoa[headerIdx].map(h => String(h).trim());
             const rows = aoa.slice(headerIdx + 1);
             const normalized = [];
             rows.forEach((row, idx) => {
                 if (!row.some(c => String(c).trim())) return;
-                const obj = { ___row: idx + headerIdx + 2 };
-                let hasValue = false;
-                headers.forEach((h, i) => {
-                    const key = h.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^\w\u4e00-\u9fa5]/g, '');
-                    obj[key] = row[i] !== undefined ? row[i] : '';
-                    if (String(row[i]).trim()) hasValue = true;
-                });
+                const obj = { ___row: idx + headerIdx + 2 }; let hasValue = false;
+                headers.forEach((h, i) => { const key = h.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^\w\u4e00-\u9fa5]/g, ''); obj[key] = row[i] !== undefined ? row[i] : ''; if (String(row[i]).trim()) hasValue = true; });
                 if (hasValue) normalized.push(obj);
             });
             const filtered = normalized.filter(r => { const nama = String(r.nama_material || r.no || '').trim().toLowerCase(); return nama !== 'no' && nama !== 'nama material' && nama !== ''; });
@@ -1600,7 +1390,6 @@ function handleFileUpload(event) {
     };
     reader.readAsArrayBuffer(file);
 }
-
 function showPreview(data) {
     document.getElementById('previewCount').innerText = data.length;
     const headers = Object.keys(data[0]).filter(k => k !== '___row');
@@ -1608,12 +1397,13 @@ function showPreview(data) {
     document.getElementById('previewBody').innerHTML = data.slice(0, 5).map(row => `<tr>${headers.map(h => `<td class="px-2 py-1 border-t border-white/5 text-gray-300 text-[10px]">${String(row[h] || '-').substring(0, 30)}</td>`).join('')}</tr>`).join('');
     document.getElementById('importPreview').classList.remove('hidden');
 }
-
 async function confirmImport() {
     if (importData.length === 0) { showToast('Error', 'Kosong!', 'error'); return; }
+    if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm(`Import ${importData.length} data?`)) return;
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
-    let success = 0, failed = 0, skipped = 0;
+    let success = 0, failed = 0, skipped = 0, queued = 0;
+    const needsApproval = !hasPermission('approve');
     const pick = (item, ...keys) => { for (const k of keys) { if (item[k] && String(item[k]).trim() !== '') return String(item[k]).trim(); } return ''; };
     const toDate = (s) => { if (!s) return null; try { const d = new Date(s); if (isNaN(d)) return null; return d.toISOString().split('T')[0]; } catch { return null; } };
     for (let i = 0; i < importData.length; i++) {
@@ -1629,22 +1419,28 @@ async function confirmImport() {
             const n = String(payload.nama_material || '').toLowerCase();
             if (!payload.nama_material || n === 'no') { skipped++; continue; }
         }
-        const { error } = await supabaseClient.from(targetTable).insert([payload]);
-        if (!error) success++; else { failed++; console.error(error); }
+        if (needsApproval) {
+            const { error } = await supabaseClient.from('approval_queue').insert([{ table_name: targetTable, record_data: payload, action_type: 'CREATE', requested_by: currentUser.email, status: 'pending' }]);
+            if (!error) queued++; else failed++;
+        } else {
+            const { error } = await supabaseClient.from(targetTable).insert([payload]);
+            if (!error) success++; else { failed++; console.error(error); }
+        }
     }
-    let msg = `✅ ${success} sukses`;
+    let msg = '';
+    if (needsApproval) msg = `✅ ${queued} masuk queue approval`;
+    else msg = `✅ ${success} sukses`;
     if (failed > 0) msg += `, ❌ ${failed} gagal`;
     if (skipped > 0) msg += `, ⏭️ ${skipped} skip`;
-    await logActivity('bulk_import', targetTable, '', `Import: ${success} sukses`);
+    await logActivity('bulk_import', targetTable, '', msg);
     showToast('Selesai', msg, failed > 0 ? 'error' : 'success');
     if (success > 0) showConfetti();
     closeBulkImport();
     await refreshAll(true);
+    updateMyReqBadge();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   TRASH
-   ═══════════════════════════════════════════════════════════ */
+/* TRASH */
 async function showDeletedAssets() {
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
     const { data: trash, error } = await supabaseClient.from(targetTable).select('*').not('deleted_at', 'is', null);
@@ -1658,7 +1454,6 @@ async function showDeletedAssets() {
     modal.classList.remove('hidden');
 }
 function closeTrashModal() { document.getElementById('trashModal').classList.add('hidden'); }
-
 async function restoreAsset(id) {
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
     const queryKey = activeModule === 'it' ? 'id_aset' : 'id';
@@ -1668,16 +1463,11 @@ async function restoreAsset(id) {
     else showToast('Gagal', error.message, 'error');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   UTILITIES
-   ═══════════════════════════════════════════════════════════ */
+/* UTILS */
 document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
-
 function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success'))
-        .catch(() => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); showToast('Copied!', text, 'success'); });
+    navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success')).catch(() => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); showToast('Copied!', text, 'success'); });
 }
-
 function printQR(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1685,31 +1475,22 @@ function printQR(id_aset) {
     w.document.write(`<html><head><title>${id_aset}</title><style>body{font-family:Arial;padding:20px;text-align:center}.label{border:2px dashed #333;padding:20px;max-width:400px;margin:20px auto;border-radius:12px}h1{font-size:20px;margin:5px 0}h2{font-size:14px;color:#666;font-weight:normal}.info{text-align:left;font-size:12px;margin-top:15px}.info div{padding:3px 0;border-bottom:1px solid #eee}</style></head><body><div class="label"><h1>${item.id_aset}</h1><h2>${item.user||''} · ${item.dept||''}</h2><canvas id="qr"></canvas><div class="info"><div><b>Device:</b> ${item.device||'-'}</div><div><b>Specs:</b> ${item.specs||'-'}</div><div><b>Status:</b> ${item.status||'-'}</div><div><b>IP:</b> ${item.ip_address||'-'}</div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script><script>new QRious({element:document.getElementById('qr'),value:'${item.id_aset}',size:180});setTimeout(()=>window.print(),500);<\/script></body></html>`);
     w.document.close();
 }
-
 function printAllLabels() {
     if (activeModule === 'it') {
         const data = applyFilters(rawData).filter(i => i.id_aset);
         if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
         const w = window.open('', '_blank');
-        w.document.write(`<html><head><title>Label IT</title><style>body{font-family:Arial;padding:10px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.label{border:1px dashed #333;padding:10px;text-align:center;page-break-inside:avoid;border-radius:8px}.label h3{font-size:12px;margin:3px 0}.label p{font-size:10px;color:#666;margin:2px 0}canvas{width:100px!important;height:100px!important}</style></head><body><h2 style="text-align:center">🏷️ Label IT - ${currentPTName}</h2><div class="grid">${data.map(i => `<div class="label"><h3>${i.id_aset}</h3><p>${i.user||''}</p><p>${i.dept||''}</p><canvas data-id="${i.id_aset}"></canvas></div>`).join('')}</div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script><script>document.querySelectorAll('canvas[data-id]').forEach(c=>{new QRious({element:c,value:c.dataset.id,size:100})});setTimeout(()=>window.print(),800);<\/script></body></html>`);
+        w.document.write(`<html><head><title>Label IT</title><style>body{font-family:Arial;padding:10px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.label{border:1px dashed #333;padding:10px;text-align:center;page-break-inside:avoid;border-radius:8px}.label h3{font-size:12px;margin:3px 0}.label p{font-size:10px;color:#666;margin:2px 0}canvas{width:100px!important;height:100px!important}</style></head><body><h2 style="text-align:center">🏷️ Label IT</h2><div class="grid">${data.map(i => `<div class="label"><h3>${i.id_aset}</h3><p>${i.user||''}</p><p>${i.dept||''}</p><canvas data-id="${i.id_aset}"></canvas></div>`).join('')}</div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script><script>document.querySelectorAll('canvas[data-id]').forEach(c=>{new QRious({element:c,value:c.dataset.id,size:100})});setTimeout(()=>window.print(),800);<\/script></body></html>`);
         w.document.close();
-    } else {
-        const data = applyFilters(rawData);
-        if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
-        const w = window.open('', '_blank');
-        w.document.write(`<html><head><title>Cetak General</title><style>body{font-family:Arial;padding:20px}h1{text-align:center}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:20px}th{background:#4f46e5;color:white;padding:8px;text-align:left}td{padding:6px 8px;border-bottom:1px solid #ddd}tr:nth-child(even){background:#f9f9f9}@media print{@page{size:A4 landscape;margin:10mm}}</style></head><body><h1>📋 Daftar Aset</h1><h3 style="text-align:center;color:#666;font-weight:normal">Total: ${data.length} | ${new Date().toLocaleDateString('id-ID')}</h3><table><thead><tr><th>No</th><th>Nama</th><th>材料名称</th><th>Spesifikasi</th><th>Jml</th><th>Satuan</th><th>Jenis</th><th>Dept</th><th>Lokasi</th></tr></thead><tbody>${data.map((i, idx) => `<tr><td>${idx+1}</td><td><b>${i.nama_material||'-'}</b></td><td>${i.nama_material_mandarin||'-'}</td><td>${i.spesifikasi||'-'}</td><td>${i.jumlah||1}</td><td>${i.satuan||'Buah'}</td><td>${i.jenis_inventaris||'-'}</td><td>${i.department||'-'}</td><td>${i.lokasi||'-'}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
-        w.document.close();
-    }
+    } else { exportToExcel(); }
 }
-
 function printSingleGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
     const w = window.open('', '_blank');
-    w.document.write(`<html><head><title>Kartu</title><style>body{font-family:Arial;padding:30px}.card{border:2px solid #4f46e5;border-radius:12px;padding:25px;max-width:500px;margin:20px auto}.header{background:#4f46e5;color:white;padding:15px;margin:-25px -25px 20px -25px;border-radius:10px 10px 0 0;text-align:center}.info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}.info .row span:first-child{color:#666}.info .row span:last-child{font-weight:600}</style></head><body><div class="card"><div class="header"><h1>📋 KARTU ASET</h1></div><div class="info"><div class="row"><span>Nama</span><span>${item.nama_material||'-'}</span></div><div class="row"><span>材料名称</span><span>${item.nama_material_mandarin||'-'}</span></div><div class="row"><span>Spesifikasi</span><span>${item.spesifikasi||'-'}</span></div><div class="row"><span>Jumlah</span><span>${item.jumlah||1} ${item.satuan||'Buah'}</span></div><div class="row"><span>Jenis</span><span>${item.jenis_inventaris||'-'}</span></div><div class="row"><span>Dept</span><span>${item.department||'-'}</span></div><div class="row"><span>Lokasi</span><span>${item.lokasi||'-'}</span></div></div></div><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
+    w.document.write(`<html><head><title>Kartu</title><style>body{font-family:Arial;padding:30px}.card{border:2px solid #4f46e5;border-radius:12px;padding:25px;max-width:500px;margin:20px auto}.header{background:#4f46e5;color:white;padding:15px;margin:-25px -25px 20px -25px;border-radius:10px 10px 0 0;text-align:center}.info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}.info .row span:first-child{color:#666}.info .row span:last-child{font-weight:600}</style></head><body><div class="card"><div class="header"><h1>📋 KARTU ASET</h1></div><div class="info"><div class="row"><span>Nama</span><span>${item.nama_material||'-'}</span></div><div class="row"><span>材料名称</span><span>${item.nama_material_mandarin||'-'}</span></div><div class="row"><span>Jumlah</span><span>${item.jumlah||1} ${item.satuan||'Buah'}</span></div><div class="row"><span>Dept</span><span>${item.department||'-'}</span></div><div class="row"><span>Lokasi</span><span>${item.lokasi||'-'}</span></div></div></div><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
     w.document.close();
 }
-
 function exportToExcel() {
     const data = applyFilters(rawData);
     if (data.length === 0) { showToast('Info', 'Kosong', 'info'); return; }
@@ -1719,20 +1500,15 @@ function exportToExcel() {
     XLSX.writeFile(wb, `Export_${activeModule}_${new Date().toISOString().slice(0,10)}.xlsx`);
     showToast('Sukses', `${data.length} data diexport`, 'success');
 }
-
 function exportToPDF() {
     const data = applyFilters(rawData);
     if (data.length === 0) { showToast('Info', 'Kosong', 'info'); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4');
-    doc.setFillColor(79, 70, 229);
-    doc.rect(0, 0, 297, 25, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
-    doc.setFont(undefined, 'bold');
+    doc.setFillColor(79, 70, 229); doc.rect(0, 0, 297, 25, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.setFont(undefined, 'bold');
     doc.text('LAPORAN ASET - ' + currentPTName, 148, 12, { align: 'center' });
-    doc.setFontSize(10);
-    doc.setFont(undefined, 'normal');
+    doc.setFontSize(10); doc.setFont(undefined, 'normal');
     doc.text('Total: ' + data.length + ' | Dicetak: ' + new Date().toLocaleString('id-ID'), 148, 20, { align: 'center' });
     doc.setTextColor(0, 0, 0);
     let headers, rows;
@@ -1747,7 +1523,6 @@ function exportToPDF() {
     doc.save(`Laporan_${activeModule}_${new Date().toISOString().slice(0,10)}.pdf`);
     showToast('PDF', 'Laporan didownload!', 'success');
 }
-
 async function downloadAllQR() {
     const data = applyFilters(rawData).filter(i => i.id_aset);
     if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
@@ -1766,7 +1541,6 @@ async function downloadAllQR() {
     a.click(); URL.revokeObjectURL(url);
     showToast('Sukses', `${data.length} QR didownload!`, 'success');
 }
-
 function initScanner() {
     if (html5QrcodeScanner) return;
     try {
@@ -1779,49 +1553,37 @@ function initScanner() {
     } catch(e) { console.warn('Scanner error:', e); }
 }
 
+/* OFFLINE */
 window.addEventListener('online', () => { isOnline = true; updateOfflineUI('online'); });
 window.addEventListener('offline', () => { isOnline = false; updateOfflineUI('offline'); });
 function updateOfflineUI(state) {
     const badge = document.getElementById('offlineBadge');
-    if (state === 'offline') { badge.className = 'offline-badge offline'; badge.innerText = '🔴 Offline Mode'; }
+    if (state === 'offline') { badge.className = 'offline-badge offline'; badge.innerText = '🔴 Offline'; }
     else if (state === 'online') { badge.className = 'offline-badge online'; badge.innerText = '🟢 Online'; setTimeout(() => badge.className = 'offline-badge', 3000); }
 }
 if (!isOnline) updateOfflineUI('offline');
 
+/* PWA */
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(() => console.log('✅ SW Registered')).catch(e => console.warn('SW err:', e));
 }
 
 /* ═══════════════════════════════════════════════════════════
-   PART 3: ENTERPRISE FEATURES
+   ENTERPRISE FEATURES
    ═══════════════════════════════════════════════════════════ */
 
-/* ─── 1. USER MANAGEMENT ─── */
+/* USER MANAGEMENT */
 async function showUserManagement() {
-    if (userRole !== 'super-admin' && userRole !== 'admin') {
-        showToast('Akses Ditolak', 'Hanya admin yang bisa kelola user', 'error');
-        return;
-    }
+    if (userRole !== 'super-admin' && userRole !== 'admin') { showToast('Akses Ditolak', 'Hanya admin', 'error'); return; }
     document.getElementById('userMgmtModal').classList.remove('hidden');
     await loadUserList();
 }
-
-function closeUserMgmt() {
-    document.getElementById('userMgmtModal').classList.add('hidden');
-    document.getElementById('addUserForm').innerHTML = '';
-}
-
+function closeUserMgmt() { document.getElementById('userMgmtModal').classList.add('hidden'); document.getElementById('addUserForm').innerHTML = ''; }
 async function loadUserList() {
     const { data, error } = await supabaseClient.from('user_profiles').select('*').order('created_at', { ascending: false });
     const list = document.getElementById('userList');
-    if (error) {
-        list.innerHTML = `<p class="text-rose-400 text-sm">Error: ${error.message}</p>`;
-        return;
-    }
-    if (!data || data.length === 0) {
-        list.innerHTML = `<p class="text-center text-gray-400 py-4">Belum ada user profile.</p>`;
-        return;
-    }
+    if (error) { list.innerHTML = `<p class="text-rose-400 text-sm">Error: ${error.message}</p>`; return; }
+    if (!data || data.length === 0) { list.innerHTML = `<p class="text-center text-gray-400 py-4">Belum ada user.</p>`; return; }
     list.innerHTML = data.map(u => `
         <div class="glass-card p-3 flex justify-between items-center flex-wrap gap-2">
             <div class="flex-1 min-w-[200px]">
@@ -1831,7 +1593,6 @@ async function loadUserList() {
                     ${!u.is_active ? '<span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-400">NONAKTIF</span>' : ''}
                 </div>
                 <div class="text-gray-400 text-xs">${u.email}</div>
-                ${u.last_login ? `<div class="text-gray-500 text-[10px]">Login: ${new Date(u.last_login).toLocaleString('id-ID')}</div>` : ''}
             </div>
             <div class="flex gap-2 items-center flex-wrap">
                 <select onchange="updateUserRole('${u.email}', this.value)" class="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-2 py-1">
@@ -1842,329 +1603,269 @@ async function loadUserList() {
                     <option value="viewer" ${u.role === 'viewer' ? 'selected' : ''}>Viewer</option>
                     <option value="auditor" ${u.role === 'auditor' ? 'selected' : ''}>Auditor</option>
                 </select>
-                <button onclick="toggleUserActive('${u.email}', ${u.is_active !== false})" class="text-amber-400 text-xs bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded" title="${u.is_active !== false ? 'Nonaktifkan' : 'Aktifkan'}">${u.is_active !== false ? '🚫' : '✅'}</button>
+                <button onclick="toggleUserActive('${u.email}', ${u.is_active !== false})" class="text-amber-400 text-xs bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded">${u.is_active !== false ? '🚫' : '✅'}</button>
                 <button onclick="deleteUserProfile('${u.email}')" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button>
             </div>
         </div>
     `).join('');
 }
-
 async function updateUserRole(email, newRole) {
-    if (email === currentUser?.email) {
-        showToast('Ditolak', 'Tidak bisa ubah role sendiri', 'warning');
-        await loadUserList();
-        return;
-    }
+    if (email === currentUser?.email) { showToast('Ditolak', 'Tidak bisa ubah role sendiri', 'warning'); await loadUserList(); return; }
     const { error } = await supabaseClient.from('user_profiles').update({ role: newRole }).eq('email', email);
     if (error) showToast('Gagal', error.message, 'error');
     else { showToast('Sukses', `Role ${email} → ${newRole}`, 'success'); await loadUserList(); }
 }
-
 async function toggleUserActive(email, currentActive) {
     const { error } = await supabaseClient.from('user_profiles').update({ is_active: !currentActive }).eq('email', email);
     if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', `User ${email} ${!currentActive ? 'diaktifkan' : 'dinonaktifkan'}`, 'success'); await loadUserList(); }
+    else { showToast('Sukses', `User ${!currentActive ? 'diaktifkan' : 'dinonaktifkan'}`, 'success'); await loadUserList(); }
 }
-
 async function deleteUserProfile(email) {
-    if (!confirm(`Hapus profile ${email}?\n\nIni cuma hapus profile, user login di Supabase Auth tetap ada.`)) return;
+    if (!confirm(`Hapus profile ${email}?`)) return;
     const { error } = await supabaseClient.from('user_profiles').delete().eq('email', email);
     if (error) showToast('Gagal', error.message, 'error');
     else { showToast('Terhapus', `Profile ${email} dihapus`, 'success'); await loadUserList(); }
 }
-
 function showAddUserForm() {
     const c = document.getElementById('addUserForm');
-    c.innerHTML = `
-        <div class="glass-card p-4 mb-4 border border-amber-500/30">
-            <p class="text-amber-400 text-xs mb-3">⚠️ Langkah: <strong>1)</strong> Bikin user di <a href="https://supabase.com/dashboard" target="_blank" class="underline">Supabase → Authentication → Users → Add user</a> → <strong>2)</strong> Isi email & password → ✅ Auto Confirm User → <strong>3)</strong> Balik ke sini, isi email yang sama untuk set role.</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div><label class="text-xs text-gray-400">Email</label><input type="email" id="new_user_email" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="user@magicase.com" /></div>
-                <div><label class="text-xs text-gray-400">Nama Lengkap</label><input type="text" id="new_user_name" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="Budi Santoso" /></div>
-                <div><label class="text-xs text-gray-400">Role</label>
-                    <select id="new_user_role" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm">
-                        <option value="staff">Staff</option>
-                        <option value="manager">Manager</option>
-                        <option value="admin">Admin</option>
-                        <option value="viewer">Viewer</option>
-                        <option value="auditor">Auditor</option>
-                        <option value="super-admin">Super Admin</option>
-                    </select>
-                </div>
-                <div><label class="text-xs text-gray-400">Department (opsional)</label>
-                    <input type="text" id="new_user_dept" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="IT / HRGA" />
-                </div>
+    c.innerHTML = `<div class="glass-card p-4 mb-4 border border-amber-500/30">
+        <p class="text-amber-400 text-xs mb-3">⚠️ Bikin user dulu di Supabase → Authentication → Users. Setelah itu isi email yang sama disini.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div><label class="text-xs text-gray-400">Email</label><input type="email" id="new_user_email" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+            <div><label class="text-xs text-gray-400">Nama</label><input type="text" id="new_user_name" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+            <div><label class="text-xs text-gray-400">Role</label>
+                <select id="new_user_role" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm">
+                    <option value="staff">Staff</option><option value="manager">Manager</option><option value="admin">Admin</option>
+                    <option value="viewer">Viewer</option><option value="auditor">Auditor</option><option value="super-admin">Super Admin</option>
+                </select>
             </div>
-            <div class="flex gap-2 mt-3">
-                <button onclick="saveNewUserProfile()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
-                <button onclick="document.getElementById('addUserForm').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
-            </div>
+            <div><label class="text-xs text-gray-400">Dept (opsional)</label><input type="text" id="new_user_dept" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
         </div>
-    `;
+        <div class="flex gap-2 mt-3">
+            <button onclick="saveNewUserProfile()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
+            <button onclick="document.getElementById('addUserForm').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
+        </div>
+    </div>`;
 }
-
 async function saveNewUserProfile() {
     const email = document.getElementById('new_user_email').value.trim();
     const full_name = document.getElementById('new_user_name').value.trim();
     const role = document.getElementById('new_user_role').value;
     const dept = document.getElementById('new_user_dept').value.trim();
-    if (!email) { showToast('Error', 'Email wajib diisi', 'error'); return; }
-    const { error } = await supabaseClient.from('user_profiles').upsert([{
-        email, full_name: full_name || email.split('@')[0], role,
-        allowed_depts: dept ? [dept] : null, is_active: true
-    }], { onConflict: 'email' });
+    if (!email) { showToast('Error', 'Email wajib', 'error'); return; }
+    const { error } = await supabaseClient.from('user_profiles').upsert([{ email, full_name: full_name || email.split('@')[0], role, allowed_depts: dept ? [dept] : null, is_active: true }], { onConflict: 'email' });
     if (error) showToast('Gagal', error.message, 'error');
-    else {
-        showToast('Sukses', `User ${email} (${role}) ditambahkan`, 'success');
-        document.getElementById('addUserForm').innerHTML = '';
-        await loadUserList();
-    }
+    else { showToast('Sukses', `User ${email} ditambahkan`, 'success'); document.getElementById('addUserForm').innerHTML = ''; await loadUserList(); }
 }
 
-/* ─── 2. APPROVAL WORKFLOW ─── */
-async function requestApproval(table, recordData, action) {
-    if (hasPermission('approve')) return true;
-    await supabaseClient.from('approval_queue').insert([{
-        table_name: table, record_data: recordData, action_type: action,
-        requested_by: currentUser.email, status: 'pending'
-    }]);
-    showToast('⏳ Menunggu Approval', 'Data dikirim ke manager', 'info');
-    return false;
-}
-
+/* APPROVAL WORKFLOW */
 async function showApprovalQueue() {
-    const { data, error } = await supabaseClient.from('approval_queue')
-        .select('*').order('requested_at', { ascending: false }).limit(50);
+    const { data, error } = await supabaseClient.from('approval_queue').select('*').order('requested_at', { ascending: false }).limit(50);
     if (error) { showToast('Error', error.message, 'error'); return; }
     const pending = (data || []).filter(x => x.status === 'pending');
     const badge = document.getElementById('approvalBadge');
-    if (badge) {
-        if (pending.length > 0) { badge.innerText = pending.length; badge.classList.remove('hidden'); }
-        else badge.classList.add('hidden');
-    }
+    if (badge) { if (pending.length > 0) { badge.innerText = pending.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `
-        <div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-white">✅ Approval Queue (${pending.length} pending)</h2>
-                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-            </div>
-            ${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Tidak ada approval.</p>' :
-            `<table class="w-full text-xs">
-                <thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Aksi</th><th class="p-2">Status</th><th class="p-2">Aksi</th></tr></thead>
-                <tbody>${data.map(item => `
-                    <tr class="border-t border-white/5">
-                        <td class="p-2 text-gray-400">${new Date(item.requested_at).toLocaleString('id-ID')}</td>
-                        <td class="p-2 text-indigo-300">${item.requested_by}</td>
-                        <td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${item.action_type}</span></td>
-                        <td class="p-2">${item.status === 'pending' ? '⏳' : item.status === 'approved' ? '✅' : '❌'} ${item.status}</td>
-                        <td class="p-2">${item.status === 'pending' && hasPermission('approve') ? `
-                            <button onclick="approveRequest(${item.id}, true)" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs">✅</button>
-                            <button onclick="approveRequest(${item.id}, false)" class="text-rose-400 bg-rose-500/10 px-2 py-1 rounded text-xs ml-1">❌</button>
-                        ` : '-'}</td>
-                    </tr>
-                `).join('')}</tbody>
-            </table>`}
-        </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-white">✅ Approval Queue (${pending.length} pending)</h2>
+            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+        </div>
+        ${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Tidak ada approval.</p>' :
+        `<table class="w-full text-xs">
+            <thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Item</th><th class="p-2">Aksi</th><th class="p-2">Status</th><th class="p-2">Review</th></tr></thead>
+            <tbody>${data.map(item => {
+                const summary = item.record_data?.id_aset || item.record_data?.nama_material || '-';
+                const isPending = item.status === 'pending';
+                const canApprove = hasPermission('approve');
+                return `<tr class="border-t border-white/5">
+                    <td class="p-2 text-gray-400">${new Date(item.requested_at).toLocaleString('id-ID')}</td>
+                    <td class="p-2 text-indigo-300">${item.requested_by}</td>
+                    <td class="p-2 text-white">${summary}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${item.action_type}</span></td>
+                    <td class="p-2">${isPending ? '⏳' : item.status === 'approved' ? '✅' : '❌'} ${item.status}</td>
+                    <td class="p-2">${isPending && canApprove ? `
+                        <button onclick="approveRequest(${item.id}, true)" class="text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-1 rounded text-xs">✅</button>
+                        <button onclick="approveRequest(${item.id}, false)" class="text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded text-xs ml-1">❌</button>
+                    ` : '<span class="text-gray-500">-</span>'}</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>`}
+    </div>`;
     document.body.appendChild(modal);
 }
-
 async function approveRequest(id, approve) {
     const { data: item } = await supabaseClient.from('approval_queue').select('*').eq('id', id).single();
     if (!item) return;
+    const notes = approve ? '' : prompt('Alasan reject (opsional):') || '';
     if (approve) {
         const { error } = await supabaseClient.from(item.table_name).insert([item.record_data]);
         if (error) { showToast('Gagal', error.message, 'error'); return; }
+        await logActivity('approve', item.table_name, item.record_data?.id_aset || '', `Approve: ${item.requested_by}`);
+    } else {
+        await logActivity('reject', item.table_name, item.record_data?.id_aset || '', `Reject: ${item.requested_by} - ${notes}`);
     }
     await supabaseClient.from('approval_queue').update({
         status: approve ? 'approved' : 'rejected',
-        reviewed_by: currentUser.email, reviewed_at: new Date().toISOString()
+        reviewed_by: currentUser.email, reviewed_at: new Date().toISOString(), review_notes: notes
     }).eq('id', id);
-    showToast(approve ? 'Approved' : 'Rejected', 'Data ' + (approve ? 'disetujui' : 'ditolak'), 'success');
+    showToast(approve ? '✅ Approved' : '❌ Rejected', `Request dari ${item.requested_by} ${approve ? 'disetujui' : 'ditolak'}`, approve ? 'success' : 'warning');
     document.querySelector('.modal-overlay')?.remove();
     await refreshAll(true);
+    updateApprovalBadge();
+}
+async function updateApprovalBadge() {
+    if (!currentUser?.email) return;
+    if (!hasPermission('approve')) return;
+    const { data } = await supabaseClient.from('approval_queue').select('id').eq('status', 'pending');
+    const badge = document.getElementById('approvalBadge');
+    if (badge) { if (data && data.length > 0) { badge.innerText = data.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
 }
 
-/* ─── 3. ASSET LIFECYCLE ─── */
+/* MY REQUESTS (STAFF) */
+async function showMyRequests() {
+    const { data, error } = await supabaseClient.from('approval_queue').select('*').eq('requested_by', currentUser.email).order('requested_at', { ascending: false });
+    if (error) { showToast('Error', error.message, 'error'); return; }
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-white">📤 Request Saya</h2>
+            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+        </div>
+        <div class="mb-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+            <p class="text-blue-300 text-sm">💡 Semua data yang Anda input akan masuk sini. Manager akan review.</p>
+        </div>
+        ${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Belum ada request.</p>' :
+        `<div class="space-y-2">${data.map(item => {
+            const statusIcon = item.status === 'pending' ? '⏳' : item.status === 'approved' ? '✅' : '❌';
+            const statusColor = item.status === 'pending' ? 'border-amber-500/30 bg-amber-500/5' : item.status === 'approved' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/5';
+            const summary = item.record_data?.id_aset || item.record_data?.nama_material || 'Item';
+            return `<div class="glass-card p-4 border ${statusColor}">
+                <div class="flex justify-between items-start flex-wrap gap-2">
+                    <div class="flex-1 min-w-[200px]">
+                        <div class="text-white font-semibold text-sm">${statusIcon} ${summary}</div>
+                        <div class="text-gray-400 text-xs mt-1">📅 ${new Date(item.requested_at).toLocaleString('id-ID')}</div>
+                        <div class="text-gray-400 text-xs">🏷️ ${item.action_type}</div>
+                        ${item.reviewed_at ? `<div class="text-gray-400 text-xs mt-1">✅ Review: ${new Date(item.reviewed_at).toLocaleString('id-ID')} oleh ${item.reviewed_by}</div>` : ''}
+                        ${item.review_notes ? `<div class="text-gray-300 text-xs mt-1 italic">💬 "${item.review_notes}"</div>` : ''}
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded-full font-bold ${item.status === 'pending' ? 'bg-amber-500/20 text-amber-400' : item.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${item.status.toUpperCase()}</span>
+                </div>
+            </div>`;
+        }).join('')}</div>`}
+    </div>`;
+    document.body.appendChild(modal);
+}
+async function updateMyReqBadge() {
+    if (!currentUser?.email) return;
+    const { data } = await supabaseClient.from('approval_queue').select('id').eq('requested_by', currentUser.email).eq('status', 'pending');
+    const badge = document.getElementById('myReqBadge');
+    if (badge) { if (data && data.length > 0) { badge.innerText = data.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
+}
+setInterval(() => { if (currentUser) { updateMyReqBadge(); updateApprovalBadge(); } }, 30000);
+
+/* LIFECYCLE */
 async function logLifecycle(assetId, assetTable, eventType, eventData = {}) {
-    try {
-        await supabaseClient.from('asset_lifecycle').insert([{
-            asset_id: String(assetId), asset_table: assetTable,
-            event_type: eventType, event_data: eventData,
-            created_by: currentUser?.email || 'unknown'
-        }]);
-    } catch (err) { console.warn('Lifecycle fail:', err); }
+    try { await supabaseClient.from('asset_lifecycle').insert([{ asset_id: String(assetId), asset_table: assetTable, event_type: eventType, event_data: eventData, created_by: currentUser?.email || 'unknown' }]); }
+    catch (err) { console.warn('Lifecycle fail:', err); }
 }
-
 function showTimeline(assetId, assetTable) {
-    supabaseClient.from('asset_lifecycle').select('*')
-        .eq('asset_id', String(assetId)).eq('asset_table', assetTable)
-        .order('event_date', { ascending: false })
+    supabaseClient.from('asset_lifecycle').select('*').eq('asset_id', String(assetId)).eq('asset_table', assetTable).order('event_date', { ascending: false })
         .then(({ data }) => {
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = `
-                <div class="glass-card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-white">⏱️ Lifecycle: ${assetId}</h2>
-                        <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-                    </div>
-                    <div class="timeline">
-                        ${(!data || data.length === 0) ? '<p class="text-gray-400 text-sm">Belum ada history.</p>' :
-                        data.map(e => `
-                            <div class="timeline-item">
-                                <div class="text-white text-sm font-semibold">${e.event_type}</div>
-                                <div class="text-gray-400 text-xs">${new Date(e.event_date).toLocaleString('id-ID')}</div>
-                                <div class="text-gray-500 text-[10px] mt-1">by ${e.created_by}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>`;
+            modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">⏱️ Lifecycle: ${assetId}</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div><div class="timeline">${(!data || data.length === 0) ? '<p class="text-gray-400 text-sm">Belum ada history.</p>' : data.map(e => `<div class="timeline-item"><div class="text-white text-sm font-semibold">${e.event_type}</div><div class="text-gray-400 text-xs">${new Date(e.event_date).toLocaleString('id-ID')}</div><div class="text-gray-500 text-[10px] mt-1">by ${e.created_by}</div></div>`).join('')}</div></div>`;
             document.body.appendChild(modal);
         });
 }
 
-/* ─── 4. MAINTENANCE LOG ─── */
+/* MAINTENANCE */
 async function showMaintenanceModal() {
     const { data } = await supabaseClient.from('maintenance_log').select('*').order('maintenance_date', { ascending: false }).limit(100);
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `
-        <div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-white">🔧 Maintenance Log</h2>
-                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-            </div>
-            <button onclick="addMaintenanceForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah Maintenance</button>
-            <div id="maintenanceFormContainer"></div>
-            <table class="w-full text-xs mt-4">
-                <thead><tr class="text-left text-gray-400"><th class="p-2">Tanggal</th><th class="p-2">Aset</th><th class="p-2">Tipe</th><th class="p-2">Biaya</th><th class="p-2">Vendor</th><th class="p-2">Notes</th></tr></thead>
-                <tbody>${(!data || data.length === 0) ? '<tr><td colspan="6" class="p-4 text-center text-gray-400">Belum ada log.</td></tr>' :
-                data.map(m => `<tr class="border-t border-white/5">
-                    <td class="p-2 text-gray-400">${m.maintenance_date}</td>
-                    <td class="p-2 text-indigo-300">${m.asset_id}</td>
-                    <td class="p-2">${m.maintenance_type}</td>
-                    <td class="p-2 text-emerald-300">Rp ${(m.cost || 0).toLocaleString('id-ID')}</td>
-                    <td class="p-2">${m.vendor || '-'}</td>
-                    <td class="p-2 text-gray-400">${m.notes || '-'}</td>
-                </tr>`).join('')}</tbody>
-            </table>
-        </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">🔧 Maintenance Log</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+        <button onclick="addMaintenanceForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah</button>
+        <div id="maintenanceFormContainer"></div>
+        <table class="w-full text-xs mt-4"><thead><tr class="text-left text-gray-400"><th class="p-2">Tanggal</th><th class="p-2">Aset</th><th class="p-2">Tipe</th><th class="p-2">Biaya</th><th class="p-2">Vendor</th></tr></thead>
+        <tbody>${(!data || data.length === 0) ? '<tr><td colspan="5" class="p-4 text-center text-gray-400">Belum ada log.</td></tr>' : data.map(m => `<tr class="border-t border-white/5"><td class="p-2 text-gray-400">${m.maintenance_date}</td><td class="p-2 text-indigo-300">${m.asset_id}</td><td class="p-2">${m.maintenance_type}</td><td class="p-2 text-emerald-300">Rp ${(m.cost || 0).toLocaleString('id-ID')}</td><td class="p-2">${m.vendor || '-'}</td></tr>`).join('')}</tbody></table>
+    </div>`;
     document.body.appendChild(modal);
 }
-
 function addMaintenanceForm() {
     const c = document.getElementById('maintenanceFormContainer');
-    c.innerHTML = `
-        <div class="glass-card p-4 mb-4">
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div><label class="text-xs text-gray-400">Tanggal</label><input type="date" id="mt_date" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Asset ID</label><input type="text" id="mt_asset" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Tipe</label><select id="mt_type" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>Preventive</option><option>Corrective</option><option>Upgrade</option></select></div>
-                <div><label class="text-xs text-gray-400">Biaya (Rp)</label><input type="number" id="mt_cost" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Vendor</label><input type="text" id="mt_vendor" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Notes</label><input type="text" id="mt_notes" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-            </div>
-            <button onclick="saveMaintenance()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button>
-        </div>`;
+    c.innerHTML = `<div class="glass-card p-4 mb-4"><div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div><label class="text-xs text-gray-400">Tanggal</label><input type="date" id="mt_date" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+        <div><label class="text-xs text-gray-400">Asset ID</label><input type="text" id="mt_asset" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+        <div><label class="text-xs text-gray-400">Tipe</label><select id="mt_type" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>Preventive</option><option>Corrective</option><option>Upgrade</option></select></div>
+        <div><label class="text-xs text-gray-400">Biaya</label><input type="number" id="mt_cost" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+        <div><label class="text-xs text-gray-400">Vendor</label><input type="text" id="mt_vendor" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+        <div><label class="text-xs text-gray-400">Notes</label><input type="text" id="mt_notes" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+    </div><button onclick="saveMaintenance()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button></div>`;
 }
-
 async function saveMaintenance() {
     const payload = {
         maintenance_date: document.getElementById('mt_date').value || new Date().toISOString().split('T')[0],
-        asset_id: document.getElementById('mt_asset').value,
-        asset_table: activeModule === 'it' ? currentPTTable : 'general_assets',
-        maintenance_type: document.getElementById('mt_type').value,
-        cost: parseFloat(document.getElementById('mt_cost').value) || 0,
-        vendor: document.getElementById('mt_vendor').value,
-        notes: document.getElementById('mt_notes').value
+        asset_id: document.getElementById('mt_asset').value, asset_table: activeModule === 'it' ? currentPTTable : 'general_assets',
+        maintenance_type: document.getElementById('mt_type').value, cost: parseFloat(document.getElementById('mt_cost').value) || 0,
+        vendor: document.getElementById('mt_vendor').value, notes: document.getElementById('mt_notes').value
     };
     if (!payload.asset_id) { showToast('Error', 'Asset ID wajib', 'error'); return; }
     const { error } = await supabaseClient.from('maintenance_log').insert([payload]);
     if (error) showToast('Gagal', error.message, 'error');
-    else {
-        await logLifecycle(payload.asset_id, payload.asset_table, `Maintenance: ${payload.maintenance_type}`, payload);
-        showToast('Sukses', 'Maintenance tersimpan', 'success');
-        document.querySelector('.modal-overlay')?.remove();
-        showMaintenanceModal();
-    }
+    else { await logLifecycle(payload.asset_id, payload.asset_table, `Maintenance: ${payload.maintenance_type}`, payload); showToast('Sukses', 'Tersimpan', 'success'); document.querySelector('.modal-overlay')?.remove(); showMaintenanceModal(); }
 }
 
-/* ─── 5. WEBHOOKS ─── */
+/* WEBHOOKS */
 async function showWebhooks() {
     const { data } = await supabaseClient.from('webhooks').select('*');
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `
-        <div class="glass-card p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-white">🔗 Webhooks</h2>
-                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-            </div>
-            <button onclick="addWebhookForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah Webhook</button>
-            <div id="webhookFormContainer"></div>
-            <div class="space-y-2 mt-4">
-                ${(!data || data.length === 0) ? '<p class="text-center text-gray-400">Belum ada webhook.</p>' :
-                data.map(w => `<div class="glass-card p-3 flex justify-between items-center">
-                    <div><div class="text-white text-sm">${w.name}</div><div class="text-gray-400 text-xs">${w.event_type} → ${w.url}</div></div>
-                    <button onclick="deleteWebhook(${w.id})" class="text-rose-400 text-xs">🗑️</button>
-                </div>`).join('')}
-            </div>
-        </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">🔗 Webhooks</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+        <button onclick="addWebhookForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah</button>
+        <div id="webhookFormContainer"></div>
+        <div class="space-y-2 mt-4">${(!data || data.length === 0) ? '<p class="text-center text-gray-400">Belum ada webhook.</p>' : data.map(w => `<div class="glass-card p-3 flex justify-between items-center"><div><div class="text-white text-sm">${w.name}</div><div class="text-gray-400 text-xs">${w.event_type} → ${w.url}</div></div><button onclick="deleteWebhook(${w.id})" class="text-rose-400 text-xs">🗑️</button></div>`).join('')}</div>
+    </div>`;
     document.body.appendChild(modal);
 }
-
 function addWebhookForm() {
-    const c = document.getElementById('webhookFormContainer');
-    c.innerHTML = `
-        <div class="glass-card p-4 mb-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div><label class="text-xs text-gray-400">Nama</label><input type="text" id="wh_name" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="Notif HRD" /></div>
-                <div><label class="text-xs text-gray-400">Event</label><select id="wh_event" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>asset.created</option><option>asset.updated</option><option>asset.deleted</option></select></div>
-                <div class="md:col-span-2"><label class="text-xs text-gray-400">URL</label><input type="text" id="wh_url" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="https://hooks.slack.com/..." /></div>
-            </div>
-            <button onclick="saveWebhook()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button>
-        </div>`;
+    document.getElementById('webhookFormContainer').innerHTML = `<div class="glass-card p-4 mb-4"><div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><label class="text-xs text-gray-400">Nama</label><input type="text" id="wh_name" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+        <div><label class="text-xs text-gray-400">Event</label><select id="wh_event" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>asset.created</option><option>asset.updated</option><option>asset.deleted</option></select></div>
+        <div class="md:col-span-2"><label class="text-xs text-gray-400">URL</label><input type="text" id="wh_url" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+    </div><button onclick="saveWebhook()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button></div>`;
 }
-
 async function saveWebhook() {
-    const payload = {
-        name: document.getElementById('wh_name').value,
-        event_type: document.getElementById('wh_event').value,
-        url: document.getElementById('wh_url').value
-    };
+    const payload = { name: document.getElementById('wh_name').value, event_type: document.getElementById('wh_event').value, url: document.getElementById('wh_url').value };
     if (!payload.url) { showToast('Error', 'URL wajib', 'error'); return; }
     await supabaseClient.from('webhooks').insert([payload]);
     showToast('Sukses', 'Webhook ditambahkan', 'success');
     document.querySelector('.modal-overlay')?.remove();
     showWebhooks();
 }
-
 async function deleteWebhook(id) {
-    if (!confirm('Hapus webhook?')) return;
+    if (!confirm('Hapus?')) return;
     await supabaseClient.from('webhooks').delete().eq('id', id);
     document.querySelector('.modal-overlay')?.remove();
     showWebhooks();
 }
-
 async function triggerWebhooks(event, data) {
     try {
         const { data: hooks } = await supabaseClient.from('webhooks').select('*').eq('event_type', event).eq('is_active', true);
-        (hooks || []).forEach(h => {
-            fetch(h.url, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ event, data, timestamp: new Date().toISOString() })
-            }).catch(() => {});
-        });
-    } catch (err) { console.warn('Webhook trigger fail:', err); }
+        (hooks || []).forEach(h => { fetch(h.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event, data, timestamp: new Date().toISOString() }) }).catch(() => {}); });
+    } catch (err) { console.warn('Webhook fail:', err); }
 }
 
-/* ─── 6. ANALYTICS DASHBOARD ─── */
+/* ANALYTICS */
 async function showAnalytics() {
     const totalValue = rawData.reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
     const totalCost = rawData.reduce((s, i) => s + (parseFloat(i.harga_beli) || 0), 0);
@@ -2173,99 +1874,63 @@ async function showAnalytics() {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `
-        <div class="glass-card p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-white">📈 Advanced Analytics</h2>
-                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total Aset</div></div>
-                <div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Nilai Sekarang</div></div>
-                <div class="kpi-card"><div class="kpi-value">Rp ${(depresiasi/1000000).toFixed(0)}Jt</div><div class="kpi-label">Depresiasi</div></div>
-                <div class="kpi-card"><div class="kpi-value">${maintenanceDue}</div><div class="kpi-label">Maintenance Due</div></div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="chart-card"><h3 class="text-xs uppercase text-gray-400 mb-3">📊 Nilai per Departemen</h3><canvas id="analyticsValueChart" height="200"></canvas></div>
-                <div class="chart-card"><h3 class="text-xs uppercase text-gray-400 mb-3">🔧 Biaya Maintenance per Bulan</h3><canvas id="analyticsMaintenanceChart" height="200"></canvas></div>
-            </div>
-        </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-white">📈 Analytics</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total Aset</div></div>
+            <div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Nilai</div></div>
+            <div class="kpi-card"><div class="kpi-value">Rp ${(depresiasi/1000000).toFixed(0)}Jt</div><div class="kpi-label">Depresiasi</div></div>
+            <div class="kpi-card"><div class="kpi-value">${maintenanceDue}</div><div class="kpi-label">Due</div></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="chart-card"><h3 class="text-xs uppercase text-gray-400 mb-3">📊 Nilai per Dept</h3><canvas id="analyticsValueChart" height="200"></canvas></div>
+            <div class="chart-card"><h3 class="text-xs uppercase text-gray-400 mb-3">🔧 Biaya Maintenance</h3><canvas id="analyticsMaintenanceChart" height="200"></canvas></div>
+        </div>
+    </div>`;
     document.body.appendChild(modal);
     setTimeout(() => renderAnalyticsCharts(rawData), 100);
 }
-
 async function renderAnalyticsCharts(data) {
     const ctx1 = document.getElementById('analyticsValueChart');
     if (ctx1) {
         const valueByDept = {};
-        data.forEach(i => {
-            const d = (i.dept || i.department || 'LAINNYA').toUpperCase();
-            valueByDept[d] = (valueByDept[d] || 0) + (parseFloat(i.nilai_sekarang) || 0);
-        });
-        new Chart(ctx1, {
-            type: 'bar',
-            data: { labels: Object.keys(valueByDept), datasets: [{ data: Object.values(valueByDept), backgroundColor: '#818cf8', borderRadius: 6 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#9ca3af', callback: v => 'Rp ' + (v/1000000).toFixed(0) + 'Jt' } }, x: { ticks: { color: '#9ca3af' } } } }
-        });
+        data.forEach(i => { const d = (i.dept || i.department || 'LAINNYA').toUpperCase(); valueByDept[d] = (valueByDept[d] || 0) + (parseFloat(i.nilai_sekarang) || 0); });
+        new Chart(ctx1, { type: 'bar', data: { labels: Object.keys(valueByDept), datasets: [{ data: Object.values(valueByDept), backgroundColor: '#818cf8', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#9ca3af', callback: v => 'Rp ' + (v/1000000).toFixed(0) + 'Jt' } }, x: { ticks: { color: '#9ca3af' } } } } });
     }
     const { data: maint } = await supabaseClient.from('maintenance_log').select('*');
     const ctx2 = document.getElementById('analyticsMaintenanceChart');
     if (ctx2 && maint) {
         const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
         const costByMonth = {};
-        maint.forEach(m => {
-            const d = new Date(m.maintenance_date);
-            const key = `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`;
-            costByMonth[key] = (costByMonth[key] || 0) + (m.cost || 0);
-        });
-        new Chart(ctx2, {
-            type: 'line',
-            data: { labels: Object.keys(costByMonth), datasets: [{ data: Object.values(costByMonth), borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.2)', fill: true, tension: 0.4 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
+        maint.forEach(m => { const d = new Date(m.maintenance_date); const key = `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`; costByMonth[key] = (costByMonth[key] || 0) + (m.cost || 0); });
+        new Chart(ctx2, { type: 'line', data: { labels: Object.keys(costByMonth), datasets: [{ data: Object.values(costByMonth), borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.2)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
     }
 }
 
-/* ─── 7. SAVED REPORTS ─── */
+/* SAVED REPORTS */
 async function showSavedReports() {
     const { data } = await supabaseClient.from('saved_reports').select('*').order('created_at', { ascending: false });
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `
-        <div class="glass-card p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-white">📁 Saved Reports</h2>
-                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-            </div>
-            <button onclick="saveCurrentReportPrompt()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Simpan Report Ini</button>
-            <div class="space-y-2">
-                ${(!data || data.length === 0) ? '<p class="text-center text-gray-400 py-4">Belum ada report tersimpan.</p>' :
-                data.map(r => `<div class="glass-card p-3 flex justify-between items-center">
-                    <div><div class="text-white text-sm">${r.report_name}</div><div class="text-gray-400 text-xs">${new Date(r.created_at).toLocaleString('id-ID')}</div></div>
-                    <div><button onclick="runSavedReport(${r.id})" class="text-emerald-400 text-xs mr-2">▶️ Run</button><button onclick="deleteSavedReport(${r.id})" class="text-rose-400 text-xs">🗑️</button></div>
-                </div>`).join('')}
-            </div>
-        </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">📁 Saved Reports</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+        <button onclick="saveCurrentReportPrompt()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Simpan Report Ini</button>
+        <div class="space-y-2">${(!data || data.length === 0) ? '<p class="text-center text-gray-400 py-4">Belum ada report.</p>' : data.map(r => `<div class="glass-card p-3 flex justify-between items-center"><div><div class="text-white text-sm">${r.report_name}</div><div class="text-gray-400 text-xs">${new Date(r.created_at).toLocaleString('id-ID')}</div></div><div><button onclick="runSavedReport(${r.id})" class="text-emerald-400 text-xs mr-2">▶️</button><button onclick="deleteSavedReport(${r.id})" class="text-rose-400 text-xs">🗑️</button></div></div>`).join('')}</div>
+    </div>`;
     document.body.appendChild(modal);
 }
-
 function saveCurrentReportPrompt() {
-    const name = prompt('Nama report:');
-    if (!name) return;
-    const cols = activeModule === 'it'
-        ? ['id_aset', 'user', 'dept', 'device', 'status', 'ip_address', 'license_os', 'specs']
-        : ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'jenis_inventaris', 'department', 'lokasi'];
+    const name = prompt('Nama report:'); if (!name) return;
+    const cols = activeModule === 'it' ? ['id_aset', 'user', 'dept', 'device', 'status', 'ip_address', 'license_os', 'specs'] : ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'jenis_inventaris', 'department', 'lokasi'];
     saveCurrentReport(name, { columns: cols, module: activeModule, pt: currentPTTable });
 }
-
 async function saveCurrentReport(name, config) {
     await supabaseClient.from('saved_reports').insert([{ report_name: name, config, created_by: currentUser?.email }]);
     showToast('Sukses', 'Report tersimpan', 'success');
     document.querySelector('.modal-overlay')?.remove();
     showSavedReports();
 }
-
 async function runSavedReport(id) {
     const { data } = await supabaseClient.from('saved_reports').select('*').eq('id', id).single();
     if (data?.config?.columns) {
@@ -2277,23 +1942,22 @@ async function runSavedReport(id) {
         XLSX.writeFile(wb, `${data.report_name}_${Date.now()}.xlsx`);
     }
 }
-
 async function deleteSavedReport(id) {
-    if (!confirm('Hapus report?')) return;
+    if (!confirm('Hapus?')) return;
     await supabaseClient.from('saved_reports').delete().eq('id', id);
     document.querySelector('.modal-overlay')?.remove();
     showSavedReports();
 }
 
-/* ─── 8. VIEW SWITCHER ─── */
+/* VIEW SWITCHER */
 function switchView(view) {
     currentView = view;
     document.getElementById('btnViewTable').className = view === 'table' ? 'tab-btn active' : 'tab-btn';
     document.getElementById('btnViewKanban').className = view === 'kanban' ? 'tab-btn active' : 'tab-btn';
     document.getElementById('btnViewCalendar').className = view === 'calendar' ? 'tab-btn active' : 'tab-btn';
     document.getElementById('btnViewTimeline').className = view === 'timeline' ? 'tab-btn active' : 'tab-btn';
-    const tableWrapper = document.querySelector('.table-wrapper');
-    if (tableWrapper) tableWrapper.parentElement.style.display = view === 'table' ? 'block' : 'none';
+    const tw = document.querySelector('.table-wrapper');
+    if (tw) tw.parentElement.style.display = view === 'table' ? 'block' : 'none';
     document.getElementById('kanbanContainer').classList.toggle('hidden', view !== 'kanban');
     document.getElementById('calendarContainer').classList.toggle('hidden', view !== 'calendar');
     document.getElementById('timelineContainer').classList.toggle('hidden', view !== 'timeline');
@@ -2301,34 +1965,11 @@ function switchView(view) {
     if (view === 'calendar') renderCalendar();
     if (view === 'timeline') renderTimeline();
 }
-
-/* ─── 9. KANBAN VIEW ─── */
 function renderKanban() {
-    if (activeModule !== 'it') {
-        document.getElementById('kanbanActive').innerHTML = '<p class="text-gray-500 text-xs text-center py-4">Kanban hanya untuk modul IT</p>';
-        document.getElementById('kanbanMaint').innerHTML = '';
-        document.getElementById('kanbanBroken').innerHTML = '';
-        document.getElementById('kanbanCountActive').innerText = '0';
-        document.getElementById('kanbanCountMaint').innerText = '0';
-        document.getElementById('kanbanCountBroken').innerText = '0';
-        return;
-    }
+    if (activeModule !== 'it') { document.getElementById('kanbanActive').innerHTML = '<p class="text-gray-500 text-xs text-center py-4">Hanya modul IT</p>'; document.getElementById('kanbanMaint').innerHTML = ''; document.getElementById('kanbanBroken').innerHTML = ''; return; }
     const columns = { Active: [], Maintenance: [], Broken: [] };
-    rawData.forEach(item => {
-        const status = String(item.status || 'Active');
-        if (columns[status]) columns[status].push(item);
-        else columns.Active.push(item);
-    });
-    const renderCard = (item) => `
-        <div class="kanban-card" draggable="true" ondragstart="handleKanbanDrag(event, '${item.id_aset}')">
-            <div class="flex justify-between items-start mb-2">
-                <span class="text-indigo-300 font-mono text-xs">${item.id_aset}</span>
-                <button onclick="editITAsset('${item.id_aset}')" class="text-blue-400 text-xs">✏️</button>
-            </div>
-            <div class="text-white text-sm font-semibold">${item.user || '-'}</div>
-            <div class="text-gray-400 text-xs">${item.device || '-'} · ${item.dept || '-'}</div>
-            ${item.specs ? `<div class="text-gray-500 text-[10px] mt-1">${item.specs}</div>` : ''}
-        </div>`;
+    rawData.forEach(item => { const status = String(item.status || 'Active'); if (columns[status]) columns[status].push(item); else columns.Active.push(item); });
+    const renderCard = (item) => `<div class="kanban-card" draggable="true" ondragstart="handleKanbanDrag(event, '${item.id_aset}')"><div class="flex justify-between items-start mb-2"><span class="text-indigo-300 font-mono text-xs">${item.id_aset}</span><button onclick="editITAsset('${item.id_aset}')" class="text-blue-400 text-xs">✏️</button></div><div class="text-white text-sm font-semibold">${item.user || '-'}</div><div class="text-gray-400 text-xs">${item.device || '-'} · ${item.dept || '-'}</div></div>`;
     document.getElementById('kanbanActive').innerHTML = columns.Active.map(renderCard).join('');
     document.getElementById('kanbanMaint').innerHTML = columns.Maintenance.map(renderCard).join('');
     document.getElementById('kanbanBroken').innerHTML = columns.Broken.map(renderCard).join('');
@@ -2336,12 +1977,7 @@ function renderKanban() {
     document.getElementById('kanbanCountMaint').innerText = columns.Maintenance.length;
     document.getElementById('kanbanCountBroken').innerText = columns.Broken.length;
 }
-
-function handleKanbanDrag(event, assetId) {
-    draggedAssetId = assetId;
-    event.target.classList.add('dragging');
-}
-
+function handleKanbanDrag(event, assetId) { draggedAssetId = assetId; event.target.classList.add('dragging'); }
 async function handleKanbanDrop(event, newStatus) {
     event.preventDefault();
     if (!draggedAssetId) return;
@@ -2354,11 +1990,8 @@ async function handleKanbanDrop(event, newStatus) {
     await refreshAll(true);
     renderKanban();
 }
-
-/* ─── 10. CALENDAR VIEW ─── */
 function renderCalendar() {
-    const year = calendarDate.getFullYear();
-    const month = calendarDate.getMonth();
+    const year = calendarDate.getFullYear(); const month = calendarDate.getMonth();
     const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     document.getElementById('calendarTitle').innerText = `${monthNames[month]} ${year}`;
     const firstDay = new Date(year, month, 1).getDay();
@@ -2370,52 +2003,30 @@ function renderCalendar() {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
-        html += `
-            <div class="calendar-day ${isToday ? 'today' : ''} ${events.length > 0 ? 'has-event' : ''}" onclick="showDayEvents('${dateStr}')">
-                <div class="text-white text-xs font-bold">${d}</div>
-                ${events.slice(0, 2).map(e => `<div class="text-[9px] text-indigo-300 truncate">${e.id_aset || e.nama_material || 'Item'}</div>`).join('')}
-                ${events.length > 2 ? `<div class="text-[9px] text-gray-400">+${events.length - 2}</div>` : ''}
-            </div>`;
+        html += `<div class="calendar-day ${isToday ? 'today' : ''} ${events.length > 0 ? 'has-event' : ''}" onclick="showDayEvents('${dateStr}')"><div class="text-white text-xs font-bold">${d}</div>${events.slice(0, 2).map(e => `<div class="text-[9px] text-indigo-300 truncate">${e.id_aset || e.nama_material || 'Item'}</div>`).join('')}${events.length > 2 ? `<div class="text-[9px] text-gray-400">+${events.length - 2}</div>` : ''}</div>`;
     }
     document.getElementById('calendarGrid').innerHTML = html;
 }
-
 function calendarPrev() { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(); }
 function calendarNext() { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); }
-
 function showDayEvents(dateStr) {
     const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
-    if (events.length === 0) { showToast('Info', 'Tidak ada event tanggal ini', 'info'); return; }
+    if (events.length === 0) { showToast('Info', 'Tidak ada event', 'info'); return; }
     showToast('Events', `${events.length} event pada ${dateStr}`, 'info');
 }
-
-/* ─── 11. TIMELINE VIEW ─── */
 async function renderTimeline() {
     const { data } = await supabaseClient.from('asset_lifecycle').select('*').order('event_date', { ascending: false }).limit(30);
     const container = document.getElementById('timelineContent');
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-sm">Belum ada lifecycle event.</p>';
-        return;
-    }
-    container.innerHTML = data.map(e => `
-        <div class="timeline-item">
-            <div class="text-white text-sm font-semibold">${e.event_type}</div>
-            <div class="text-indigo-300 text-xs">${e.asset_id}</div>
-            <div class="text-gray-400 text-xs">${new Date(e.event_date).toLocaleString('id-ID')}</div>
-            <div class="text-gray-500 text-[10px] mt-1">by ${e.created_by}</div>
-        </div>
-    `).join('');
+    if (!data || data.length === 0) { container.innerHTML = '<p class="text-gray-400 text-sm">Belum ada lifecycle event.</p>'; return; }
+    container.innerHTML = data.map(e => `<div class="timeline-item"><div class="text-white text-sm font-semibold">${e.event_type}</div><div class="text-indigo-300 text-xs">${e.asset_id}</div><div class="text-gray-400 text-xs">${new Date(e.event_date).toLocaleString('id-ID')}</div><div class="text-gray-500 text-[10px] mt-1">by ${e.created_by}</div></div>`).join('');
 }
 
-/* ─── 12. COMMAND PALETTE ─── */
+/* COMMAND PALETTE */
 function openCommandPalette() {
     document.querySelector('.cmd-palette')?.remove();
     const cmd = document.createElement('div');
     cmd.className = 'cmd-palette';
-    cmd.innerHTML = `
-        <input type="text" class="cmd-input" id="cmdInput" placeholder="Ketik perintah atau cari aset..." autofocus />
-        <div class="cmd-list" id="cmdList"></div>
-    `;
+    cmd.innerHTML = `<input type="text" class="cmd-input" id="cmdInput" placeholder="Ketik perintah..." autofocus /><div class="cmd-list" id="cmdList"></div>`;
     document.body.appendChild(cmd);
     document.getElementById('cmdInput').addEventListener('input', e => updateCmdList(e.target.value));
     document.getElementById('cmdInput').addEventListener('keydown', e => {
@@ -2426,113 +2037,73 @@ function openCommandPalette() {
     });
     updateCmdList('');
 }
-
 function updateCmdList(query) {
     const all = [
-        { icon: '➕', text: 'Tambah Aset Baru', action: () => toggleForm() },
+        { icon: '➕', text: 'Tambah Aset', action: () => toggleForm() },
         { icon: '📤', text: 'Import Massal', action: () => openBulkImport() },
         { icon: '📊', text: 'Export Excel', action: () => exportToExcel() },
         { icon: '📄', text: 'Export PDF', action: () => exportToPDF() },
         { icon: '🖨️', text: 'Cetak Label', action: () => printAllLabels() },
-        { icon: '📥', text: 'Download QR ZIP', action: () => downloadAllQR() },
+        { icon: '📥', text: 'QR ZIP', action: () => downloadAllQR() },
         { icon: '🗑️', text: 'Trash', action: () => showDeletedAssets() },
         { icon: '✅', text: 'Approval Queue', action: () => showApprovalQueue() },
+        { icon: '📤', text: 'Request Saya', action: () => showMyRequests() },
         { icon: '📈', text: 'Analytics', action: () => showAnalytics() },
-        { icon: '🔧', text: 'Maintenance Log', action: () => showMaintenanceModal() },
+        { icon: '🔧', text: 'Maintenance', action: () => showMaintenanceModal() },
         { icon: '🔗', text: 'Webhooks', action: () => showWebhooks() },
-        { icon: '📁', text: 'Saved Reports', action: () => showSavedReports() },
-        { icon: '📝', text: 'Activity Log', action: () => showLogModal() },
+        { icon: '📁', text: 'Reports', action: () => showSavedReports() },
+        { icon: '📝', text: 'Log', action: () => showLogModal() },
         { icon: '👥', text: 'Kelola User', action: () => showUserManagement() },
         { icon: '🌙', text: 'Toggle Theme', action: () => toggleTheme() },
-        { icon: '📊', text: 'Kanban View', action: () => switchView('kanban') },
-        { icon: '📅', text: 'Calendar View', action: () => switchView('calendar') },
-        { icon: '⏱️', text: 'Timeline View', action: () => switchView('timeline') },
-        { icon: '📋', text: 'Table View', action: () => switchView('table') },
-        { icon: '📊', text: 'Eksekutif Dashboard', action: () => showExecutiveDashboard() },
-        { icon: '🔔', text: 'Notifikasi', action: () => showNotifications() }
+        { icon: '📊', text: 'Kanban', action: () => switchView('kanban') },
+        { icon: '📅', text: 'Kalender', action: () => switchView('calendar') },
+        { icon: '⏱️', text: 'Timeline', action: () => switchView('timeline') },
+        { icon: '📋', text: 'Tabel', action: () => switchView('table') },
+        { icon: '📊', text: 'Eksekutif', action: () => showExecutiveDashboard() },
     ];
     const q = query.toLowerCase().trim();
     cmdItems = q ? all.filter(i => i.text.toLowerCase().includes(q)) : all;
-    if (q && rawData.length > 0) {
-        const found = rawData.filter(i => JSON.stringify(i).toLowerCase().includes(q)).slice(0, 5);
-        found.forEach(item => {
-            cmdItems.push({
-                icon: '🔍',
-                text: `Cari: ${item.id_aset || item.nama_material}`,
-                action: () => { document.getElementById('searchInput').value = item.id_aset || item.nama_material; renderTable(rawData); }
-            });
-        });
-    }
     cmdSelectedIdx = 0;
     updateCmdUI();
 }
-
 function updateCmdUI() {
     const list = document.getElementById('cmdList');
     if (!list) return;
-    list.innerHTML = cmdItems.length === 0 ? '<div class="cmd-item text-gray-500">Tidak ada hasil</div>' :
-        cmdItems.map((item, idx) => `<div class="cmd-item ${idx === cmdSelectedIdx ? 'active' : ''}" onclick="runCmd(${idx})">
-            <span>${item.icon}</span><span>${item.text}</span>
-        </div>`).join('');
+    list.innerHTML = cmdItems.length === 0 ? '<div class="cmd-item text-gray-500">Tidak ada hasil</div>' : cmdItems.map((item, idx) => `<div class="cmd-item ${idx === cmdSelectedIdx ? 'active' : ''}" onclick="runCmd(${idx})"><span>${item.icon}</span><span>${item.text}</span></div>`).join('');
 }
+function runCmd(idx) { const item = cmdItems[idx]; document.querySelector('.cmd-palette')?.remove(); if (item) item.action(); }
 
-function runCmd(idx) {
-    const item = cmdItems[idx];
-    document.querySelector('.cmd-palette')?.remove();
-    if (item) item.action();
-}
-
-/* ─── 13. EXECUTIVE DASHBOARD ─── */
+/* EXECUTIVE */
 async function showExecutiveDashboard() {
     const { data: itData } = await supabaseClient.from('inventaris_p1').select('*').is('deleted_at', null);
     const { data: genData } = await supabaseClient.from('general_assets').select('*').is('deleted_at', null);
-    const itCount = itData?.length || 0;
-    const genCount = genData?.length || 0;
+    const itCount = itData?.length || 0; const genCount = genData?.length || 0;
     const totalNilai = [...(itData||[]), ...(genData||[])].reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `
-        <div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <div><h2 class="text-2xl font-bold text-white">📊 Dashboard Eksekutif</h2><p class="text-gray-400 text-sm">Ringkasan Aset Perusahaan</p></div>
-                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏢</div><div class="text-2xl font-bold text-indigo-400">${itCount}</div><div class="text-xs text-gray-400 uppercase">Aset IT</div></div>
-                <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">📋</div><div class="text-2xl font-bold text-purple-400">${genCount}</div><div class="text-xs text-gray-400 uppercase">Aset General</div></div>
-                <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">💰</div><div class="text-2xl font-bold text-emerald-400">Rp ${(totalNilai/1000000).toFixed(0)}Jt</div><div class="text-xs text-gray-400 uppercase">Total Nilai</div></div>
-                <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏬</div><div class="text-2xl font-bold text-amber-400">2</div><div class="text-xs text-gray-400 uppercase">Perusahaan</div></div>
-            </div>
-            <h3 class="text-white font-bold mb-3">🏢 Breakdown per Departemen</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                ${(() => {
-                    const deptCounts = {};
-                    [...(itData||[]), ...(genData||[])].forEach(i => { const d = (i.dept || i.department || 'LAINNYA').toUpperCase(); deptCounts[d] = (deptCounts[d] || 0) + 1; });
-                    return Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).map(([d, c]) => `<div class="bg-white/5 rounded-lg p-3 text-center"><div class="text-indigo-300 font-bold">${c}</div><div class="text-gray-400 text-xs">${d}</div></div>`).join('');
-                })()}
-            </div>
-        </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-white">📊 Eksekutif</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏢</div><div class="text-2xl font-bold text-indigo-400">${itCount}</div><div class="text-xs text-gray-400 uppercase">IT</div></div>
+            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">📋</div><div class="text-2xl font-bold text-purple-400">${genCount}</div><div class="text-xs text-gray-400 uppercase">General</div></div>
+            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">💰</div><div class="text-2xl font-bold text-emerald-400">Rp ${(totalNilai/1000000).toFixed(0)}Jt</div><div class="text-xs text-gray-400 uppercase">Nilai</div></div>
+            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏬</div><div class="text-2xl font-bold text-amber-400">2</div><div class="text-xs text-gray-400 uppercase">PT</div></div>
+        </div>
+    </div>`;
     document.body.appendChild(modal);
 }
 
-/* ─── 14. KEYBOARD SHORTCUTS ─── */
+/* KEYBOARD */
 document.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openCommandPalette(); }
     if (e.key === 'Escape') document.querySelector('.cmd-palette')?.remove();
     if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); toggleForm(); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'e') { e.preventDefault(); exportToExcel(); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); exportToPDF(); }
 });
 
-/* ─── 15. INIT ─── */
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        if (currentUser) loadUserProfile();
-    }, 500);
-});
-
-console.log('🚀 Enterprise Asset Manager v5.0 LOADED');
+/* INIT */
+window.addEventListener('load', () => { setTimeout(() => { if (currentUser) loadUserProfile(); }, 500); });
+console.log('🚀 Enterprise Asset Manager v6.0 LOADED');
 </script>
 </body>
 </html>
