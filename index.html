@@ -238,35 +238,35 @@
                         <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🍩 Status Distribution</h3>
                         <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Live</span>
                     </div>
-                    <div style="height:200px;position:relative"><canvas id="chartStatus"></canvas></div>
+                    <div style="height:280px;position:relative"><canvas id="chartStatus"></canvas></div>
                 </div>
                 <div class="chart-card">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🏢 Department Distribution</h3>
-                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Top 8</span>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">All</span>
                     </div>
-                    <div style="height:200px;position:relative"><canvas id="chartDept"></canvas></div>
+                    <div style="height:280px;position:relative"><canvas id="chartDept"></canvas></div>
                 </div>
                 <div class="chart-card">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">💻 Device / Kategori</h3>
                         <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Pie</span>
                     </div>
-                    <div style="height:200px;position:relative"><canvas id="chartDevice"></canvas></div>
+                    <div style="height:280px;position:relative"><canvas id="chartDevice"></canvas></div>
                 </div>
                 <div class="chart-card lg:col-span-2">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">📈 Asset Growth (per bulan)</h3>
                         <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Last 12 bulan</span>
                     </div>
-                    <div style="height:220px;position:relative"><canvas id="chartGrowth"></canvas></div>
+                    <div style="height:280px;position:relative"><canvas id="chartGrowth"></canvas></div>
                 </div>
                 <div class="chart-card">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🎯 License Status</h3>
                         <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">IT Only</span>
                     </div>
-                    <div style="height:220px;position:relative"><canvas id="chartLicense"></canvas></div>
+                    <div style="height:280px;position:relative"><canvas id="chartLicense"></canvas></div>
                 </div>
             </div>
 
@@ -401,7 +401,6 @@
             activeFilter = null;
             knownDepts = new Set();
             updateFilterButtons();
-            // Realtime & auto-refresh switch ke table baru
             const table = module === 'it' ? currentPTTable : 'general_assets';
             setupRealtime(table);
             loadData();
@@ -419,7 +418,6 @@
                 const oldCount = rawData.length;
                 rawData = data || [];
                 
-                // Detect dept baru
                 const currentDepts = new Set(
                     rawData.map(x => (x.dept || x.department || 'N/A').toUpperCase().trim()).filter(Boolean)
                 );
@@ -428,16 +426,17 @@
                 if (newDepts.length > 0 && knownDepts.size > 0) {
                     console.log('🆕 Dept baru terdeteksi:', newDepts);
                     if (!silent) showToast('Dept Baru!', `${newDepts.join(', ')} telah ditambahkan`, 'success');
-                    newDepts.forEach(d => {
-                        const el = document.querySelector(`[data-dept="${d}"]`);
-                        if (el) el.classList.add('new-dept');
-                    });
+                    setTimeout(() => {
+                        newDepts.forEach(d => {
+                            const el = document.querySelector(`[data-dept="${d}"]`);
+                            if (el) el.classList.add('new-dept');
+                        });
+                    }, 100);
                 }
                 knownDepts = currentDepts;
                 
                 console.log(`🔄 Refresh: ${rawData.length} rows | Depts: ${[...currentDepts].join(', ')}`);
                 
-                // Update SEMUA komponen
                 updateStats(rawData);
                 if (activeModule === 'it') renderDeptSummary(rawData);
                 renderCharts(rawData);
@@ -502,10 +501,8 @@
 
         function setupAutoRefresh() {
             if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-            // Backup: auto-refresh tiap 10 detik kalau realtime gagal
             autoRefreshTimer = setInterval(() => {
                 if (document.getElementById('main-content').classList.contains('hidden')) return;
-                console.log('⏰ Auto-refresh tick');
                 refreshAll(true);
             }, 10000);
         }
@@ -657,7 +654,10 @@
                 const d = (i.dept || 'LAINNYA').toUpperCase().trim();
                 counts[d] = (counts[d] || 0) + 1;
             });
-            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            const sorted = Object.entries(counts).sort((a, b) => {
+                if (b[1] !== a[1]) return b[1] - a[1];
+                return a[0].localeCompare(b[0]);
+            });
             const grid = document.getElementById('deptSummaryGrid');
             grid.innerHTML = sorted.map(([dept, count]) => `
                 <div class="stat-card" data-dept="${dept}" onclick="filterByDept('${dept}')">
@@ -674,12 +674,11 @@
         }
 
         /* ============================================================
-           CHARTS — Auto sync
+           CHARTS
         ============================================================ */
         function renderCharts(data) {
             console.log(`📊 Render charts: ${data.length} rows`);
             
-            // Destroy semua chart lama
             Object.keys(charts).forEach(key => {
                 if (charts[key]) {
                     try { charts[key].destroy(); } catch(e) { console.warn('Destroy err:', e); }
@@ -730,7 +729,7 @@
                 });
             }
             
-            /* DEPT */
+            /* DEPT — Horizontal Bar, tampil SEMUA dept */
             const cDept = document.getElementById('chartDept');
             if (cDept) {
                 const dc = {};
@@ -739,14 +738,36 @@
                     dc[d] = (dc[d] || 0) + 1;
                 });
                 console.log('📊 IT Dept counts:', dc);
-                const sd = Object.entries(dc).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                // ✅ Sort stabil + tampil SEMUA (gak ada slice limit)
+                const sd = Object.entries(dc).sort((a, b) => {
+                    if (b[1] !== a[1]) return b[1] - a[1];
+                    return a[0].localeCompare(b[0]);
+                });
+                // Dynamic height berdasarkan jumlah dept
+                const dynamicHeight = Math.max(280, sd.length * 32);
+                cDept.parentElement.style.height = dynamicHeight + 'px';
+                
                 charts.dept = new Chart(cDept, {
                     type: 'bar',
                     data: {
                         labels: sd.map(d => d[0]),
-                        datasets: [{ label: 'Jumlah', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }]
+                        datasets: [{ 
+                            label: 'Jumlah Aset', 
+                            data: sd.map(d => d[1]), 
+                            backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), 
+                            borderRadius: 6, 
+                            borderSkipped: false 
+                        }]
                     },
-                    options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } }
+                    options: { 
+                        ...commonOpts, 
+                        indexAxis: 'y',  // ✅ Horizontal
+                        plugins: { ...commonOpts.plugins, legend: { display: false } }, 
+                        scales: { 
+                            x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, 
+                            y: { ticks: { color: '#9ca3af', font: { size: 11, weight: '600' } }, grid: { display: false } } 
+                        } 
+                    }
                 });
             }
             
@@ -829,17 +850,40 @@
                 });
             }
             
-            /* DEPT */
+            /* DEPT — Horizontal Bar, tampil SEMUA */
             const cDept = document.getElementById('chartDept');
             if (cDept) {
                 const dc = {};
                 data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
                 console.log('📊 General Dept counts:', dc);
-                const sd = Object.entries(dc).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                const sd = Object.entries(dc).sort((a, b) => {
+                    if (b[1] !== a[1]) return b[1] - a[1];
+                    return a[0].localeCompare(b[0]);
+                });
+                const dynamicHeight = Math.max(280, sd.length * 32);
+                cDept.parentElement.style.height = dynamicHeight + 'px';
+                
                 charts.dept = new Chart(cDept, {
                     type: 'bar',
-                    data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Jumlah', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] },
-                    options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } }
+                    data: { 
+                        labels: sd.map(d => d[0]), 
+                        datasets: [{ 
+                            label: 'Jumlah Item', 
+                            data: sd.map(d => d[1]), 
+                            backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), 
+                            borderRadius: 6, 
+                            borderSkipped: false 
+                        }] 
+                    },
+                    options: { 
+                        ...commonOpts, 
+                        indexAxis: 'y',
+                        plugins: { ...commonOpts.plugins, legend: { display: false } }, 
+                        scales: { 
+                            x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, 
+                            y: { ticks: { color: '#9ca3af', font: { size: 11, weight: '600' } }, grid: { display: false } } 
+                        } 
+                    }
                 });
             }
             
@@ -987,7 +1031,7 @@
         }
 
         /* ============================================================
-           SAVE — Auto-refresh semua
+           SAVE
         ============================================================ */
         function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
@@ -1006,11 +1050,7 @@
             if (!payload.id_aset) { showToast('Error', 'ID Aset wajib diisi!', 'error'); return; }
             const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
             if (error) showToast('Gagal', error.message, 'error');
-            else {
-                showToast('Sukses', 'IT Aset disimpan!', 'success');
-                toggleForm();
-                await refreshAll(true); // ✅ Auto-sync semua
-            }
+            else { showToast('Sukses', 'IT Aset disimpan!', 'success'); toggleForm(); await refreshAll(true); }
         }
 
         async function saveGeneralAsset() {
@@ -1024,11 +1064,7 @@
             if (!payload.nama_material) { showToast('Error', 'Nama Material wajib diisi!', 'error'); return; }
             const { error } = await supabaseClient.from('general_assets').insert([payload]);
             if (error) showToast('Gagal', error.message, 'error');
-            else {
-                showToast('Sukses', 'Data disimpan!', 'success');
-                toggleForm();
-                await refreshAll(true); // ✅ Auto-sync semua
-            }
+            else { showToast('Sukses', 'Data disimpan!', 'success'); toggleForm(); await refreshAll(true); }
         }
 
         /* ============================================================
@@ -1321,7 +1357,6 @@
             if (!confirm(`Import ${importData.length} data ke database?`)) return;
             const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
             let success = 0, failed = 0, skipped = 0;
-            const errors = [];
             const pick = (item, ...keys) => {
                 for (const k of keys) {
                     if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== '') return String(item[k]).trim();
@@ -1334,7 +1369,6 @@
             };
             for (let i = 0; i < importData.length; i++) {
                 const item = importData[i];
-                const rowNum = item.___row || (i + 2);
                 let payload = {};
                 if (activeModule === 'it') {
                     payload = {
@@ -1386,7 +1420,7 @@
                 }
                 const { error } = await supabaseClient.from(targetTable).insert([payload]);
                 if (!error) success++;
-                else { failed++; errors.push(`Baris ${rowNum}: ${error.message}`); }
+                else { failed++; console.error('Gagal:', error, payload); }
             }
             let msg = `✅ ${success} sukses`;
             if (failed > 0) msg += `, ❌ ${failed} gagal`;
