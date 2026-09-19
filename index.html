@@ -252,6 +252,7 @@
         let deptChartInstance = null;
         let html5QrcodeScanner = null;
 
+        /* ============ TOAST ============ */
         function showToast(title, message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -259,9 +260,10 @@
             toast.innerHTML = `<div class="font-semibold text-white">${title}</div><div class="text-xs text-gray-300">${message}</div>`;
             toast.onclick = () => toast.remove();
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+            setTimeout(() => toast.remove(), 5000);
         }
 
+        /* ============ AUTH ============ */
         supabaseClient.auth.onAuthStateChange((event, session) => { if (session) checkUser(); });
         checkUser();
 
@@ -309,20 +311,24 @@
             loadData();
         }
 
+        /* ============ LOAD DATA ============ */
         async function loadData() {
             const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
             try {
                 const { data, error } = await supabaseClient.from(tableName).select('*').is('deleted_at', null);
                 if (error) throw error;
                 rawData = data || [];
+                console.log(`📦 Loaded ${rawData.length} rows from ${tableName}`);
                 renderTable(rawData);
                 updateStats(rawData);
                 if (activeModule === 'it') updateCharts(rawData);
             } catch (err) {
+                console.error(err);
                 showToast('Error', 'Gagal memuat data: ' + err.message, 'error');
             }
         }
 
+        /* ============ RENDER TABLE ============ */
         function renderTable(data) {
             const thead = document.getElementById('tableHead');
             const tbody = document.getElementById('tableBody');
@@ -333,7 +339,7 @@
                 tbody.innerHTML = data.map(item => `
                     <tr>
                         <td><canvas class="qr-code" data-value="${item.id_aset}" width="40" height="40"></canvas></td>
-                        <td class="font-mono text-indigo-300">${item.id_aset}</td>
+                        <td class="font-mono text-indigo-300">${item.id_aset || '-'}</td>
                         <td>${item.user || '-'}</td>
                         <td>${item.dept || '-'}</td>
                         <td>${item.device || '-'}</td>
@@ -344,7 +350,7 @@
                     </tr>
                 `).join('');
                 document.querySelectorAll('canvas.qr-code').forEach(c => {
-                    new QRious({ element: c, value: c.dataset.value, size: 40, background: 'white', foreground: '#111827' });
+                    try { new QRious({ element: c, value: c.dataset.value || 'N/A', size: 40, background: 'white', foreground: '#111827' }); } catch(e){}
                 });
             } else {
                 thead.innerHTML = `
@@ -364,29 +370,44 @@
                     </tr>
                 `;
                 if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="12" class="text-center py-10 text-gray-400">Belum ada data General Assets.</td></tr>`; return; }
-                tbody.innerHTML = data.map((item, idx) => `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td class="font-semibold text-left">${item.nama_material || '-'}</td>
-                        <td class="text-gray-400 text-left">${item.nama_material_mandarin || '-'}</td>
-                        <td>${item.spesifikasi || '-'}</td>
-                        <td class="font-bold text-indigo-300">${item.jumlah || 1}</td>
-                        <td>${item.satuan || 'Buah'}</td>
-                        <td>${item.keterangan || '-'}</td>
-                        <td><span class="badge-status active">${item.jenis_inventaris || 'Fixed Asset'}</span></td>
-                        <td>${item.department || '-'}</td>
-                        <td>${item.gambar ? `<a href="${item.gambar}" target="_blank" class="text-blue-400 underline text-[10px]">Lihat Foto</a>` : '-'}</td>
-                        <td>${item.lokasi || '-'}</td>
-                        <td class="text-center"><button onclick="deleteGeneralItem(${item.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button></td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = data.map((item, idx) => {
+                    let gambarCell = '-';
+                    if (item.gambar && typeof item.gambar === 'string' && item.gambar.startsWith('http')) {
+                        gambarCell = `<a href="${item.gambar}" target="_blank" class="text-blue-400 underline text-[10px]">Lihat Foto</a>`;
+                    } else if (item.gambar) {
+                        gambarCell = `<span class="text-gray-500 text-[10px]">${String(item.gambar).substring(0, 20)}</span>`;
+                    }
+                    return `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td class="font-semibold text-left">${item.nama_material || '-'}</td>
+                            <td class="text-gray-400 text-left">${item.nama_material_mandarin || '-'}</td>
+                            <td>${item.spesifikasi || '-'}</td>
+                            <td class="font-bold text-indigo-300">${item.jumlah || 1}</td>
+                            <td>${item.satuan || 'Buah'}</td>
+                            <td>${item.keterangan || '-'}</td>
+                            <td><span class="badge-status active">${item.jenis_inventaris || 'Fixed Asset'}</span></td>
+                            <td>${item.department || '-'}</td>
+                            <td>${gambarCell}</td>
+                            <td>${item.lokasi || '-'}</td>
+                            <td class="text-center"><button onclick="deleteGeneralItem(${item.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">Hapus</button></td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
 
+        /* ============ STATS & CHARTS ============ */
         function updateStats(data) {
             document.getElementById('statTotal').innerText = data.length;
-            document.getElementById('statActive').innerText = data.filter(i => String(i.status || i.jenis_inventaris).toLowerCase().includes('active') || String(i.status || i.jenis_inventaris).toLowerCase().includes('fixed')).length;
-            document.getElementById('statMaint').innerText = data.filter(i => String(i.status).toLowerCase() === 'maintenance' || String(i.status).toLowerCase() === 'broken').length;
+            document.getElementById('statActive').innerText = data.filter(i => {
+                const s = String(i.status || i.jenis_inventaris || '').toLowerCase();
+                return s.includes('active') || s.includes('fixed');
+            }).length;
+            document.getElementById('statMaint').innerText = data.filter(i => {
+                const s = String(i.status || '').toLowerCase();
+                return s === 'maintenance' || s === 'broken';
+            }).length;
             const depts = new Set(data.map(i => i.dept || i.department).filter(Boolean));
             document.getElementById('statDept').innerText = depts.size;
         }
@@ -417,11 +438,12 @@
             });
         }
 
+        /* ============ FORM ============ */
         function toggleForm() {
             const formContainer = document.getElementById('formContainer');
             formContainer.classList.toggle('hidden');
             const form = document.getElementById('dynamicForm');
-            
+
             if (activeModule === 'it') {
                 document.getElementById('formTitle').innerText = "Input Komputer / IT Aset Baru";
                 form.innerHTML = `
@@ -446,10 +468,7 @@
                     <div><label>Jenis Inventaris</label><select id="gen_jenis"><option value="Fixed Asset">Fixed Asset</option><option value="Consumable">Consumable</option></select></div>
                     <div><label>Department *</label><input type="text" id="gen_dept" placeholder="IT / HRGA" required /></div>
                     <div><label>Link / URL Gambar</label><input type="text" id="gen_gambar" placeholder="https://..." /></div>
-                    <div class="col-span-3">
-                        <label>Lokasi</label>
-                        <input type="text" id="gen_lokasi" placeholder="Ruang Kantor Administrasi" />
-                    </div>
+                    <div class="col-span-3"><label>Lokasi</label><input type="text" id="gen_lokasi" placeholder="Ruang Kantor Administrasi" /></div>
                     <div class="col-span-3 flex justify-end mt-2"><button type="button" onclick="saveGeneralAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl">Simpan Data</button></div>
                 `;
             }
@@ -467,7 +486,7 @@
                 deleted_at: null
             };
             const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
-            if (error) alert('Gagal: ' + error.message);
+            if (error) showToast('Gagal', error.message, 'error');
             else { showToast('Sukses', 'IT Aset disimpan!', 'success'); toggleForm(); loadData(); }
         }
 
@@ -486,24 +505,26 @@
                 deleted_at: null
             };
             const { error } = await supabaseClient.from('general_assets').insert([payload]);
-            if (error) alert('Gagal: ' + error.message);
+            if (error) showToast('Gagal', error.message, 'error');
             else { showToast('Sukses', 'Data disimpan!', 'success'); toggleForm(); loadData(); }
         }
 
+        /* ============ DELETE & RESTORE ============ */
         async function deleteItem(id) {
             if (!confirm(`Hapus aset ${id}?`)) return;
             const { error } = await supabaseClient.from(currentPTTable).update({ deleted_at: new Date().toISOString() }).eq('id_aset', id);
-            if (error) alert('Gagal: ' + error.message);
+            if (error) showToast('Gagal', error.message, 'error');
             else { loadData(); showToast('Terhapus', 'Aset masuk ke trash', 'info'); }
         }
 
         async function deleteGeneralItem(id) {
             if (!confirm(`Hapus data ini?`)) return;
             const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
-            if (error) alert('Gagal: ' + error.message);
+            if (error) showToast('Gagal', error.message, 'error');
             else { loadData(); showToast('Terhapus', 'Data masuk ke trash', 'info'); }
         }
 
+        /* ============ BULK IMPORT (FIXED) ============ */
         function openBulkImport() {
             document.getElementById('importModalTitle').innerText = activeModule === 'it' ? 'IT Computers' : 'Aset PT Magicase';
             document.getElementById('bulkImportModal').classList.remove('hidden');
@@ -520,22 +541,36 @@
                     user: 'Budi',
                     dept: 'IT',
                     device: 'KOMPUTER',
-                    specs: 'Core i5',
+                    specs: 'Core i5 / 8GB',
                     status: 'Active',
                     ip_address: '192.168.1.10'
                 }];
                 const ws = XLSX.utils.json_to_sheet(sampleData);
+                ws['!cols'] = [{wch:15},{wch:20},{wch:10},{wch:12},{wch:20},{wch:10},{wch:18}];
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'Template_IT');
                 XLSX.writeFile(wb, 'Template_Import_IT.xlsx');
             } else {
-                const excelRows = [
-                    ["No", "Nama Material", "材料名称", "Spesifikasi", "Jumlah", "Satuan", "Keterangan", "Jenis Inventaris", "Department", "Gambar", "Lokasi"],
-                    [1, "Meja Kerja", "工作台", "Standard", 15, "Buah", "", "Fixed Asset", "HRGA", "", "Ruang Kantor Administrasi"]
+                // ✅ Template TANPA kolom "No" biar mapping tidak geser
+                const sampleData = [{
+                    nama_material: 'Komputer / PC',
+                    nama_material_mandarin: '电脑/PC',
+                    spesifikasi: 'Acer',
+                    jumlah: 12,
+                    satuan: 'set',
+                    keterangan: '',
+                    jenis_inventaris: 'Fixed Asset',
+                    department: 'IT',
+                    gambar: '',
+                    lokasi: 'Ruang Kantor Administrasi'
+                }];
+                const ws = XLSX.utils.json_to_sheet(sampleData);
+                ws['!cols'] = [
+                    {wch:25},{wch:22},{wch:18},{wch:8},{wch:10},
+                    {wch:20},{wch:16},{wch:12},{wch:35},{wch:30}
                 ];
-                const ws = XLSX.utils.aoa_to_sheet(excelRows);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Aset PT Magicase');
+                XLSX.utils.book_append_sheet(wb, ws, 'Aset_PT_Magicase');
                 XLSX.writeFile(wb, 'Template_Import_General_Assets.xlsx');
             }
         }
@@ -545,11 +580,48 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                importData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                if (importData.length === 0) { alert('File kosong!'); return; }
-                showPreview(importData);
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                    let rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false });
+                    console.log('🔍 Raw rows dari Excel:', rows);
+
+                    // ✅ Normalize header
+                    rows = rows.map(row => {
+                        const clean = {};
+                        Object.keys(row).forEach(k => {
+                            const key = String(k).toLowerCase().trim()
+                                .replace(/\s+/g, '_')
+                                .replace(/[^\w\u4e00-\u9fa5]/g, '');
+                            clean[key] = row[k];
+                        });
+                        return clean;
+                    });
+
+                    // ✅ Buang baris kosong & header row (kalau ada "No")
+                    rows = rows.filter(r => {
+                        const values = Object.values(r).map(v => String(v).trim()).filter(Boolean);
+                        if (values.length === 0) return false;
+                        const nama = String(r.nama_material || r.no || '').trim().toLowerCase();
+                        if (nama === 'no' || nama === 'nama material') return false;
+                        return true;
+                    });
+
+                    if (rows.length === 0) {
+                        showToast('Error', 'File Excel kosong atau hanya berisi header!', 'error');
+                        return;
+                    }
+
+                    console.log('✅ Data bersih siap import:', rows);
+                    importData = rows;
+                    showPreview(importData);
+                    showToast('Info', `${importData.length} baris siap diimport. Cek preview lalu Konfirmasi.`, 'info');
+                } catch (err) {
+                    console.error(err);
+                    showToast('Error', 'Gagal baca file: ' + err.message, 'error');
+                }
             };
             reader.readAsArrayBuffer(file);
         }
@@ -560,72 +632,107 @@
             const bodyRow = document.getElementById('previewBody');
             const headers = Object.keys(data[0]);
             headerRow.innerHTML = headers.map(h => `<th class="px-2 py-1 text-left text-gray-400 text-[10px]">${h}</th>`).join('');
-            bodyRow.innerHTML = data.slice(0, 5).map(row => `<tr>${headers.map(h => `<td class="px-2 py-1 border-t border-white/5 text-gray-300 text-[10px]">${row[h] || '-'}</td>`).join('')}</tr>`).join('');
+            bodyRow.innerHTML = data.slice(0, 5).map(row =>
+                `<tr>${headers.map(h => `<td class="px-2 py-1 border-t border-white/5 text-gray-300 text-[10px]">${String(row[h] || '-').substring(0,40)}</td>`).join('')}</tr>`
+            ).join('');
             previewDiv.classList.remove('hidden');
         }
 
         async function confirmImport() {
             if (importData.length === 0) {
-                alert('Data import kosong!');
+                showToast('Error', 'Data import kosong!', 'error');
                 return;
             }
             if (!confirm(`Yakin ingin mengimport ${importData.length} data ke database?`)) return;
-            
-            const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
-            let success = 0;
 
-            for (let item of importData) {
+            const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
+            let success = 0, failed = 0, skipped = 0;
+            let errors = [];
+
+            for (let i = 0; i < importData.length; i++) {
+                const item = importData[i];
                 let payload = {};
-                const keys = Object.keys(item);
 
                 if (activeModule === 'it') {
                     payload = {
-                        id_aset: item[keys[0]] || '',
-                        user: item[keys[1]] || '',
-                        dept: item[keys[2]] || '',
-                        device: item[keys[3]] || 'KOMPUTER',
-                        specs: item[keys[4]] || '',
-                        status: item[keys[5]] || 'Active',
-                        ip_address: item[keys[6]] || '',
+                        id_aset:    String(item.id_aset || item.id || '').trim(),
+                        user:       String(item.user || '').trim(),
+                        dept:       String(item.dept || item.department || '').trim(),
+                        device:     String(item.device || 'KOMPUTER').trim().toUpperCase(),
+                        specs:      String(item.specs || item.spesifikasi || '').trim(),
+                        status:     String(item.status || 'Active').trim(),
+                        ip_address: String(item.ip_address || item.ip || '').trim(),
                         deleted_at: null
                     };
+                    if (!payload.id_aset) { skipped++; continue; }
                 } else {
-                    // Mapping berdasarkan index kolom mutlak dari file Excel
-                    payload = {
-                        nama_material: item[keys[1]] || item[keys[0]] || '',
-                        nama_material_mandarin: item[keys[2]] || '',
-                        spesifikasi: item[keys[3]] || '',
-                        jumlah: parseInt(item[keys[4]]) || 1,
-                        satuan: item[keys[5]] || 'Buah',
-                        keterangan: item[keys[6]] || '',
-                        jenis_inventaris: item[keys[7]] || 'Fixed Asset',
-                        department: item[keys[8]] || '',
-                        gambar: item[keys[9]] || '',
-                        lokasi: item[keys[10]] || '',
-                        deleted_at: null
+                    // ✅ HELPER: ambil value dari multiple kemungkinan key
+                    const pick = (...keys) => {
+                        for (const k of keys) {
+                            if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== '') {
+                                return String(item[k]).trim();
+                            }
+                        }
+                        return '';
                     };
 
-                    if (!payload.nama_material || payload.nama_material === 'No' || payload.nama_material === 'Nama Material') continue;
+                    payload = {
+                        nama_material:          pick('nama_material', 'nama', 'material'),
+                        nama_material_mandarin: pick('nama_material_mandarin', '材料名称', '材料名稱', 'mandarin'),
+                        spesifikasi:            pick('spesifikasi', 'specs', 'spec'),
+                        jumlah:                 parseInt(pick('jumlah', 'qty', 'quantity')) || 1,
+                        satuan:                 pick('satuan', 'unit') || 'Buah',
+                        keterangan:             pick('keterangan', 'notes', 'remark'),
+                        jenis_inventaris:       pick('jenis_inventaris', 'jenis', 'type') || 'Fixed Asset',
+                        department:             pick('department', 'dept', 'divisi'),
+                        gambar:                 pick('gambar', 'image', 'foto', 'url_gambar'),
+                        lokasi:                 pick('lokasi', 'location', 'ruang'),
+                        deleted_at:             null
+                    };
+
+                    // Skip baris header / kosong
+                    const namaLower = payload.nama_material.toLowerCase();
+                    if (!payload.nama_material || namaLower === 'no' || namaLower === 'nama material') {
+                        skipped++;
+                        continue;
+                    }
+
+                    console.log(`📝 Baris ${i+2} → payload:`, payload);
                 }
 
                 const { error } = await supabaseClient.from(targetTable).insert([payload]);
                 if (!error) {
                     success++;
                 } else {
-                    console.error("Gagal insert baris:", error.message);
+                    failed++;
+                    errors.push(`Baris ${i+2}: ${error.message}`);
+                    console.error(`❌ Baris ${i+2} GAGAL:`, error, payload);
                 }
             }
 
-            showToast('Sukses', `${success} dari ${importData.length} data berhasil diimport!`, 'success');
+            let msg = `✅ ${success} sukses`;
+            if (failed > 0) msg += `, ❌ ${failed} gagal`;
+            if (skipped > 0) msg += `, ⏭️ ${skipped} di-skip`;
+
+            if (failed > 0) {
+                showToast('Selesai dengan Error', msg + '. Buka Console (F12) untuk detail.', 'error');
+                console.warn('📋 Detail error:', errors);
+            } else {
+                showToast('Sukses', msg, 'success');
+            }
+
             closeBulkImport();
             loadData();
         }
 
+        /* ============ TRASH ============ */
         async function showDeletedAssets() {
             const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
-            const { data: trash } = await supabaseClient.from(targetTable).select('*').not('deleted_at', 'is', null);
+            const { data: trash, error } = await supabaseClient.from(targetTable).select('*').not('deleted_at', 'is', null);
             const modal = document.getElementById('trashModal');
             const body = document.getElementById('trashBody');
+
+            if (error) { showToast('Error', error.message, 'error'); return; }
 
             if (!trash || trash.length === 0) {
                 body.innerHTML = `<p class="text-center py-6 text-gray-400">Trash kosong.</p>`;
@@ -636,9 +743,9 @@
                         <tbody>
                             ${trash.map(item => `
                                 <tr class="border-t border-white/5">
-                                    <td>${item.id_aset || item.nama_material}</td>
+                                    <td>${item.id_aset || item.nama_material || '-'}</td>
                                     <td>${item.dept || item.department || '-'}</td>
-                                    <td><button onclick="restoreAsset(${item.id || `'`+item.id_aset+`'`})" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">Restore</button></td>
+                                    <td><button onclick="restoreAsset('${item.id || item.id_aset}')" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">Restore</button></td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -652,10 +759,13 @@
         async function restoreAsset(id) {
             const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
             const queryKey = activeModule === 'it' ? 'id_aset' : 'id';
-            const { error } = await supabaseClient.from(targetTable).update({ deleted_at: null }).eq(queryKey, id);
+            const val = isNaN(id) ? id : parseInt(id);
+            const { error } = await supabaseClient.from(targetTable).update({ deleted_at: null }).eq(queryKey, val);
             if (!error) { showToast('Dipulihkan', 'Data berhasil dikembalikan', 'success'); closeTrashModal(); loadData(); }
+            else showToast('Gagal', error.message, 'error');
         }
 
+        /* ============ SEARCH & EXPORT ============ */
         function resetFilter() { renderTable(rawData); }
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const kw = e.target.value.toLowerCase();
@@ -663,12 +773,14 @@
         });
 
         function exportToExcel() {
+            if (rawData.length === 0) { showToast('Info', 'Tidak ada data untuk diexport', 'info'); return; }
             const ws = XLSX.utils.json_to_sheet(rawData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, activeModule === 'it' ? 'IT_Assets' : 'General_Assets');
             XLSX.writeFile(wb, `Export_${activeModule.toUpperCase()}_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
+        /* ============ SCANNER ============ */
         function initScanner() {
             if (html5QrcodeScanner) return;
             try {
@@ -678,7 +790,7 @@
                     if (found) showToast('QR Ditemukan', `ID: ${found.id_aset} | User: ${found.user || '-'}`, 'success');
                     else showToast('Tidak Ditemukan', `QR Code tidak terdaftar.`, 'error');
                 }, () => {});
-            } catch(e) {}
+            } catch(e) { console.warn('Scanner error:', e); }
         }
     </script>
 </body>
