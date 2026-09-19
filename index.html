@@ -4,52 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enterprise Asset Manager Pro</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Asset Mgr">
+    
+    <!-- External -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         * { font-family: 'Inter', sans-serif; }
-        body { background: #0a0e1a; min-height: 100vh; }
+        body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
+        [data-theme="light"] body { background: #f3f4f6; color: #1f2937; }
+        [data-theme="light"] .glass, [data-theme="light"] .glass-card, [data-theme="light"] .chart-card { background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.1); color: #1f2937; }
+        [data-theme="light"] .text-white { color: #1f2937 !important; }
+        [data-theme="light"] .text-gray-400 { color: #6b7280 !important; }
+        [data-theme="light"] .text-gray-300 { color: #4b5563 !important; }
+        [data-theme="light"] .table-wrapper { background: rgba(255,255,255,0.9); }
+        [data-theme="light"] .table-wrapper thead th { background: rgba(129, 140, 248, 0.15) !important; color: #4f46e5 !important; }
+        [data-theme="light"] .table-wrapper tbody td { color: #1f2937; border-color: rgba(0,0,0,0.05); }
+        
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
         .glass-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; transition: all 0.4s ease; }
         .glass-card:hover { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15); }
         .gradient-text { background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .bg-animated { background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+        [data-theme="light"] .bg-animated { background: linear-gradient(-45deg, #e0e7ff, #f3e8ff, #fce7f3, #e0e7ff); }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
         .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px 12px; transition: all 0.3s ease; cursor: pointer; text-align: center; }
         .stat-card:hover { transform: scale(1.05); border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.08); }
         .stat-card.new-dept { animation: newDeptPulse 2s ease-in-out 1; }
-        @keyframes newDeptPulse {
-            0%, 100% { border-color: rgba(255,255,255,0.06); }
-            50% { border-color: #34d399; box-shadow: 0 0 20px rgba(52, 211, 153, 0.5); }
-        }
+        @keyframes newDeptPulse { 0%, 100% { border-color: rgba(255,255,255,0.06); } 50% { border-color: #34d399; box-shadow: 0 0 20px rgba(52, 211, 153, 0.5); } }
         .stat-count { font-size: 1.5rem; font-weight: 800; color: #818cf8; }
         .stat-label { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        
         .table-wrapper { max-height: 60vh; overflow: auto; border-radius: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); }
         .table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
         .table-wrapper thead th { position: sticky; top: 0; z-index: 20; background: rgba(26, 16, 64, 0.98) !important; backdrop-filter: blur(10px); color: #c4b5fd !important; font-weight: 600; padding: 10px 8px; text-transform: uppercase; font-size: 0.58rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
         .table-wrapper tbody td { padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #e5e7eb; font-size: 0.7rem; vertical-align: middle; text-align: center; }
         .table-wrapper tbody tr:hover { background: rgba(99, 102, 241, 0.05); }
+        .table-wrapper input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; accent-color: #818cf8; }
+        
         .badge-status { padding: 3px 10px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; display: inline-block; }
         .badge-status.active { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
         .badge-status.maintenance { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
         .badge-status.broken { background: rgba(251, 113, 133, 0.2); color: #fb7185; border: 1px solid rgba(251, 113, 133, 0.3); }
+        
         .qr-code { width: 42px; height: 42px; border-radius: 6px; background: white; padding: 2px; display: inline-block; cursor: pointer; transition: transform 0.2s; }
         .qr-code:hover { transform: scale(1.15); }
+        
         .login-box { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 40px; width: 100%; max-width: 420px; }
         .login-box input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 12px 16px; width: 100%; outline: none; }
         .login-box input:focus { border-color: #818cf8; }
+        
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .form-grid label { color: #9ca3af; font-size: 0.6rem; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; }
         .form-grid input, .form-grid select, .form-grid textarea { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: white; border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; width: 100%; outline: none; transition: all 0.2s; }
         .form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus { border-color: #818cf8; background: rgba(129, 140, 248, 0.05); }
         .form-grid select option { background: #1a1040; color: white; }
         .form-section { grid-column: 1 / -1; margin-top: 8px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); }
+        
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; max-width: 400px; }
         .toast { padding: 14px 18px; border-radius: 12px; margin-bottom: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
@@ -57,9 +85,11 @@
         .toast-error { background: rgba(251, 113, 133, 0.15); border-color: rgba(251, 113, 133, 0.3); }
         .toast-info { background: rgba(96, 165, 250, 0.15); border-color: rgba(96, 165, 250, 0.3); }
         .toast-warning { background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.3); }
+        
         .tab-btn { padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #9ca3af; }
         .tab-btn:hover { background: rgba(255,255,255,0.08); }
         .tab-btn.active { background: linear-gradient(135deg, #818cf8, #c084fc); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.3); border-color: transparent; }
+        
         .btn-action { padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; font-weight: 600; white-space: nowrap; }
         .btn-action:hover { transform: translateY(-1px); }
         .btn-action.edit { background: rgba(96, 165, 250, 0.15); color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); }
@@ -67,19 +97,51 @@
         .btn-action.clone { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
         .btn-action.transfer { background: rgba(34, 211, 238, 0.15); color: #22d3ee; border-color: rgba(34, 211, 238, 0.3); }
         .btn-action.delete { background: rgba(251, 113, 133, 0.15); color: #fb7185; border-color: rgba(251, 113, 133, 0.3); }
+        
         .drop-zone { border: 2px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.02); cursor: pointer; transition: all 0.3s; }
         .drop-zone:hover { border-color: #818cf8; background: rgba(99, 102, 241, 0.05); }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
         .filter-btn { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid; }
         .filter-btn.warning { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
         .filter-btn.danger { background: rgba(251, 113, 133, 0.1); color: #fb7185; border-color: rgba(251, 113, 133, 0.3); }
         .filter-btn.active { background: rgba(129, 140, 248, 0.2); border-color: #818cf8; color: #818cf8; }
+        
         .chart-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; transition: all 0.3s ease; }
         .chart-card:hover { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 8px 24px rgba(99, 102, 241, 0.1); }
+        
         .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: livePulse 2s ease-in-out infinite; }
         @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        
+        .upload-box { border: 2px dashed rgba(99, 102, 241, 0.4); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(99,102,241,0.03); }
+        .upload-box:hover { border-color: #818cf8; background: rgba(99,102,241,0.08); }
+        .preview-img { max-width: 120px; max-height: 120px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); }
+        
+        .badge-notif { position: absolute; top: -4px; right: -4px; background: #fb7185; color: white; font-size: 10px; border-radius: 10px; padding: 2px 6px; font-weight: 700; animation: badgePulse 2s ease-in-out infinite; }
+        @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        
+        /* Light mode fixes */
+        [data-theme="light"] .stat-card { background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.06); }
+        [data-theme="light"] .stat-count { color: #4f46e5; }
+        [data-theme="light"] .stat-label { color: #6b7280; }
+        [data-theme="light"] .glass-card { background: rgba(255,255,255,0.9); }
+        [data-theme="light"] .form-grid input, [data-theme="light"] .form-grid select, [data-theme="light"] .form-grid textarea { background: rgba(0,0,0,0.03); color: #1f2937; border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .form-grid select option { background: white; color: #1f2937; }
+        [data-theme="light"] .drop-zone { background: rgba(0,0,0,0.02); }
+        
+        /* Skeleton loading */
+        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        /* Confetti */
+        .confetti { position: fixed; width: 10px; height: 10px; background: #818cf8; animation: confettiFall 3s linear forwards; z-index: 99999; pointer-events: none; }
+        @keyframes confettiFall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        
         @media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
-        @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
+        @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } .stat-count { font-size: 1.2rem; } }
+        
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
         ::-webkit-scrollbar-thumb { background: rgba(129, 140, 248, 0.3); border-radius: 4px; }
@@ -90,17 +152,18 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- LOGIN -->
-    <div id="loginSection" class="flex items-center justify-center min-h-screen">
+    <div id="loginSection" class="flex items-center justify-center min-h-screen p-4">
         <div class="login-box text-center">
             <div class="text-5xl mb-3">⚡</div>
             <h1 class="text-2xl font-bold gradient-text">Enterprise Asset Manager</h1>
-            <p class="text-gray-400 text-sm mt-2 mb-6">Secure Enterprise Inventory System</p>
+            <p class="text-gray-400 text-sm mt-2 mb-6" data-i18n="login_subtitle">Secure Enterprise Inventory System</p>
             <div class="space-y-4">
                 <input type="email" id="loginEmail" placeholder="Email Admin" />
                 <input type="password" id="loginPassword" placeholder="Password" onkeypress="if(event.key==='Enter')handleLogin()" />
                 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
             </div>
             <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
+            <p class="text-gray-500 text-xs mt-6">v3.0 • Enterprise Edition</p>
         </div>
     </div>
 
@@ -109,7 +172,7 @@
         <div class="glass-card p-10 text-center max-w-md w-full mx-4">
             <div class="text-5xl mb-4">🏢</div>
             <h2 class="text-2xl font-bold text-white mb-2">Pilih Database PT</h2>
-            <p class="text-gray-400 text-sm mb-8">Select company database to manage assets</p>
+            <p class="text-gray-400 text-sm mb-8">Select company database</p>
             <div class="grid gap-4">
                 <button onclick="setPT('inventaris_p1', 'PT Magicase (P1)')" class="btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-4 rounded-xl border-none">PT Magicase (P1)</button>
                 <button onclick="setPT('inventaris_p2', 'PT Panrama (P2)')" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-xl border-none">PT Panrama (P2)</button>
@@ -125,13 +188,12 @@
                 <button onclick="closeBulkImport()" class="text-gray-400 hover:text-white text-xl">✕</button>
             </div>
             <div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <p class="text-blue-300 text-sm mb-2">💡 <strong>Tips:</strong> Download template, isi data sesuai kolom, lalu upload kembali.</p>
+                <p class="text-blue-300 text-sm mb-2">💡 Download template, isi data, upload kembali.</p>
                 <button onclick="downloadTemplate()" class="btn bg-blue-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 Download Template Excel</button>
             </div>
             <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
                 <div class="text-4xl mb-3">📁</div>
                 <p class="text-gray-300 font-semibold">Klik untuk pilih file Excel</p>
-                <p class="text-gray-500 text-xs mt-1">Format: .xlsx / .xls</p>
                 <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" onchange="handleFileUpload(event)" />
             </div>
             <div id="importPreview" class="hidden mt-4">
@@ -143,7 +205,7 @@
                     </table>
                 </div>
                 <div class="flex gap-3 mt-4">
-                    <button onclick="confirmImport()" class="btn bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-xl text-sm border-none">✅ Konfirmasi Import</button>
+                    <button onclick="confirmImport()" class="btn bg-emerald-500 text-white px-6 py-2 rounded-xl text-sm border-none">✅ Konfirmasi Import</button>
                     <button onclick="closeBulkImport()" class="btn bg-white/5 text-gray-300 px-6 py-2 rounded-xl text-sm border border-white/10">Batal</button>
                 </div>
             </div>
@@ -161,9 +223,20 @@
         </div>
     </div>
 
+    <!-- ACTIVITY LOG MODAL -->
+    <div id="logModal" class="hidden modal-overlay">
+        <div class="glass-card p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white">📝 Log Aktivitas</h2>
+                <button onclick="closeLogModal()" class="text-gray-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div id="logBody"></div>
+        </div>
+    </div>
+
     <!-- MAIN -->
     <div id="main-content" class="hidden">
-        <nav class="glass px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+        <nav class="glass px-6 py-3 flex items-center justify-between sticky top-0 z-50 flex-wrap gap-2">
             <div class="flex items-center gap-3">
                 <span class="text-xl">⚡</span>
                 <div>
@@ -171,12 +244,19 @@
                     <span id="companyBadge" class="text-indigo-400 font-bold text-sm ml-2"></span>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 flex-wrap">
                 <div class="flex items-center gap-2 text-sm">
                     <div class="live-dot"></div>
-                    <span class="text-gray-300" id="connectionStatus">Live</span>
+                    <span class="text-gray-300 text-xs" id="connectionStatus">Live</span>
                 </div>
-                <button onclick="manualRefresh()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Refresh manual">🔄</button>
+                <button onclick="showNotifications()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Notifikasi">
+                    🔔
+                    <span id="notifBadge" class="badge-notif hidden">0</span>
+                </button>
+                <button onclick="showLogModal()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Log">📝</button>
+                <button onclick="toggleTheme()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Theme" id="themeBtn">🌙</button>
+                <button onclick="toggleLanguage()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Language" id="langBtn">🌐 ID</button>
+                <button onclick="manualRefresh()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Refresh">🔄</button>
                 <button onclick="handleLogout()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">Logout</button>
             </div>
         </nav>
@@ -186,6 +266,7 @@
             <div class="flex gap-3 mb-6 flex-wrap">
                 <button onclick="switchModule('it')" id="btnTabIT" class="tab-btn active">💻 IT Computers & Hardware</button>
                 <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 Aset PT Magicase Group Indonesia</button>
+                <button onclick="showExecutiveDashboard()" class="tab-btn">📊 Dashboard Eksekutif</button>
             </div>
 
             <!-- SCANNER -->
@@ -198,7 +279,7 @@
                 </div>
             </div>
 
-            <!-- DEPT SUMMARY CARDS (IT only) -->
+            <!-- DEPT SUMMARY -->
             <div id="deptSummarySection" class="mb-6">
                 <div id="deptSummaryGrid" class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-10 gap-2"></div>
             </div>
@@ -231,7 +312,7 @@
                 </div>
             </div>
 
-            <!-- DASHBOARD CHARTS -->
+            <!-- CHARTS -->
             <div id="dashboardCharts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <div class="chart-card">
                     <div class="flex items-center justify-between mb-3">
@@ -242,7 +323,7 @@
                 </div>
                 <div class="chart-card">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🏢 Department Distribution</h3>
+                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🏢 Department</h3>
                         <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">All</span>
                     </div>
                     <div style="height:280px;position:relative"><canvas id="chartDept"></canvas></div>
@@ -256,17 +337,24 @@
                 </div>
                 <div class="chart-card lg:col-span-2">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">📈 Asset Growth (per bulan)</h3>
-                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Last 12 bulan</span>
+                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">📈 Asset Growth</h3>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">12 bulan</span>
                     </div>
                     <div style="height:280px;position:relative"><canvas id="chartGrowth"></canvas></div>
                 </div>
                 <div class="chart-card">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🎯 License Status</h3>
-                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">IT Only</span>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">IT</span>
                     </div>
                     <div style="height:280px;position:relative"><canvas id="chartLicense"></canvas></div>
+                </div>
+                <div class="chart-card lg:col-span-3">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🔥 Aktivitas Input (Heatmap Hari x Jam)</h3>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">30 hari</span>
+                    </div>
+                    <div style="height:180px;position:relative"><canvas id="chartHeatmap"></canvas></div>
                 </div>
             </div>
 
@@ -275,11 +363,22 @@
                 <button onclick="toggleForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded-xl text-sm border-none">+ Tambah Aset</button>
                 <button onclick="openBulkImport()" class="btn bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm border-none">📤 Import Massal</button>
                 <button onclick="printAllLabels()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">🖨️ Cetak</button>
-                <button onclick="exportToExcel()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📊 Export Excel</button>
+                <button onclick="downloadAllQR()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📥 QR ZIP</button>
+                <button onclick="exportToExcel()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📊 Excel</button>
+                <button onclick="exportToPDF()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📄 PDF</button>
                 <button onclick="showDeletedAssets()" class="btn bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl text-sm">🗑️ Trash</button>
             </div>
 
-            <!-- FORM CONTAINER -->
+            <!-- BULK ACTION BAR -->
+            <div id="bulkActionBar" class="hidden glass-card p-3 mb-4 flex items-center gap-3 flex-wrap">
+                <span class="text-white text-sm"><strong id="selectedCount">0</strong> item dipilih</span>
+                <button onclick="bulkDelete()" class="btn bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs">🗑️ Hapus Semua</button>
+                <button onclick="bulkExport()" class="btn bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs">📊 Export Terpilih</button>
+                <button onclick="bulkTransfer()" class="btn bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-3 py-1.5 rounded-lg text-xs">🔄 Transfer</button>
+                <button onclick="clearSelection()" class="btn bg-white/5 text-gray-300 border border-white/10 px-3 py-1.5 rounded-lg text-xs">✕ Clear</button>
+            </div>
+
+            <!-- FORM -->
             <div id="formContainer" class="glass-card p-5 mb-4 hidden">
                 <div class="flex justify-between items-center mb-3">
                     <h2 id="formTitle" class="text-lg font-bold text-white">Input Aset Baru</h2>
@@ -290,9 +389,16 @@
 
             <!-- SEARCH & FILTER -->
             <div class="flex flex-wrap gap-3 mb-4 items-center">
-                <input type="text" id="searchInput" placeholder="🔍 Cari ID, User, Dept, IP, License..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] focus:border-indigo-500 outline-none" />
-                <button onclick="toggleFilter('expiring')" id="btnFilterExpiring" class="filter-btn warning">⚠️ Expiring Soon</button>
-                <button onclick="toggleFilter('expired')" id="btnFilterExpired" class="filter-btn danger">🔴 Expired License</button>
+                <input type="text" id="searchInput" placeholder="🔍 Cari ID, User, Dept, IP..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] focus:border-indigo-500 outline-none" />
+                <select id="filterDept" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)">
+                    <option value="">Semua Dept</option>
+                </select>
+                <select id="filterDevice" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)">
+                    <option value="">Semua Device</option>
+                </select>
+                <button onclick="toggleFilter('expiring')" id="btnFilterExpiring" class="filter-btn warning">⚠️ Expiring</button>
+                <button onclick="toggleFilter('expired')" id="btnFilterExpired" class="filter-btn danger">🔴 Expired</button>
+                <button onclick="toggleFilter('maintenance')" id="btnFilterMaintenance" class="filter-btn warning">🔧 Maintenance</button>
                 <button onclick="clearFilters()" class="filter-btn" style="background:rgba(255,255,255,0.05);color:#9ca3af;border-color:rgba(255,255,255,0.1)">✕ Clear</button>
             </div>
 
@@ -329,7 +435,93 @@
         let realtimeChannel = null;
         let autoRefreshTimer = null;
         let knownDepts = new Set();
-        const charts = { status: null, dept: null, device: null, growth: null, license: null };
+        let currentUser = null;
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let currentLang = localStorage.getItem('lang') || 'id';
+        let selectedRows = new Set();
+        const charts = { status: null, dept: null, device: null, growth: null, license: null, heatmap: null };
+
+        /* ============================================================
+           TRANSLATIONS
+        ============================================================ */
+        const translations = {
+            id: {
+                login_subtitle: 'Secure Enterprise Inventory System',
+                total_item: 'Total Item',
+                active: 'Active / Fixed',
+                maintenance: 'Maintenance',
+                department: 'Department',
+                tambah_aset: 'Tambah Aset',
+                import_massal: 'Import Massal',
+                cetak: 'Cetak',
+                export_excel: 'Export Excel',
+                export_pdf: 'Export PDF',
+                trash: 'Trash',
+                cari: 'Cari ID, User, Dept, IP...'
+            },
+            en: {
+                login_subtitle: 'Secure Enterprise Inventory System',
+                total_item: 'Total Items',
+                active: 'Active / Fixed',
+                maintenance: 'Maintenance',
+                department: 'Department',
+                tambah_aset: 'Add Asset',
+                import_massal: 'Bulk Import',
+                cetak: 'Print',
+                export_excel: 'Export Excel',
+                export_pdf: 'Export PDF',
+                trash: 'Trash',
+                cari: 'Search ID, User, Dept, IP...'
+            },
+            zh: {
+                login_subtitle: '安全的企业库存系统',
+                total_item: '总项目',
+                active: '活跃 / 固定资产',
+                maintenance: '维修',
+                department: '部门',
+                tambah_aset: '添加资产',
+                import_massal: '批量导入',
+                cetak: '打印',
+                export_excel: '导出 Excel',
+                export_pdf: '导出 PDF',
+                trash: '回收站',
+                cari: '搜索 ID, 用户, 部门, IP...'
+            }
+        };
+
+        function t(key) { return translations[currentLang]?.[key] || translations.id[key] || key; }
+
+        /* ============================================================
+           THEME & LANGUAGE
+        ============================================================ */
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        document.getElementById('themeBtn').innerText = currentTheme === 'dark' ? '🌙' : '☀️';
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            document.getElementById('themeBtn').innerText = currentTheme === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('theme', currentTheme);
+            showToast('Theme', `Mode ${currentTheme === 'dark' ? 'Gelap' : 'Terang'}`, 'info');
+        }
+
+        function toggleLanguage() {
+            const langs = ['id', 'en', 'zh'];
+            const idx = (langs.indexOf(currentLang) + 1) % langs.length;
+            currentLang = langs[idx];
+            localStorage.setItem('lang', currentLang);
+            document.getElementById('langBtn').innerText = `🌐 ${currentLang.toUpperCase()}`;
+            applyTranslations();
+            showToast('Bahasa', `Language: ${currentLang.toUpperCase()}`, 'info');
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.innerText = t(key);
+            });
+        }
+        applyTranslations();
 
         /* ============================================================
            TOAST
@@ -344,23 +536,37 @@
             setTimeout(() => toast.remove(), 5000);
         }
 
+        function showConfetti() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    c.className = 'confetti';
+                    c.style.left = Math.random() * 100 + 'vw';
+                    c.style.top = '-20px';
+                    c.style.background = ['#818cf8', '#c084fc', '#f472b6', '#34d399', '#fbbf24'][Math.floor(Math.random() * 5)];
+                    document.body.appendChild(c);
+                    setTimeout(() => c.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
         /* ============================================================
            AUTH
         ============================================================ */
         supabaseClient.auth.onAuthStateChange((event, session) => { if (session) checkUser(); });
         checkUser();
 
-        function checkUser() {
-            supabaseClient.auth.getUser().then(({ data: { user } }) => {
-                if (user) {
-                    document.getElementById('loginSection').classList.add('hidden');
-                    document.getElementById('pilihPTModal').classList.remove('hidden');
-                } else {
-                    document.getElementById('loginSection').classList.remove('hidden');
-                    document.getElementById('pilihPTModal').classList.add('hidden');
-                    document.getElementById('main-content').classList.add('hidden');
-                }
-            });
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('pilihPTModal').classList.remove('hidden');
+            } else {
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('pilihPTModal').classList.add('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+            }
         }
 
         async function handleLogin() {
@@ -375,6 +581,7 @@
         async function handleLogout() {
             if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
             if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+            await logActivity('logout', '', '', 'User logout');
             await supabaseClient.auth.signOut();
             window.location.reload();
         }
@@ -400,6 +607,8 @@
             document.getElementById('deptSummarySection').style.display = module === 'it' ? 'block' : 'none';
             activeFilter = null;
             knownDepts = new Set();
+            selectedRows.clear();
+            updateBulkBar();
             updateFilterButtons();
             const table = module === 'it' ? currentPTTable : 'general_assets';
             setupRealtime(table);
@@ -407,7 +616,109 @@
         }
 
         /* ============================================================
-           REFRESH ALL — Auto-sync semua komponen
+           ACTIVITY LOG
+        ============================================================ */
+        async function logActivity(action, tableName, recordId, detail) {
+            try {
+                await supabaseClient.from('activity_log').insert([{
+                    user_email: currentUser?.email || 'unknown',
+                    action, table_name: tableName, record_id: recordId, detail
+                }]);
+            } catch (err) { console.warn('Log fail:', err); }
+        }
+
+        async function showLogModal() {
+            const { data, error } = await supabaseClient.from('activity_log').select('*').order('created_at', { ascending: false }).limit(100);
+            const modal = document.getElementById('logModal');
+            const body = document.getElementById('logBody');
+            if (error) { showToast('Error', error.message, 'error'); return; }
+            if (!data || data.length === 0) {
+                body.innerHTML = '<p class="text-center py-6 text-gray-400">Belum ada log.</p>';
+            } else {
+                body.innerHTML = `
+                    <table class="w-full text-xs">
+                        <thead><tr class="text-left text-gray-400">
+                            <th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Aksi</th><th class="p-2">Detail</th>
+                        </tr></thead>
+                        <tbody>
+                            ${data.map(l => `<tr class="border-t border-white/5">
+                                <td class="p-2 text-gray-400">${new Date(l.created_at).toLocaleString('id-ID')}</td>
+                                <td class="p-2 text-indigo-300">${l.user_email}</td>
+                                <td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${l.action}</span></td>
+                                <td class="p-2 text-gray-300">${l.detail || l.record_id || '-'}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+            modal.classList.remove('hidden');
+        }
+        function closeLogModal() { document.getElementById('logModal').classList.add('hidden'); }
+
+        /* ============================================================
+           NOTIFICATIONS
+        ============================================================ */
+        function checkNotifications(data) {
+            const today = new Date();
+            const next30 = new Date(); next30.setDate(next30.getDate() + 30);
+            const notifications = [];
+            
+            data.forEach(i => {
+                // License expired
+                if (i.license_expiry) {
+                    const exp = new Date(i.license_expiry);
+                    const days = Math.ceil((exp - today) / 86400000);
+                    if (days < 0) notifications.push({ type: 'error', msg: `${i.id_aset}: Lisensi EXPIRED ${Math.abs(days)} hari lalu` });
+                    else if (days <= 7) notifications.push({ type: 'warning', msg: `${i.id_aset}: Lisensi expiring dalam ${days} hari` });
+                }
+                // Maintenance
+                if (i.maintenance_next_date) {
+                    const mn = new Date(i.maintenance_next_date);
+                    const days = Math.ceil((mn - today) / 86400000);
+                    if (days < 0) notifications.push({ type: 'error', msg: `${i.id_aset}: Maintenance OVERDUE ${Math.abs(days)} hari` });
+                    else if (days <= 7) notifications.push({ type: 'warning', msg: `${i.id_aset}: Maintenance dalam ${days} hari` });
+                }
+            });
+            
+            const badge = document.getElementById('notifBadge');
+            if (notifications.length > 0) {
+                badge.innerText = notifications.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+            return notifications;
+        }
+
+        function showNotifications() {
+            const notifs = checkNotifications(rawData);
+            if (notifs.length === 0) {
+                showToast('🔔', 'Tidak ada notifikasi', 'info');
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+            modal.innerHTML = `
+                <div class="glass-card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-white">🔔 Notifikasi (${notifs.length})</h2>
+                        <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+                    </div>
+                    <div class="space-y-2">
+                        ${notifs.map(n => `
+                            <div class="p-3 rounded-xl border ${n.type === 'error' ? 'bg-rose-500/10 border-rose-500/30 text-rose-300' : 'bg-amber-500/10 border-amber-500/30 text-amber-300'}">
+                                ${n.type === 'error' ? '🔴' : '⚠️'} ${n.msg}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        /* ============================================================
+           REFRESH ALL
         ============================================================ */
         async function refreshAll(silent = false) {
             const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
@@ -418,13 +729,10 @@
                 const oldCount = rawData.length;
                 rawData = data || [];
                 
-                const currentDepts = new Set(
-                    rawData.map(x => (x.dept || x.department || 'N/A').toUpperCase().trim()).filter(Boolean)
-                );
+                const currentDepts = new Set(rawData.map(x => (x.dept || x.department || 'N/A').toUpperCase().trim()).filter(Boolean));
                 const newDepts = [...currentDepts].filter(d => !knownDepts.has(d));
                 
                 if (newDepts.length > 0 && knownDepts.size > 0) {
-                    console.log('🆕 Dept baru terdeteksi:', newDepts);
                     if (!silent) showToast('Dept Baru!', `${newDepts.join(', ')} telah ditambahkan`, 'success');
                     setTimeout(() => {
                         newDepts.forEach(d => {
@@ -435,68 +743,52 @@
                 }
                 knownDepts = currentDepts;
                 
-                console.log(`🔄 Refresh: ${rawData.length} rows | Depts: ${[...currentDepts].join(', ')}`);
-                
                 updateStats(rawData);
                 if (activeModule === 'it') renderDeptSummary(rawData);
                 renderCharts(rawData);
                 renderTable(rawData);
-                
-                updateLastRefresh();
+                updateFilterOptions();
+                checkNotifications(rawData);
                 
                 if (!silent && oldCount !== rawData.length) {
-                    console.log(`✅ Data berubah: ${oldCount} → ${rawData.length}`);
+                    console.log(`✅ Data: ${oldCount} → ${rawData.length}`);
                 }
             } catch (err) {
                 console.error('❌ Refresh error:', err);
-                if (!silent) showToast('Error', 'Gagal refresh data: ' + err.message, 'error');
+                if (!silent) showToast('Error', err.message, 'error');
             }
         }
 
-        async function loadData() {
-            await refreshAll(true);
-        }
+        async function loadData() { await refreshAll(true); }
+        function manualRefresh() { showToast('Refresh', 'Memuat ulang...', 'info'); refreshAll(); }
 
-        function manualRefresh() {
-            showToast('Refresh', 'Memuat ulang data...', 'info');
-            refreshAll();
-        }
-
-        function updateLastRefresh() {
-            const status = document.getElementById('connectionStatus');
-            if (status) status.innerText = 'Live';
+        function updateFilterOptions() {
+            const depts = new Set(rawData.map(x => x.dept || x.department).filter(Boolean));
+            const devices = new Set(rawData.map(x => x.device).filter(Boolean));
+            
+            const deptSelect = document.getElementById('filterDept');
+            deptSelect.innerHTML = '<option value="">Semua Dept</option>' + [...depts].sort().map(d => `<option value="${d}">${d}</option>`).join('');
+            
+            const devSelect = document.getElementById('filterDevice');
+            devSelect.innerHTML = '<option value="">Semua Device</option>' + [...devices].sort().map(d => `<option value="${d}">${d}</option>`).join('');
         }
 
         /* ============================================================
            REALTIME + AUTO-REFRESH
         ============================================================ */
         function setupRealtime(table) {
-            if (realtimeChannel) {
-                supabaseClient.removeChannel(realtimeChannel);
-                realtimeChannel = null;
-            }
-            console.log(`🔌 Realtime subscribe: ${table}`);
+            if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
             try {
                 realtimeChannel = supabaseClient
                     .channel(`public:${table}`)
-                    .on('postgres_changes', 
-                        { event: '*', schema: 'public', table: table }, 
-                        (payload) => {
-                            console.log('🔔 Realtime event:', payload.eventType, payload);
-                            const status = document.getElementById('connectionStatus');
-                            if (status) status.innerText = '⚡ Update...';
-                            setTimeout(() => {
-                                refreshAll(true);
-                                if (status) status.innerText = 'Live';
-                            }, 300);
-                        }
-                    )
-                    .subscribe((status) => {
-                        console.log('📡 Realtime status:', status);
-                    });
-            } catch (err) {
-                console.warn('Realtime error:', err);
-            }
+                    .on('postgres_changes', { event: '*', schema: 'public', table: table }, (payload) => {
+                        console.log('🔔 Realtime:', payload.eventType);
+                        const status = document.getElementById('connectionStatus');
+                        if (status) status.innerText = '⚡ Update...';
+                        setTimeout(() => { refreshAll(true); if (status) status.innerText = 'Live'; }, 300);
+                    })
+                    .subscribe();
+            } catch (err) { console.warn('Realtime err:', err); }
         }
 
         function setupAutoRefresh() {
@@ -508,7 +800,7 @@
         }
 
         /* ============================================================
-           FILTER & SEARCH
+           FILTERS
         ============================================================ */
         function applyFilters(data) {
             let filtered = data;
@@ -519,11 +811,19 @@
                 const today = new Date();
                 const next30 = new Date(); next30.setDate(next30.getDate() + 30);
                 filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) >= today && new Date(i.license_expiry) <= next30);
+            } else if (activeFilter === 'maintenance') {
+                filtered = filtered.filter(i => String(i.status || '').toLowerCase() === 'maintenance');
             }
+            
+            const deptFilter = document.getElementById('filterDept').value;
+            if (deptFilter) filtered = filtered.filter(i => (i.dept || i.department) === deptFilter);
+            
+            const devFilter = document.getElementById('filterDevice').value;
+            if (devFilter) filtered = filtered.filter(i => i.device === devFilter);
+            
             const kw = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (kw) {
-                filtered = filtered.filter(item => Object.values(item).filter(Boolean).join(' ').toLowerCase().includes(kw));
-            }
+            if (kw) filtered = filtered.filter(item => Object.values(item).filter(Boolean).join(' ').toLowerCase().includes(kw));
+            
             return filtered;
         }
 
@@ -537,10 +837,10 @@
 
             if (activeModule === 'it') {
                 thead.innerHTML = `<tr>
+                    <th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th>
                     <th>QR</th><th>ID Aset</th><th>User</th><th>Dept</th><th>Device</th>
-                    <th>Status</th><th>IP Address</th><th>License</th>
-                    <th>Monitor</th><th>Printer</th><th>Mouse/KB</th>
-                    <th class="text-center">Aksi</th>
+                    <th>Status</th><th>IP</th><th>License</th>
+                    <th>Gambar</th><th>Nilai</th><th class="text-center">Aksi</th>
                 </tr>`;
                 if (filtered.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="12" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`;
@@ -548,8 +848,7 @@
                 }
                 tbody.innerHTML = filtered.map(item => {
                     const statusClass = String(item.status || 'active').toLowerCase();
-                    const lic = [item.license_os, item.license_office, item.license_av].filter(Boolean).join(' · ') || '-';
-                    let licBadge = lic;
+                    let licBadge = [item.license_os, item.license_office, item.license_av].filter(Boolean).join(' · ') || '-';
                     if (item.license_expiry) {
                         const exp = new Date(item.license_expiry);
                         const today = new Date();
@@ -557,29 +856,31 @@
                         if (days < 0) licBadge += ` <span style="color:#fb7185">🔴</span>`;
                         else if (days <= 30) licBadge += ` <span style="color:#fbbf24">⚠️</span>`;
                     }
-                    const monitor = [item.monitor_brand, item.monitor_size].filter(Boolean).join(' ') || '-';
-                    const printer = [item.printer_brand, item.printer_model].filter(Boolean).join(' ') || '-';
-                    const mouseKb = [item.mouse_brand, item.keyboard_brand].filter(Boolean).join(' / ') || '-';
+                    const imgUrl = item.gambar_url ? (item.gambar_url.startsWith('http') ? item.gambar_url : STORAGE_BUCKET_URL + item.gambar_url) : '';
+                    const imgCell = imgUrl ? `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.style.display='none'">` : '-';
+                    const nilai = item.nilai_sekarang || 0;
+                    const nilaiFmt = nilai > 0 ? `Rp ${(nilai/1000000).toFixed(1)}Jt` : '-';
+                    
                     return `
                         <tr>
+                            <td><input type="checkbox" class="row-check" data-id="${item.id_aset}" ${selectedRows.has(item.id_aset) ? 'checked' : ''} onchange="toggleRow(this, '${item.id_aset}')"></td>
                             <td><canvas class="qr-code" data-value="${item.id_aset}" width="42" height="42" onclick="printQR('${item.id_aset}')"></canvas></td>
-                            <td class="font-mono text-indigo-300" style="cursor:pointer" onclick="copyToClipboard('${item.id_aset}')" title="Klik copy">${item.id_aset} 📋</td>
+                            <td class="font-mono text-indigo-300" style="cursor:pointer" onclick="copyToClipboard('${item.id_aset}')">${item.id_aset} 📋</td>
                             <td>${item.user || '-'}</td>
                             <td><span class="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${item.dept || '-'}</span></td>
                             <td>${item.device || '-'}</td>
                             <td><span class="badge-status ${statusClass}">${item.status || 'Active'}</span></td>
                             <td class="font-mono text-blue-300 text-xs">${item.ip_address || '-'}</td>
                             <td class="text-xs">${licBadge}</td>
-                            <td class="text-xs">${monitor}</td>
-                            <td class="text-xs">${printer}</td>
-                            <td class="text-xs">${mouseKb}</td>
+                            <td>${imgCell}</td>
+                            <td class="text-xs text-emerald-300 font-semibold">${nilaiFmt}</td>
                             <td>
                                 <div class="flex gap-1 justify-center flex-wrap">
-                                    <button onclick="editITAsset('${item.id_aset}')" class="btn-action edit">✏️ Edit</button>
-                                    <button onclick="printQR('${item.id_aset}')" class="btn-action label">🏷️ Label</button>
-                                    <button onclick="cloneITAsset('${item.id_aset}')" class="btn-action clone">📋 Clone</button>
-                                    <button onclick="transferITAsset('${item.id_aset}')" class="btn-action transfer">🔄 Transfer</button>
-                                    <button onclick="deleteItem('${item.id_aset}')" class="btn-action delete">🗑️ Hapus</button>
+                                    <button onclick="editITAsset('${item.id_aset}')" class="btn-action edit">✏️</button>
+                                    <button onclick="printQR('${item.id_aset}')" class="btn-action label">🏷️</button>
+                                    <button onclick="cloneITAsset('${item.id_aset}')" class="btn-action clone">📋</button>
+                                    <button onclick="transferITAsset('${item.id_aset}')" class="btn-action transfer">🔄</button>
+                                    <button onclick="deleteItem('${item.id_aset}')" class="btn-action delete">🗑️</button>
                                 </div>
                             </td>
                         </tr>
@@ -590,12 +891,13 @@
                 });
             } else {
                 thead.innerHTML = `<tr>
+                    <th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th>
                     <th>No</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th>
-                    <th>Jumlah</th><th>Satuan</th><th>Keterangan</th><th>Jenis</th>
-                    <th>Department</th><th>Gambar</th><th>Lokasi</th><th class="text-center">Aksi</th>
+                    <th>Jumlah</th><th>Satuan</th><th>Jenis</th>
+                    <th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th>
                 </tr>`;
                 if (filtered.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="12" class="text-center py-10 text-gray-400">Belum ada data General Assets.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="13" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`;
                     return;
                 }
                 tbody.innerHTML = filtered.map((item, idx) => {
@@ -603,37 +905,112 @@
                     if (item.gambar) {
                         const g = String(item.gambar).trim();
                         const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g);
-                        gambarCell = `<a href="${imgUrl}" target="_blank" class="inline-block">
-                            <img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.1);" onerror="this.parentElement.innerHTML='<span class=\\'text-gray-500 text-[10px]\\'>❌</span>'" />
-                        </a>`;
+                        gambarCell = `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.parentElement.innerHTML='-'">`;
                     }
+                    const nilai = item.nilai_sekarang || 0;
+                    const nilaiFmt = nilai > 0 ? `Rp ${(nilai/1000000).toFixed(1)}Jt` : '-';
+                    
                     return `
                         <tr>
+                            <td><input type="checkbox" class="row-check" data-id="${item.id}" ${selectedRows.has(String(item.id)) ? 'checked' : ''} onchange="toggleRow(this, '${item.id}')"></td>
                             <td>${idx + 1}</td>
                             <td class="font-semibold" style="text-align:left">${item.nama_material || '-'}</td>
                             <td class="text-gray-400" style="text-align:left">${item.nama_material_mandarin || '-'}</td>
                             <td>${item.spesifikasi || '-'}</td>
                             <td class="font-bold text-indigo-300">${item.jumlah || 1}</td>
                             <td>${item.satuan || 'Buah'}</td>
-                            <td>${item.keterangan || '-'}</td>
                             <td><span class="badge-status active">${item.jenis_inventaris || 'Fixed Asset'}</span></td>
                             <td>${item.department || '-'}</td>
                             <td>${gambarCell}</td>
+                            <td class="text-xs text-emerald-300 font-semibold">${nilaiFmt}</td>
                             <td>${item.lokasi || '-'}</td>
                             <td>
                                 <div class="flex gap-1 justify-center flex-wrap">
-                                    <button onclick="editGeneralAsset(${item.id})" class="btn-action edit">✏️ Edit</button>
-                                    <button onclick="printSingleGeneral(${item.id})" class="btn-action label">🖨️ Cetak</button>
-                                    <button onclick="showDetailGeneral(${item.id})" class="btn-action transfer">👁️ Detail</button>
-                                    <button onclick="deleteGeneralItem(${item.id})" class="btn-action delete">🗑️ Hapus</button>
+                                    <button onclick="editGeneralAsset(${item.id})" class="btn-action edit">✏️</button>
+                                    <button onclick="printSingleGeneral(${item.id})" class="btn-action label">🖨️</button>
+                                    <button onclick="showDetailGeneral(${item.id})" class="btn-action transfer">👁️</button>
+                                    <button onclick="deleteGeneralItem(${item.id})" class="btn-action delete">🗑️</button>
                                 </div>
                             </td>
                         </tr>
                     `;
                 }).join('');
             }
+            updateBulkBar();
         }
 
+        /* ============================================================
+           BULK SELECTION
+        ============================================================ */
+        function toggleSelectAll(el) {
+            const checks = document.querySelectorAll('.row-check');
+            checks.forEach(c => {
+                c.checked = el.checked;
+                if (el.checked) selectedRows.add(c.dataset.id);
+                else selectedRows.delete(c.dataset.id);
+            });
+            updateBulkBar();
+        }
+        function toggleRow(el, id) {
+            if (el.checked) selectedRows.add(String(id));
+            else selectedRows.delete(String(id));
+            updateBulkBar();
+        }
+        function updateBulkBar() {
+            const bar = document.getElementById('bulkActionBar');
+            document.getElementById('selectedCount').innerText = selectedRows.size;
+            if (selectedRows.size > 0) bar.classList.remove('hidden');
+            else bar.classList.add('hidden');
+        }
+        function clearSelection() {
+            selectedRows.clear();
+            document.querySelectorAll('.row-check').forEach(c => c.checked = false);
+            const ca = document.getElementById('checkAll');
+            if (ca) ca.checked = false;
+            updateBulkBar();
+        }
+        async function bulkDelete() {
+            if (!confirm(`Hapus ${selectedRows.size} item?`)) return;
+            const table = activeModule === 'it' ? currentPTTable : 'general_assets';
+            const key = activeModule === 'it' ? 'id_aset' : 'id';
+            const ids = [...selectedRows];
+            for (const id of ids) {
+                const val = isNaN(id) ? id : parseInt(id);
+                await supabaseClient.from(table).update({ deleted_at: new Date().toISOString() }).eq(key, val);
+            }
+            await logActivity('bulk_delete', table, '', `${ids.length} item dihapus`);
+            showToast('Bulk Delete', `${ids.length} item dihapus`, 'success');
+            clearSelection();
+            await refreshAll(true);
+        }
+        async function bulkExport() {
+            const table = activeModule === 'it' ? currentPTTable : 'general_assets';
+            const selected = rawData.filter(i => selectedRows.has(String(i.id || i.id_aset)));
+            if (selected.length === 0) return;
+            const ws = XLSX.utils.json_to_sheet(selected);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Selected');
+            XLSX.writeFile(wb, `Bulk_Export_${Date.now()}.xlsx`);
+            showToast('Export', `${selected.length} item diexport`, 'success');
+        }
+        async function bulkTransfer() {
+            const newDept = prompt('Transfer semua ke dept baru:');
+            if (!newDept) return;
+            const table = activeModule === 'it' ? currentPTTable : 'general_assets';
+            const key = activeModule === 'it' ? 'id_aset' : 'id';
+            const deptField = activeModule === 'it' ? 'dept' : 'department';
+            for (const id of [...selectedRows]) {
+                const val = isNaN(id) ? id : parseInt(id);
+                await supabaseClient.from(table).update({ [deptField]: newDept }).eq(key, val);
+            }
+            showToast('Transfer', `${selectedRows.size} item dipindah ke ${newDept}`, 'success');
+            clearSelection();
+            await refreshAll(true);
+        }
+
+        /* ============================================================
+           STATS & DEPT SUMMARY
+        ============================================================ */
         function updateStats(data) {
             document.getElementById('statTotal').innerText = data.length;
             document.getElementById('statActive').innerText = data.filter(i => {
@@ -670,39 +1047,23 @@
         function filterByDept(dept) {
             document.getElementById('searchInput').value = dept;
             renderTable(rawData);
-            showToast('Filter', `Menampilkan dept: ${dept}`, 'info');
+            showToast('Filter', `Dept: ${dept}`, 'info');
         }
 
         /* ============================================================
            CHARTS
         ============================================================ */
         function renderCharts(data) {
-            console.log(`📊 Render charts: ${data.length} rows`);
-            
             Object.keys(charts).forEach(key => {
-                if (charts[key]) {
-                    try { charts[key].destroy(); } catch(e) { console.warn('Destroy err:', e); }
-                    charts[key] = null;
-                }
+                if (charts[key]) { try { charts[key].destroy(); } catch(e) {} charts[key] = null; }
             });
             
             const commonOpts = {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 animation: { duration: 600, easing: 'easeOutQuart' },
                 plugins: {
-                    legend: {
-                        labels: { color: '#9ca3af', font: { size: 11, family: 'Inter' }, padding: 10, boxWidth: 12, boxHeight: 12 }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(26, 16, 64, 0.95)',
-                        borderColor: 'rgba(129, 140, 248, 0.3)',
-                        borderWidth: 1,
-                        titleColor: '#fff',
-                        bodyColor: '#e5e7eb',
-                        padding: 12,
-                        cornerRadius: 8
-                    }
+                    legend: { labels: { color: currentTheme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 11, family: 'Inter' }, padding: 10, boxWidth: 12, boxHeight: 12 } },
+                    tooltip: { backgroundColor: 'rgba(26, 16, 64, 0.95)', borderColor: 'rgba(129, 140, 248, 0.3)', borderWidth: 1, titleColor: '#fff', bodyColor: '#e5e7eb', padding: 12, cornerRadius: 8 }
                 }
             };
             
@@ -715,59 +1076,26 @@
             const cStatus = document.getElementById('chartStatus');
             if (cStatus) {
                 const sc = { Active: 0, Maintenance: 0, Broken: 0 };
-                data.forEach(i => {
-                    const s = String(i.status || 'Active');
-                    if (sc[s] !== undefined) sc[s]++; else sc.Active++;
-                });
+                data.forEach(i => { const s = String(i.status || 'Active'); if (sc[s] !== undefined) sc[s]++; else sc.Active++; });
                 charts.status = new Chart(cStatus, {
                     type: 'doughnut',
-                    data: {
-                        labels: ['Active', 'Maintenance', 'Broken'],
-                        datasets: [{ data: [sc.Active, sc.Maintenance, sc.Broken], backgroundColor: ['#34d399', '#fbbf24', '#fb7185'], borderWidth: 2, hoverOffset: 8 }]
-                    },
+                    data: { labels: ['Active', 'Maintenance', 'Broken'], datasets: [{ data: [sc.Active, sc.Maintenance, sc.Broken], backgroundColor: ['#34d399', '#fbbf24', '#fb7185'], borderWidth: 2, hoverOffset: 8 }] },
                     options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } }
                 });
             }
             
-            /* DEPT — Horizontal Bar, tampil SEMUA dept */
+            /* DEPT — Horizontal Bar */
             const cDept = document.getElementById('chartDept');
             if (cDept) {
                 const dc = {};
-                data.forEach(i => {
-                    const d = String(i.dept || 'LAINNYA').toUpperCase().trim();
-                    dc[d] = (dc[d] || 0) + 1;
-                });
-                console.log('📊 IT Dept counts:', dc);
-                // ✅ Sort stabil + tampil SEMUA (gak ada slice limit)
-                const sd = Object.entries(dc).sort((a, b) => {
-                    if (b[1] !== a[1]) return b[1] - a[1];
-                    return a[0].localeCompare(b[0]);
-                });
-                // Dynamic height berdasarkan jumlah dept
+                data.forEach(i => { const d = String(i.dept || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
+                const sd = Object.entries(dc).sort((a, b) => { if (b[1] !== a[1]) return b[1] - a[1]; return a[0].localeCompare(b[0]); });
                 const dynamicHeight = Math.max(280, sd.length * 32);
                 cDept.parentElement.style.height = dynamicHeight + 'px';
-                
                 charts.dept = new Chart(cDept, {
                     type: 'bar',
-                    data: {
-                        labels: sd.map(d => d[0]),
-                        datasets: [{ 
-                            label: 'Jumlah Aset', 
-                            data: sd.map(d => d[1]), 
-                            backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), 
-                            borderRadius: 6, 
-                            borderSkipped: false 
-                        }]
-                    },
-                    options: { 
-                        ...commonOpts, 
-                        indexAxis: 'y',  // ✅ Horizontal
-                        plugins: { ...commonOpts.plugins, legend: { display: false } }, 
-                        scales: { 
-                            x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, 
-                            y: { ticks: { color: '#9ca3af', font: { size: 11, weight: '600' } }, grid: { display: false } } 
-                        } 
-                    }
+                    data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Jumlah', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] },
+                    options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: currentTheme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 11, weight: '600' } }, grid: { display: false } } } }
                 });
             }
             
@@ -809,7 +1137,7 @@
                 grad.addColorStop(1, 'rgba(129, 140, 248, 0.02)');
                 charts.growth = new Chart(ctx, {
                     type: 'line',
-                    data: { labels: ga.map(g => g.label), datasets: [{ label: 'Aset Baru', data: ga.map(g => g.count), borderColor: '#818cf8', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#818cf8', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 8 }] },
+                    data: { labels: ga.map(g => g.label), datasets: [{ label: 'Aset Baru', data: ga.map(g => g.count), borderColor: '#818cf8', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#818cf8', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] },
                     options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } }
                 });
             }
@@ -834,10 +1162,12 @@
                     options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } }
                 });
             }
+            
+            /* HEATMAP */
+            renderHeatmap(data, commonOpts);
         }
 
         function renderGeneralCharts(data, commonOpts) {
-            /* JENIS */
             const cStatus = document.getElementById('chartStatus');
             if (cStatus) {
                 const jc = {};
@@ -850,44 +1180,20 @@
                 });
             }
             
-            /* DEPT — Horizontal Bar, tampil SEMUA */
             const cDept = document.getElementById('chartDept');
             if (cDept) {
                 const dc = {};
                 data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
-                console.log('📊 General Dept counts:', dc);
-                const sd = Object.entries(dc).sort((a, b) => {
-                    if (b[1] !== a[1]) return b[1] - a[1];
-                    return a[0].localeCompare(b[0]);
-                });
+                const sd = Object.entries(dc).sort((a, b) => { if (b[1] !== a[1]) return b[1] - a[1]; return a[0].localeCompare(b[0]); });
                 const dynamicHeight = Math.max(280, sd.length * 32);
                 cDept.parentElement.style.height = dynamicHeight + 'px';
-                
                 charts.dept = new Chart(cDept, {
                     type: 'bar',
-                    data: { 
-                        labels: sd.map(d => d[0]), 
-                        datasets: [{ 
-                            label: 'Jumlah Item', 
-                            data: sd.map(d => d[1]), 
-                            backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), 
-                            borderRadius: 6, 
-                            borderSkipped: false 
-                        }] 
-                    },
-                    options: { 
-                        ...commonOpts, 
-                        indexAxis: 'y',
-                        plugins: { ...commonOpts.plugins, legend: { display: false } }, 
-                        scales: { 
-                            x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, 
-                            y: { ticks: { color: '#9ca3af', font: { size: 11, weight: '600' } }, grid: { display: false } } 
-                        } 
-                    }
+                    data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Item', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] },
+                    options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: currentTheme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 11, weight: '600' } }, grid: { display: false } } } }
                 });
             }
             
-            /* QTY PER DEPT */
             const cDevice = document.getElementById('chartDevice');
             if (cDevice) {
                 const qd = {};
@@ -901,7 +1207,6 @@
                 });
             }
             
-            /* GROWTH */
             const cGrowth = document.getElementById('chartGrowth');
             if (cGrowth) {
                 const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -925,12 +1230,11 @@
                 grad.addColorStop(1, 'rgba(192, 132, 252, 0.02)');
                 charts.growth = new Chart(ctx, {
                     type: 'line',
-                    data: { labels: ga.map(g => g.label), datasets: [{ label: 'Item Baru', data: ga.map(g => g.count), borderColor: '#c084fc', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#c084fc', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 8 }] },
+                    data: { labels: ga.map(g => g.label), datasets: [{ label: 'Item Baru', data: ga.map(g => g.count), borderColor: '#c084fc', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#c084fc', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] },
                     options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } }
                 });
             }
             
-            /* TOP 5 DEPT */
             const cLic = document.getElementById('chartLicense');
             if (cLic) {
                 const dc = {};
@@ -942,25 +1246,151 @@
                     options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } } } }
                 });
             }
+            
+            renderHeatmap(data, commonOpts);
+        }
+
+        function renderHeatmap(data, commonOpts) {
+            const cHeat = document.getElementById('chartHeatmap');
+            if (!cHeat) return;
+            const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            const heat = {};
+            days.forEach(d => heat[d] = Array(24).fill(0));
+            data.forEach(i => {
+                if (!i.created_at) return;
+                const d = new Date(i.created_at);
+                heat[days[d.getDay()]][d.getHours()]++;
+            });
+            
+            // Buat bar chart sederhana sebagai visualisasi heatmap
+            const hourLabels = Array.from({length: 24}, (_, i) => `${i}:00`);
+            const datasets = days.map((day, idx) => ({
+                label: day,
+                data: heat[day],
+                backgroundColor: `hsla(${230 + idx * 20}, 70%, 60%, 0.7)`,
+                borderRadius: 3,
+                barPercentage: 0.9
+            }));
+            
+            charts.heatmap = new Chart(cHeat, {
+                type: 'bar',
+                data: { labels: hourLabels, datasets },
+                options: {
+                    ...commonOpts,
+                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'top', labels: { ...commonOpts.plugins.legend.labels, boxWidth: 10, font: { size: 9 } } } },
+                    scales: {
+                        y: { beginAtZero: true, stacked: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { stacked: true, ticks: { color: '#6b7280', font: { size: 8 } }, grid: { display: false } }
+                    }
+                }
+            });
         }
 
         /* ============================================================
-           FILTER BUTTONS
+           EXECUTIVE DASHBOARD
         ============================================================ */
-        function toggleFilter(type) {
-            activeFilter = activeFilter === type ? null : type;
-            updateFilterButtons();
-            renderTable(rawData);
+        async function showExecutiveDashboard() {
+            const { data: itData } = await supabaseClient.from('inventaris_p1').select('*').is('deleted_at', null);
+            const { data: genData } = await supabaseClient.from('general_assets').select('*').is('deleted_at', null);
+            
+            const itCount = itData?.length || 0;
+            const genCount = genData?.length || 0;
+            const totalNilai = [...(itData||[]), ...(genData||[])].reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+            modal.innerHTML = `
+                <div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">📊 Dashboard Eksekutif</h2>
+                            <p class="text-gray-400 text-sm">Ringkasan Aset Perusahaan</p>
+                        </div>
+                        <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="glass-card p-4 text-center">
+                            <div class="text-3xl mb-1">🏢</div>
+                            <div class="text-2xl font-bold text-indigo-400">${itCount}</div>
+                            <div class="text-xs text-gray-400 uppercase">Aset IT</div>
+                        </div>
+                        <div class="glass-card p-4 text-center">
+                            <div class="text-3xl mb-1">📋</div>
+                            <div class="text-2xl font-bold text-purple-400">${genCount}</div>
+                            <div class="text-xs text-gray-400 uppercase">Aset General</div>
+                        </div>
+                        <div class="glass-card p-4 text-center">
+                            <div class="text-3xl mb-1">💰</div>
+                            <div class="text-2xl font-bold text-emerald-400">Rp ${(totalNilai/1000000).toFixed(0)}Jt</div>
+                            <div class="text-xs text-gray-400 uppercase">Total Nilai</div>
+                        </div>
+                        <div class="glass-card p-4 text-center">
+                            <div class="text-3xl mb-1">🏬</div>
+                            <div class="text-2xl font-bold text-amber-400">2</div>
+                            <div class="text-xs text-gray-400 uppercase">Perusahaan</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-white font-bold mb-3">🏢 Breakdown per Departemen</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        ${(() => {
+                            const deptCounts = {};
+                            [...(itData||[]), ...(genData||[])].forEach(i => {
+                                const d = (i.dept || i.department || 'LAINNYA').toUpperCase();
+                                deptCounts[d] = (deptCounts[d] || 0) + 1;
+                            });
+                            return Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).map(([d, c]) => `
+                                <div class="bg-white/5 rounded-lg p-3 text-center">
+                                    <div class="text-indigo-300 font-bold">${c}</div>
+                                    <div class="text-gray-400 text-xs">${d}</div>
+                                </div>
+                            `).join('');
+                        })()}
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-xl">
+                        <p class="text-indigo-300 text-sm">📅 Generated: ${new Date().toLocaleString('id-ID')}</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
-        function clearFilters() {
-            activeFilter = null;
-            document.getElementById('searchInput').value = '';
-            updateFilterButtons();
-            renderTable(rawData);
+
+        /* ============================================================
+           UPLOAD GAMBAR
+        ============================================================ */
+        async function uploadImage(file, prefix = 'img') {
+            if (!file) return null;
+            const ext = file.name.split('.').pop();
+            const fileName = `${prefix}_${Date.now()}.${ext}`;
+            const { data, error } = await supabaseClient.storage.from('aset-images').upload(fileName, file);
+            if (error) { showToast('Upload Gagal', error.message, 'error'); return null; }
+            const { data: urlData } = supabaseClient.storage.from('aset-images').getPublicUrl(fileName);
+            return urlData.publicUrl;
         }
-        function updateFilterButtons() {
-            document.getElementById('btnFilterExpired').classList.toggle('active', activeFilter === 'expired');
-            document.getElementById('btnFilterExpiring').classList.toggle('active', activeFilter === 'expiring');
+
+        function handleImageSelect(event, previewId, hiddenId) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById(previewId);
+                if (preview) {
+                    preview.innerHTML = `<img src="${e.target.result}" class="preview-img">`;
+                    preview.classList.remove('hidden');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function viewImage(url) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.onclick = () => modal.remove();
+            modal.innerHTML = `<img src="${url}" style="max-width:90vw;max-height:90vh;border-radius:12px;">`;
+            document.body.appendChild(modal);
         }
 
         /* ============================================================
@@ -975,33 +1405,40 @@
             if (activeModule === 'it') {
                 document.getElementById('formTitle').innerText = "➕ Input IT Aset Baru";
                 form.innerHTML = `
-                    <div><label>ID Aset *</label><input type="text" id="it_id" placeholder="PC-001" required /></div>
-                    <div><label>User *</label><input type="text" id="it_user" placeholder="Nama Karyawan" required /></div>
-                    <div><label>Dept *</label><input type="text" id="it_dept" placeholder="IT" list="deptList" /></div>
+                    <div><label>ID Aset *</label><input type="text" id="it_id" required /></div>
+                    <div><label>User *</label><input type="text" id="it_user" required /></div>
+                    <div><label>Dept *</label><input type="text" id="it_dept" list="deptList" /></div>
                     <datalist id="deptList">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
                     <div><label>Device *</label><select id="it_device"><option>KOMPUTER</option><option>LAPTOP</option><option>PRINTER</option><option>SERVER</option></select></div>
-                    <div><label>Spesifikasi *</label><input type="text" id="it_specs" placeholder="Core i5 / 8GB" /></div>
+                    <div><label>Spesifikasi *</label><input type="text" id="it_specs" /></div>
                     <div><label>Status *</label><select id="it_status"><option>Active</option><option>Maintenance</option><option>Broken</option></select></div>
-                    <div><label>IP Address</label><input type="text" id="it_ip" placeholder="192.168.1.10" /></div>
+                    <div><label>IP Address</label><input type="text" id="it_ip" /></div>
                     <div><label>MAC Address</label><input type="text" id="it_mac" /></div>
                     <div><label>Hostname</label><input type="text" id="it_host" /></div>
-                    <div><label>License OS</label><input type="text" id="it_los" placeholder="Windows 11 Pro" /></div>
+                    <div><label>License OS</label><input type="text" id="it_los" /></div>
                     <div><label>License Office</label><input type="text" id="it_loffice" /></div>
                     <div><label>License AV</label><input type="text" id="it_lav" /></div>
                     <div><label>License Expiry</label><input type="date" id="it_lexp" /></div>
                     <div><label>Tanggal Beli</label><input type="date" id="it_pdate" /></div>
                     <div><label>Garansi Expiry</label><input type="date" id="it_wexp" /></div>
+                    <div><label>Harga Beli (Rp)</label><input type="number" id="it_harga" placeholder="5000000" /></div>
+                    <div><label>Umur Ekonomis (thn)</label><input type="number" id="it_umur" value="5" /></div>
+                    <div><label>Maintenance Next Date</label><input type="date" id="it_mnext" /></div>
+                    <div><label>Maintenance Interval (hari)</label><input type="number" id="it_mint" value="180" /></div>
                     <div><label>Monitor Brand</label><input type="text" id="it_mb" /></div>
                     <div><label>Monitor Size</label><input type="text" id="it_ms" /></div>
-                    <div><label>Monitor Serial</label><input type="text" id="it_msn" /></div>
                     <div><label>Printer Brand</label><input type="text" id="it_pb" /></div>
-                    <div><label>Printer Model</label><input type="text" id="it_pm" /></div>
-                    <div><label>Printer Serial</label><input type="text" id="it_psn" /></div>
                     <div><label>Mouse Brand</label><input type="text" id="it_mob" /></div>
-                    <div><label>Mouse Type</label><input type="text" id="it_mot" /></div>
                     <div><label>Keyboard Brand</label><input type="text" id="it_kb" /></div>
-                    <div><label>Keyboard Type</label><input type="text" id="it_kt" /></div>
                     <div class="form-section"><label>Notes</label><textarea id="it_notes" rows="2"></textarea></div>
+                    <div class="form-section"><label>Upload Gambar</label>
+                        <div class="upload-box" onclick="document.getElementById('it_img_input').click()">
+                            <div class="text-3xl mb-1">📸</div>
+                            <p class="text-gray-400 text-xs">Klik untuk upload</p>
+                            <input type="file" id="it_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'it_img_preview')" />
+                        </div>
+                        <div id="it_img_preview" class="mt-3 hidden"></div>
+                    </div>
                     <div class="form-section flex justify-end gap-2">
                         <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
                         <button type="button" onclick="saveITAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl border-none">💾 Simpan</button>
@@ -1010,17 +1447,27 @@
             } else {
                 document.getElementById('formTitle').innerText = "➕ Input Aset General Baru";
                 form.innerHTML = `
-                    <div><label>Nama Material *</label><input type="text" id="gen_nama" placeholder="Meja Kerja" required /></div>
-                    <div><label>材料名称</label><input type="text" id="gen_mandarin" placeholder="工作台" /></div>
+                    <div><label>Nama Material *</label><input type="text" id="gen_nama" required /></div>
+                    <div><label>材料名称</label><input type="text" id="gen_mandarin" /></div>
                     <div><label>Spesifikasi</label><input type="text" id="gen_specs" /></div>
                     <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="1" min="1" required /></div>
                     <div><label>Satuan</label><input type="text" id="gen_satuan" value="Buah" /></div>
                     <div><label>Keterangan</label><input type="text" id="gen_keterangan" /></div>
                     <div><label>Jenis</label><select id="gen_jenis"><option>Fixed Asset</option><option>Consumable</option></select></div>
-                    <div><label>Department</label><input type="text" id="gen_dept" placeholder="HRGA" list="deptListGen" /></div>
+                    <div><label>Department</label><input type="text" id="gen_dept" list="deptListGen" /></div>
                     <datalist id="deptListGen">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
-                    <div><label>Link/Nama Gambar</label><input type="text" id="gen_gambar" /></div>
                     <div><label>Lokasi</label><input type="text" id="gen_lokasi" /></div>
+                    <div><label>Harga Beli (Rp)</label><input type="number" id="gen_harga" /></div>
+                    <div><label>Umur Ekonomis (thn)</label><input type="number" id="gen_umur" value="5" /></div>
+                    <div><label>Maintenance Next Date</label><input type="date" id="gen_mnext" /></div>
+                    <div class="form-section"><label>Upload Gambar</label>
+                        <div class="upload-box" onclick="document.getElementById('gen_img_input').click()">
+                            <div class="text-3xl mb-1">📸</div>
+                            <p class="text-gray-400 text-xs">Klik untuk upload</p>
+                            <input type="file" id="gen_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'gen_img_preview')" />
+                        </div>
+                        <div id="gen_img_preview" class="mt-3 hidden"></div>
+                    </div>
                     <div class="form-section flex justify-end gap-2">
                         <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
                         <button type="button" onclick="saveGeneralAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl border-none">💾 Simpan</button>
@@ -1030,41 +1477,82 @@
             fc.scrollIntoView({ behavior: 'smooth' });
         }
 
-        /* ============================================================
-           SAVE
-        ============================================================ */
         function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+        function calcDepreciation(harga, umur) {
+            if (!harga || !umur) return 0;
+            const perYear = harga / umur;
+            const tahunBerjalan = 0;
+            return Math.max(0, harga - perYear * tahunBerjalan);
+        }
 
         async function saveITAsset() {
+            const imgInput = document.getElementById('it_img_input');
+            let imgUrl = null;
+            if (imgInput && imgInput.files[0]) {
+                showToast('Upload', 'Mengupload gambar...', 'info');
+                imgUrl = await uploadImage(imgInput.files[0], v('it_id') || 'img');
+            }
+            
+            const harga = parseFloat(v('it_harga')) || 0;
+            const umur = parseInt(v('it_umur')) || 5;
+            
             const payload = {
                 id_aset: v('it_id'), user: v('it_user') || '-', dept: v('it_dept'),
                 device: v('it_device'), specs: v('it_specs') || '-', status: v('it_status') || 'Active',
                 ip_address: v('it_ip'), mac_address: v('it_mac'), hostname: v('it_host'),
                 license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
                 license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
-                monitor_brand: v('it_mb'), monitor_size: v('it_ms'), monitor_serial: v('it_msn'),
-                printer_brand: v('it_pb'), printer_model: v('it_pm'), printer_serial: v('it_psn'),
-                mouse_brand: v('it_mob'), mouse_type: v('it_mot'), keyboard_brand: v('it_kb'), keyboard_type: v('it_kt'),
-                notes: v('it_notes'), deleted_at: null
+                monitor_brand: v('it_mb'), monitor_size: v('it_ms'),
+                printer_brand: v('it_pb'), mouse_brand: v('it_mob'), keyboard_brand: v('it_kb'),
+                notes: v('it_notes'),
+                harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+                maintenance_next_date: v('it_mnext') || null, maintenance_interval_days: parseInt(v('it_mint')) || 180,
+                gambar_url: imgUrl,
+                deleted_at: null
             };
-            if (!payload.id_aset) { showToast('Error', 'ID Aset wajib diisi!', 'error'); return; }
+            if (!payload.id_aset) { showToast('Error', 'ID Aset wajib!', 'error'); return; }
             const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Sukses', 'IT Aset disimpan!', 'success'); toggleForm(); await refreshAll(true); }
+            else {
+                await logActivity('create', currentPTTable, payload.id_aset, `Tambah IT: ${payload.id_aset}`);
+                showToast('Sukses', 'IT Aset disimpan!', 'success');
+                showConfetti();
+                toggleForm();
+                await refreshAll(true);
+            }
         }
 
         async function saveGeneralAsset() {
+            const imgInput = document.getElementById('gen_img_input');
+            let imgUrl = null;
+            if (imgInput && imgInput.files[0]) {
+                showToast('Upload', 'Mengupload gambar...', 'info');
+                imgUrl = await uploadImage(imgInput.files[0], v('gen_nama') || 'img');
+            }
+            
+            const harga = parseFloat(v('gen_harga')) || 0;
+            const umur = parseInt(v('gen_umur')) || 5;
+            
             const payload = {
                 nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
                 spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
                 satuan: v('gen_satuan') || 'Buah', keterangan: v('gen_keterangan'),
                 jenis_inventaris: v('gen_jenis'), department: v('gen_dept'),
-                gambar: v('gen_gambar'), lokasi: v('gen_lokasi'), deleted_at: null
+                lokasi: v('gen_lokasi'),
+                harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+                maintenance_next_date: v('gen_mnext') || null,
+                gambar: imgUrl, deleted_at: null
             };
-            if (!payload.nama_material) { showToast('Error', 'Nama Material wajib diisi!', 'error'); return; }
+            if (!payload.nama_material) { showToast('Error', 'Nama Material wajib!', 'error'); return; }
             const { error } = await supabaseClient.from('general_assets').insert([payload]);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Sukses', 'Data disimpan!', 'success'); toggleForm(); await refreshAll(true); }
+            else {
+                await logActivity('create', 'general_assets', '', `Tambah: ${payload.nama_material}`);
+                showToast('Sukses', 'Data disimpan!', 'success');
+                showConfetti();
+                toggleForm();
+                await refreshAll(true);
+            }
         }
 
         /* ============================================================
@@ -1072,7 +1560,7 @@
         ============================================================ */
         function editITAsset(id_aset) {
             const item = rawData.find(x => String(x.id_aset) === String(id_aset));
-            if (!item) { showToast('Error', 'Data tidak ditemukan', 'error'); return; }
+            if (!item) return;
             const fc = document.getElementById('formContainer');
             fc.classList.remove('hidden');
             document.getElementById('formTitle').innerText = `✏️ Edit: ${id_aset}`;
@@ -1095,17 +1583,23 @@
                 <div><label>License Expiry</label><input type="date" id="it_lexp" value="${item.license_expiry || ''}" /></div>
                 <div><label>Tgl Beli</label><input type="date" id="it_pdate" value="${item.purchase_date || ''}" /></div>
                 <div><label>Garansi</label><input type="date" id="it_wexp" value="${item.warranty_expiry || ''}" /></div>
-                <div><label>Monitor Brand</label><input type="text" id="it_mb" value="${item.monitor_brand || ''}" /></div>
-                <div><label>Monitor Size</label><input type="text" id="it_ms" value="${item.monitor_size || ''}" /></div>
-                <div><label>Monitor Serial</label><input type="text" id="it_msn" value="${item.monitor_serial || ''}" /></div>
-                <div><label>Printer Brand</label><input type="text" id="it_pb" value="${item.printer_brand || ''}" /></div>
-                <div><label>Printer Model</label><input type="text" id="it_pm" value="${item.printer_model || ''}" /></div>
-                <div><label>Printer Serial</label><input type="text" id="it_psn" value="${item.printer_serial || ''}" /></div>
-                <div><label>Mouse Brand</label><input type="text" id="it_mob" value="${item.mouse_brand || ''}" /></div>
-                <div><label>Mouse Type</label><input type="text" id="it_mot" value="${item.mouse_type || ''}" /></div>
-                <div><label>Keyboard Brand</label><input type="text" id="it_kb" value="${item.keyboard_brand || ''}" /></div>
-                <div><label>Keyboard Type</label><input type="text" id="it_kt" value="${item.keyboard_type || ''}" /></div>
+                <div><label>Harga Beli</label><input type="number" id="it_harga" value="${item.harga_beli || 0}" /></div>
+                <div><label>Umur Ekonomis</label><input type="number" id="it_umur" value="${item.umur_ekonomis || 5}" /></div>
+                <div><label>Maintenance Next</label><input type="date" id="it_mnext" value="${item.maintenance_next_date || ''}" /></div>
+                <div><label>Maintenance Interval</label><input type="number" id="it_mint" value="${item.maintenance_interval_days || 180}" /></div>
+                <div><label>Monitor</label><input type="text" id="it_mb" value="${item.monitor_brand || ''}" /></div>
+                <div><label>Printer</label><input type="text" id="it_pb" value="${item.printer_brand || ''}" /></div>
+                <div><label>Mouse</label><input type="text" id="it_mob" value="${item.mouse_brand || ''}" /></div>
+                <div><label>Keyboard</label><input type="text" id="it_kb" value="${item.keyboard_brand || ''}" /></div>
                 <div class="form-section"><label>Notes</label><textarea id="it_notes" rows="2">${item.notes || ''}</textarea></div>
+                <div class="form-section"><label>Upload Gambar Baru (opsional)</label>
+                    <div class="upload-box" onclick="document.getElementById('it_img_input').click()">
+                        <div class="text-3xl mb-1">📸</div>
+                        <p class="text-gray-400 text-xs">Klik untuk ganti gambar</p>
+                        <input type="file" id="it_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'it_img_preview')" />
+                    </div>
+                    <div id="it_img_preview" class="mt-3 hidden"></div>
+                </div>
                 <div class="form-section flex justify-end gap-2">
                     <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
                     <button type="button" onclick="updateITAsset('${id_aset}')" class="btn bg-emerald-500 text-white px-6 py-2 rounded-xl border-none">💾 Update</button>
@@ -1115,19 +1609,35 @@
         }
 
         async function updateITAsset(id_aset) {
+            const imgInput = document.getElementById('it_img_input');
+            let imgUrl = undefined;
+            if (imgInput && imgInput.files[0]) {
+                imgUrl = await uploadImage(imgInput.files[0], id_aset);
+            }
+            
+            const harga = parseFloat(v('it_harga')) || 0;
+            const umur = parseInt(v('it_umur')) || 5;
+            
             const payload = {
                 user: v('it_user'), dept: v('it_dept'), device: v('it_device'), specs: v('it_specs'),
                 status: v('it_status'), ip_address: v('it_ip'), mac_address: v('it_mac'), hostname: v('it_host'),
                 license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
                 license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
-                monitor_brand: v('it_mb'), monitor_size: v('it_ms'), monitor_serial: v('it_msn'),
-                printer_brand: v('it_pb'), printer_model: v('it_pm'), printer_serial: v('it_psn'),
-                mouse_brand: v('it_mob'), mouse_type: v('it_mot'), keyboard_brand: v('it_kb'), keyboard_type: v('it_kt'),
-                notes: v('it_notes')
+                monitor_brand: v('it_mb'), printer_brand: v('it_pb'), mouse_brand: v('it_mob'), keyboard_brand: v('it_kb'),
+                notes: v('it_notes'),
+                harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+                maintenance_next_date: v('it_mnext') || null, maintenance_interval_days: parseInt(v('it_mint')) || 180
             };
+            if (imgUrl) payload.gambar_url = imgUrl;
+            
             const { error } = await supabaseClient.from(currentPTTable).update(payload).eq('id_aset', id_aset);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Sukses', 'Aset diupdate!', 'success'); toggleForm(); await refreshAll(true); }
+            else {
+                await logActivity('update', currentPTTable, id_aset, `Update IT: ${id_aset}`);
+                showToast('Sukses', 'Aset diupdate!', 'success');
+                toggleForm();
+                await refreshAll(true);
+            }
         }
 
         function cloneITAsset(id_aset) {
@@ -1140,7 +1650,7 @@
                 document.getElementById('it_dept').value = item.dept || '';
                 document.getElementById('it_specs').value = item.specs || '';
             }, 100);
-            showToast('Clone', `Copy dari ${id_aset}. Edit ID & simpan.`, 'info');
+            showToast('Clone', `Copy dari ${id_aset}`, 'info');
         }
 
         function transferITAsset(id_aset) {
@@ -1150,9 +1660,13 @@
             if (!newUser) return;
             const newDept = prompt(`Dept baru (lama: ${item.dept}):`, item.dept);
             if (!newDept) return;
-            supabaseClient.from(currentPTTable).update({ user: newUser, dept: newDept }).eq('id_aset', id_aset).then(({ error }) => {
+            supabaseClient.from(currentPTTable).update({ user: newUser, dept: newDept }).eq('id_aset', id_aset).then(async ({ error }) => {
                 if (error) showToast('Gagal', error.message, 'error');
-                else { showToast('Sukses', `Ditransfer ke ${newUser}`, 'success'); refreshAll(true); }
+                else {
+                    await logActivity('transfer', currentPTTable, id_aset, `${id_aset} → ${newUser} (${newDept})`);
+                    showToast('Sukses', `Ditransfer ke ${newUser}`, 'success');
+                    refreshAll(true);
+                }
             });
         }
 
@@ -1160,7 +1674,11 @@
             if (!confirm(`Hapus aset ${id_aset}?`)) return;
             const { error } = await supabaseClient.from(currentPTTable).update({ deleted_at: new Date().toISOString() }).eq('id_aset', id_aset);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Terhapus', 'Aset masuk trash', 'info'); await refreshAll(true); }
+            else {
+                await logActivity('delete', currentPTTable, id_aset, `Hapus IT: ${id_aset}`);
+                showToast('Terhapus', 'Masuk trash', 'info');
+                await refreshAll(true);
+            }
         }
 
         function editGeneralAsset(id) {
@@ -1174,14 +1692,16 @@
                 <div><label>Nama Material *</label><input type="text" id="gen_nama" value="${item.nama_material || ''}" /></div>
                 <div><label>材料名称</label><input type="text" id="gen_mandarin" value="${item.nama_material_mandarin || ''}" /></div>
                 <div><label>Spesifikasi</label><input type="text" id="gen_specs" value="${item.spesifikasi || ''}" /></div>
-                <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="${item.jumlah || 1}" min="1" /></div>
+                <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="${item.jumlah || 1}" /></div>
                 <div><label>Satuan</label><input type="text" id="gen_satuan" value="${item.satuan || 'Buah'}" /></div>
                 <div><label>Keterangan</label><input type="text" id="gen_keterangan" value="${item.keterangan || ''}" /></div>
                 <div><label>Jenis</label><select id="gen_jenis"><option ${item.jenis_inventaris === 'Fixed Asset' ? 'selected' : ''}>Fixed Asset</option><option ${item.jenis_inventaris === 'Consumable' ? 'selected' : ''}>Consumable</option></select></div>
                 <div><label>Department</label><input type="text" id="gen_dept" value="${item.department || ''}" list="deptListGen" /></div>
                 <datalist id="deptListGen">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
-                <div><label>Link/Nama Gambar</label><input type="text" id="gen_gambar" value="${item.gambar || ''}" /></div>
                 <div><label>Lokasi</label><input type="text" id="gen_lokasi" value="${item.lokasi || ''}" /></div>
+                <div><label>Harga Beli</label><input type="number" id="gen_harga" value="${item.harga_beli || 0}" /></div>
+                <div><label>Umur Ekonomis</label><input type="number" id="gen_umur" value="${item.umur_ekonomis || 5}" /></div>
+                <div><label>Maintenance Next</label><input type="date" id="gen_mnext" value="${item.maintenance_next_date || ''}" /></div>
                 <div class="form-section flex justify-end gap-2">
                     <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
                     <button type="button" onclick="updateGeneralAsset(${id})" class="btn bg-emerald-500 text-white px-6 py-2 rounded-xl border-none">💾 Update</button>
@@ -1191,16 +1711,25 @@
         }
 
         async function updateGeneralAsset(id) {
+            const harga = parseFloat(v('gen_harga')) || 0;
+            const umur = parseInt(v('gen_umur')) || 5;
             const payload = {
                 nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
                 spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
                 satuan: v('gen_satuan'), keterangan: v('gen_keterangan'),
                 jenis_inventaris: v('gen_jenis'), department: v('gen_dept'),
-                gambar: v('gen_gambar'), lokasi: v('gen_lokasi')
+                lokasi: v('gen_lokasi'),
+                harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+                maintenance_next_date: v('gen_mnext') || null
             };
             const { error } = await supabaseClient.from('general_assets').update(payload).eq('id', id);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Sukses', 'Data diupdate!', 'success'); toggleForm(); await refreshAll(true); }
+            else {
+                await logActivity('update', 'general_assets', String(id), `Update: ${payload.nama_material}`);
+                showToast('Sukses', 'Data diupdate!', 'success');
+                toggleForm();
+                await refreshAll(true);
+            }
         }
 
         function showDetailGeneral(id) {
@@ -1226,10 +1755,11 @@
                         <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">材料名称</span><span class="text-white">${item.nama_material_mandarin || '-'}</span></div>
                         <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Spesifikasi</span><span class="text-white">${item.spesifikasi || '-'}</span></div>
                         <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jumlah</span><span class="text-white font-bold">${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
-                        <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Keterangan</span><span class="text-white">${item.keterangan || '-'}</span></div>
                         <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jenis</span><span class="text-white">${item.jenis_inventaris || 'Fixed Asset'}</span></div>
                         <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Department</span><span class="text-white">${item.department || '-'}</span></div>
-                        <div class="flex justify-between pb-2"><span class="text-gray-400">Lokasi</span><span class="text-white">${item.lokasi || '-'}</span></div>
+                        <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Lokasi</span><span class="text-white">${item.lokasi || '-'}</span></div>
+                        <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Harga Beli</span><span class="text-emerald-300">Rp ${(item.harga_beli || 0).toLocaleString('id-ID')}</span></div>
+                        <div class="flex justify-between pb-2"><span class="text-gray-400">Nilai Sekarang</span><span class="text-emerald-300 font-bold">Rp ${(item.nilai_sekarang || 0).toLocaleString('id-ID')}</span></div>
                     </div>
                     ${imgHtml}
                     <div class="flex gap-2 justify-center mt-4">
@@ -1244,14 +1774,18 @@
             if (!confirm('Hapus data ini?')) return;
             const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Terhapus', 'Data masuk trash', 'info'); await refreshAll(true); }
+            else {
+                await logActivity('delete', 'general_assets', String(id), `Hapus General`);
+                showToast('Terhapus', 'Masuk trash', 'info');
+                await refreshAll(true);
+            }
         }
 
         /* ============================================================
            BULK IMPORT
         ============================================================ */
         function openBulkImport() {
-            document.getElementById('importModalTitle').innerText = activeModule === 'it' ? '(IT Computers)' : '(Aset PT Magicase)';
+            document.getElementById('importModalTitle').innerText = activeModule === 'it' ? '(IT)' : '(General)';
             document.getElementById('bulkImportModal').classList.remove('hidden');
             document.getElementById('importPreview').classList.add('hidden');
             document.getElementById('fileInput').value = '';
@@ -1261,32 +1795,17 @@
 
         function downloadTemplate() {
             if (activeModule === 'it') {
-                const sample = [{
-                    id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER',
-                    specs: 'Core i5 / 8GB', status: 'Active', ip_address: '192.168.1.10',
-                    mac_address: '', hostname: 'PC-001',
-                    license_os: 'Windows 11 Pro', license_office: 'Office 2021', license_av: 'Kaspersky',
-                    license_expiry: '2027-12-31', purchase_date: '2024-01-15', warranty_expiry: '2027-01-15',
-                    monitor_brand: 'LG', monitor_size: '24"', monitor_serial: 'MON123',
-                    printer_brand: '', printer_model: '', printer_serial: '',
-                    mouse_brand: 'Logitech', mouse_type: 'Wireless',
-                    keyboard_brand: 'Logitech', keyboard_type: 'Mechanical', notes: ''
-                }];
+                const sample = [{ id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10', harga_beli: 5000000, umur_ekonomis: 5 }];
                 const ws = XLSX.utils.json_to_sheet(sample);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Template_IT');
-                XLSX.writeFile(wb, 'Template_Import_IT.xlsx');
+                XLSX.utils.book_append_sheet(wb, ws, 'IT');
+                XLSX.writeFile(wb, 'Template_IT.xlsx');
             } else {
-                const sample = [{
-                    nama_material: 'Meja Kerja', nama_material_mandarin: '工作台',
-                    spesifikasi: 'Standard', jumlah: 15, satuan: 'Buah',
-                    keterangan: '', jenis_inventaris: 'Fixed Asset',
-                    department: 'HRGA', gambar: '', lokasi: 'Ruang Administrasi'
-                }];
+                const sample = [{ nama_material: 'Meja', nama_material_mandarin: '工作台', spesifikasi: 'Standard', jumlah: 15, satuan: 'Buah', jenis_inventaris: 'Fixed Asset', department: 'HRGA', lokasi: 'Ruang A', harga_beli: 500000, umur_ekonomis: 5 }];
                 const ws = XLSX.utils.json_to_sheet(sample);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Template_General');
-                XLSX.writeFile(wb, 'Template_Import_General.xlsx');
+                XLSX.utils.book_append_sheet(wb, ws, 'General');
+                XLSX.writeFile(wb, 'Template_General.xlsx');
             }
         }
 
@@ -1300,14 +1819,11 @@
                     const wb = XLSX.read(data, { type: 'array' });
                     const sheet = wb.Sheets[wb.SheetNames[0]];
                     const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false, blankrows: false });
-                    console.log('🔍 Raw AOA:', aoa);
                     if (aoa.length < 2) { showToast('Error', 'File kosong!', 'error'); return; }
                     let headerIdx = 0;
                     for (let i = 0; i < Math.min(aoa.length, 10); i++) {
                         const rowText = aoa[i].map(c => String(c).toLowerCase()).join('|');
-                        if (rowText.includes('nama_material') || rowText.includes('nama material') || rowText.includes('id_aset') || rowText.includes('id aset')) {
-                            headerIdx = i; break;
-                        }
+                        if (rowText.includes('nama_material') || rowText.includes('nama material') || rowText.includes('id_aset') || rowText.includes('id aset')) { headerIdx = i; break; }
                     }
                     const headers = aoa[headerIdx].map(h => String(h).trim());
                     const rows = aoa.slice(headerIdx + 1);
@@ -1330,11 +1846,8 @@
                     if (filtered.length === 0) { showToast('Error', 'Tidak ada data valid!', 'error'); return; }
                     importData = filtered;
                     showPreview(filtered);
-                    showToast('Info', `${filtered.length} baris siap import`, 'info');
-                } catch (err) {
-                    console.error(err);
-                    showToast('Error', 'Gagal baca file: ' + err.message, 'error');
-                }
+                    showToast('Info', `${filtered.length} baris siap`, 'info');
+                } catch (err) { showToast('Error', err.message, 'error'); }
             };
             reader.readAsArrayBuffer(file);
         }
@@ -1346,87 +1859,58 @@
             document.getElementById('previewCount').innerText = data.length;
             const headers = Object.keys(data[0]).filter(k => k !== '___row');
             head.innerHTML = headers.map(h => `<th class="px-2 py-1 text-left text-gray-400 text-[10px]">${h}</th>`).join('');
-            body.innerHTML = data.slice(0, 5).map(row =>
-                `<tr>${headers.map(h => `<td class="px-2 py-1 border-t border-white/5 text-gray-300 text-[10px]">${String(row[h] || '-').substring(0, 30)}</td>`).join('')}</tr>`
-            ).join('');
+            body.innerHTML = data.slice(0, 5).map(row => `<tr>${headers.map(h => `<td class="px-2 py-1 border-t border-white/5 text-gray-300 text-[10px]">${String(row[h] || '-').substring(0, 30)}</td>`).join('')}</tr>`).join('');
             pv.classList.remove('hidden');
         }
 
         async function confirmImport() {
-            if (importData.length === 0) { showToast('Error', 'Data kosong!', 'error'); return; }
-            if (!confirm(`Import ${importData.length} data ke database?`)) return;
+            if (importData.length === 0) { showToast('Error', 'Kosong!', 'error'); return; }
+            if (!confirm(`Import ${importData.length} data?`)) return;
             const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
             let success = 0, failed = 0, skipped = 0;
-            const pick = (item, ...keys) => {
-                for (const k of keys) {
-                    if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== '') return String(item[k]).trim();
-                }
-                return '';
-            };
-            const toDate = (s) => {
-                if (!s) return null;
-                try { const d = new Date(s); if (isNaN(d)) return null; return d.toISOString().split('T')[0]; } catch { return null; }
-            };
+            const pick = (item, ...keys) => { for (const k of keys) { if (item[k] && String(item[k]).trim() !== '') return String(item[k]).trim(); } return ''; };
+            const toDate = (s) => { if (!s) return null; try { const d = new Date(s); if (isNaN(d)) return null; return d.toISOString().split('T')[0]; } catch { return null; } };
+            
             for (let i = 0; i < importData.length; i++) {
                 const item = importData[i];
                 let payload = {};
+                const harga = parseFloat(pick(item, 'harga_beli', 'harga')) || 0;
+                const umur = parseInt(pick(item, 'umur_ekonomis', 'umur')) || 5;
+                
                 if (activeModule === 'it') {
                     payload = {
-                        id_aset: pick(item, 'id_aset', 'id', 'idaset', 'id_asset'),
-                        user: pick(item, 'user', 'nama_user', 'pengguna') || '-',
-                        dept: pick(item, 'dept', 'department', 'departemen'),
-                        device: (pick(item, 'device', 'perangkat') || 'KOMPUTER').toUpperCase(),
-                        specs: pick(item, 'specs', 'spesifikasi', 'spec') || '-',
-                        status: pick(item, 'status') || 'Active',
-                        ip_address: pick(item, 'ip_address', 'ip', 'ipaddress'),
-                        mac_address: pick(item, 'mac_address', 'mac'),
-                        hostname: pick(item, 'hostname', 'host'),
-                        license_os: pick(item, 'license_os', 'os'),
-                        license_office: pick(item, 'license_office', 'office'),
-                        license_av: pick(item, 'license_av', 'antivirus', 'av'),
-                        license_expiry: toDate(pick(item, 'license_expiry', 'license_exp', 'expiry')),
-                        purchase_date: toDate(pick(item, 'purchase_date', 'tgl_beli')),
-                        warranty_expiry: toDate(pick(item, 'warranty_expiry', 'garansi')),
-                        monitor_brand: pick(item, 'monitor_brand'),
-                        monitor_size: pick(item, 'monitor_size'),
-                        monitor_serial: pick(item, 'monitor_serial'),
-                        printer_brand: pick(item, 'printer_brand'),
-                        printer_model: pick(item, 'printer_model'),
-                        printer_serial: pick(item, 'printer_serial'),
-                        mouse_brand: pick(item, 'mouse_brand'),
-                        mouse_type: pick(item, 'mouse_type'),
-                        keyboard_brand: pick(item, 'keyboard_brand'),
-                        keyboard_type: pick(item, 'keyboard_type'),
-                        notes: pick(item, 'notes', 'keterangan', 'catatan'),
-                        deleted_at: null
+                        id_aset: pick(item, 'id_aset', 'id'), user: pick(item, 'user') || '-',
+                        dept: pick(item, 'dept', 'department'), device: (pick(item, 'device') || 'KOMPUTER').toUpperCase(),
+                        specs: pick(item, 'specs', 'spesifikasi') || '-', status: pick(item, 'status') || 'Active',
+                        ip_address: pick(item, 'ip_address', 'ip'), license_os: pick(item, 'license_os'),
+                        license_expiry: toDate(pick(item, 'license_expiry')),
+                        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+                        notes: pick(item, 'notes'), deleted_at: null
                     };
                     if (!payload.id_aset) { skipped++; continue; }
                 } else {
                     payload = {
-                        nama_material: pick(item, 'nama_material', 'nama', 'material'),
-                        nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称', 'mandarin'),
-                        spesifikasi: pick(item, 'spesifikasi', 'specs', 'spec'),
-                        jumlah: parseInt(pick(item, 'jumlah', 'qty')) || 1,
-                        satuan: pick(item, 'satuan', 'unit') || 'Buah',
-                        keterangan: pick(item, 'keterangan', 'notes'),
-                        jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis', 'type') || 'Fixed Asset',
-                        department: pick(item, 'department', 'dept'),
-                        gambar: pick(item, 'gambar', 'image', 'foto'),
-                        lokasi: pick(item, 'lokasi', 'location'),
+                        nama_material: pick(item, 'nama_material', 'nama'),
+                        nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称'),
+                        spesifikasi: pick(item, 'spesifikasi'), jumlah: parseInt(pick(item, 'jumlah')) || 1,
+                        satuan: pick(item, 'satuan') || 'Buah', keterangan: pick(item, 'keterangan'),
+                        jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis') || 'Fixed Asset',
+                        department: pick(item, 'department', 'dept'), lokasi: pick(item, 'lokasi'),
+                        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
                         deleted_at: null
                     };
                     const n = String(payload.nama_material || '').toLowerCase();
-                    if (!payload.nama_material || n === 'no' || n === 'nama material') { skipped++; continue; }
+                    if (!payload.nama_material || n === 'no') { skipped++; continue; }
                 }
                 const { error } = await supabaseClient.from(targetTable).insert([payload]);
-                if (!error) success++;
-                else { failed++; console.error('Gagal:', error, payload); }
+                if (!error) success++; else { failed++; console.error(error); }
             }
             let msg = `✅ ${success} sukses`;
             if (failed > 0) msg += `, ❌ ${failed} gagal`;
             if (skipped > 0) msg += `, ⏭️ ${skipped} skip`;
-            if (failed > 0) showToast('Selesai (ada error)', msg, 'error');
-            else showToast('Sukses!', msg, 'success');
+            await logActivity('bulk_import', targetTable, '', `Import: ${success} sukses`);
+            showToast('Selesai', msg, failed > 0 ? 'error' : 'success');
+            if (success > 0) showConfetti();
             closeBulkImport();
             await refreshAll(true);
         }
@@ -1446,16 +1930,12 @@
                 body.innerHTML = `
                     <table class="w-full text-xs">
                         <thead><tr class="text-left text-gray-400"><th class="p-2">ID/Nama</th><th class="p-2">Dept</th><th class="p-2">Dihapus</th><th class="p-2">Aksi</th></tr></thead>
-                        <tbody>
-                            ${trash.map(item => `
-                                <tr class="border-t border-white/5">
-                                    <td class="p-2">${item.id_aset || item.nama_material || '-'}</td>
-                                    <td class="p-2">${item.dept || item.department || '-'}</td>
-                                    <td class="p-2 text-gray-500">${item.deleted_at ? new Date(item.deleted_at).toLocaleDateString('id-ID') : '-'}</td>
-                                    <td class="p-2"><button onclick="restoreAsset('${item.id || item.id_aset}')" class="text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-1 rounded">↩️ Restore</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
+                        <tbody>${trash.map(item => `<tr class="border-t border-white/5">
+                            <td class="p-2">${item.id_aset || item.nama_material || '-'}</td>
+                            <td class="p-2">${item.dept || item.department || '-'}</td>
+                            <td class="p-2 text-gray-500">${item.deleted_at ? new Date(item.deleted_at).toLocaleDateString('id-ID') : '-'}</td>
+                            <td class="p-2"><button onclick="restoreAsset('${item.id || item.id_aset}')" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">↩️ Restore</button></td>
+                        </tr>`).join('')}</tbody>
                     </table>
                 `;
             }
@@ -1468,22 +1948,24 @@
             const queryKey = activeModule === 'it' ? 'id_aset' : 'id';
             const val = isNaN(id) ? id : parseInt(id);
             const { error } = await supabaseClient.from(targetTable).update({ deleted_at: null }).eq(queryKey, val);
-            if (!error) { showToast('Dipulihkan', 'Data dikembalikan', 'success'); closeTrashModal(); await refreshAll(true); }
-            else showToast('Gagal', error.message, 'error');
+            if (!error) {
+                await logActivity('restore', targetTable, String(id), 'Restore');
+                showToast('Dipulihkan', 'Data dikembalikan', 'success');
+                closeTrashModal();
+                await refreshAll(true);
+            } else showToast('Gagal', error.message, 'error');
         }
 
         /* ============================================================
-           UTILITIES
+           EXPORT / PRINT
         ============================================================ */
-        document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
-
         function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}" dicopy`, 'success'))
+            navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success'))
                 .catch(() => {
                     const ta = document.createElement('textarea');
                     ta.value = text; document.body.appendChild(ta); ta.select();
                     document.execCommand('copy'); ta.remove();
-                    showToast('Copied!', `"${text}" dicopy`, 'success');
+                    showToast('Copied!', text, 'success');
                 });
         }
 
@@ -1491,28 +1973,7 @@
             const item = rawData.find(x => String(x.id_aset) === String(id_aset));
             if (!item) return;
             const w = window.open('', '_blank');
-            w.document.write(`
-                <html><head><title>Label - ${id_aset}</title>
-                <style>
-                    body { font-family: Arial; padding: 20px; text-align: center; }
-                    .label { border: 2px dashed #333; padding: 20px; max-width: 400px; margin: 20px auto; border-radius: 12px; }
-                    h1 { font-size: 20px; margin: 5px 0; } h2 { font-size: 14px; color: #666; font-weight: normal; margin: 5px 0; }
-                    .info { text-align: left; font-size: 12px; margin-top: 15px; } .info div { padding: 3px 0; border-bottom: 1px solid #eee; }
-                </style></head><body>
-                <div class="label">
-                    <h1>${item.id_aset}</h1><h2>${item.user || ''} · ${item.dept || ''}</h2>
-                    <canvas id="qr"></canvas>
-                    <div class="info">
-                        <div><b>Device:</b> ${item.device || '-'}</div>
-                        <div><b>Spesifikasi:</b> ${item.specs || '-'}</div>
-                        <div><b>Status:</b> ${item.status || '-'}</div>
-                        <div><b>IP:</b> ${item.ip_address || '-'}</div>
-                    </div>
-                </div>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
-                <script>new QRious({ element: document.getElementById('qr'), value: '${item.id_aset}', size: 180 }); setTimeout(() => window.print(), 500);<\/script>
-                </body></html>
-            `);
+            w.document.write(`<html><head><title>${id_aset}</title><style>body{font-family:Arial;padding:20px;text-align:center}.label{border:2px dashed #333;padding:20px;max-width:400px;margin:20px auto;border-radius:12px}h1{font-size:20px;margin:5px 0}h2{font-size:14px;color:#666;font-weight:normal}.info{text-align:left;font-size:12px;margin-top:15px}.info div{padding:3px 0;border-bottom:1px solid #eee}</style></head><body><div class="label"><h1>${item.id_aset}</h1><h2>${item.user||''} · ${item.dept||''}</h2><canvas id="qr"></canvas><div class="info"><div><b>Device:</b> ${item.device||'-'}</div><div><b>Specs:</b> ${item.specs||'-'}</div><div><b>Status:</b> ${item.status||'-'}</div><div><b>IP:</b> ${item.ip_address||'-'}</div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script><script>new QRious({element:document.getElementById('qr'),value:'${item.id_aset}',size:180});setTimeout(()=>window.print(),500);<\/script></body></html>`);
             w.document.close();
         }
 
@@ -1521,50 +1982,13 @@
                 const data = applyFilters(rawData).filter(i => i.id_aset);
                 if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
                 const w = window.open('', '_blank');
-                w.document.write(`
-                    <html><head><title>Cetak Label IT</title>
-                    <style>
-                        body { font-family: Arial; padding: 10px; }
-                        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-                        .label { border: 1px dashed #333; padding: 10px; text-align: center; page-break-inside: avoid; border-radius: 8px; }
-                        .label h3 { font-size: 12px; margin: 3px 0; } .label p { font-size: 10px; color: #666; margin: 2px 0; }
-                        canvas { width: 100px !important; height: 100px !important; }
-                    </style></head><body>
-                    <h2 style="text-align:center">🏷️ Label IT Aset - ${currentPTName}</h2>
-                    <div class="grid">
-                        ${data.map(i => `<div class="label"><h3>${i.id_aset}</h3><p>${i.user || ''}</p><p>${i.dept || ''}</p><canvas data-id="${i.id_aset}"></canvas></div>`).join('')}
-                    </div>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
-                    <script>document.querySelectorAll('canvas[data-id]').forEach(c => { new QRious({ element: c, value: c.dataset.id, size: 100 }); }); setTimeout(() => window.print(), 800);<\/script>
-                    </body></html>
-                `);
+                w.document.write(`<html><head><title>Label IT</title><style>body{font-family:Arial;padding:10px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.label{border:1px dashed #333;padding:10px;text-align:center;page-break-inside:avoid;border-radius:8px}.label h3{font-size:12px;margin:3px 0}.label p{font-size:10px;color:#666;margin:2px 0}canvas{width:100px!important;height:100px!important}</style></head><body><h2 style="text-align:center">🏷️ Label IT - ${currentPTName}</h2><div class="grid">${data.map(i => `<div class="label"><h3>${i.id_aset}</h3><p>${i.user||''}</p><p>${i.dept||''}</p><canvas data-id="${i.id_aset}"></canvas></div>`).join('')}</div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script><script>document.querySelectorAll('canvas[data-id]').forEach(c=>{new QRious({element:c,value:c.dataset.id,size:100})});setTimeout(()=>window.print(),800);<\/script></body></html>`);
                 w.document.close();
             } else {
                 const data = applyFilters(rawData);
                 if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
                 const w = window.open('', '_blank');
-                w.document.write(`
-                    <html><head><title>Cetak Aset General</title>
-                    <style>
-                        body { font-family: Arial; padding: 20px; }
-                        h1 { text-align: center; color: #333; }
-                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 20px; }
-                        th { background: #4f46e5; color: white; padding: 8px; text-align: left; }
-                        td { padding: 6px 8px; border-bottom: 1px solid #ddd; }
-                        tr:nth-child(even) { background: #f9f9f9; }
-                        @media print { @page { size: A4 landscape; margin: 10mm; } }
-                    </style></head><body>
-                    <h1>📋 Daftar Aset PT Magicase</h1>
-                    <h3 style="text-align:center;color:#666;font-weight:normal">Total: ${data.length} item | ${new Date().toLocaleDateString('id-ID')}</h3>
-                    <table>
-                        <thead><tr><th>No</th><th>Nama</th><th>材料名称</th><th>Spesifikasi</th><th>Jml</th><th>Satuan</th><th>Jenis</th><th>Dept</th><th>Lokasi</th></tr></thead>
-                        <tbody>
-                            ${data.map((i, idx) => `<tr><td>${idx + 1}</td><td><b>${i.nama_material || '-'}</b></td><td>${i.nama_material_mandarin || '-'}</td><td>${i.spesifikasi || '-'}</td><td style="text-align:center">${i.jumlah || 1}</td><td>${i.satuan || 'Buah'}</td><td>${i.jenis_inventaris || 'Fixed Asset'}</td><td>${i.department || '-'}</td><td>${i.lokasi || '-'}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
-                    <script>setTimeout(() => window.print(), 500);<\/script>
-                    </body></html>
-                `);
+                w.document.write(`<html><head><title>Cetak General</title><style>body{font-family:Arial;padding:20px}h1{text-align:center}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:20px}th{background:#4f46e5;color:white;padding:8px;text-align:left}td{padding:6px 8px;border-bottom:1px solid #ddd}tr:nth-child(even){background:#f9f9f9}@media print{@page{size:A4 landscape;margin:10mm}}</style></head><body><h1>📋 Daftar Aset PT Magicase</h1><h3 style="text-align:center;color:#666;font-weight:normal">Total: ${data.length} item | ${new Date().toLocaleDateString('id-ID')}</h3><table><thead><tr><th>No</th><th>Nama</th><th>材料名称</th><th>Spesifikasi</th><th>Jml</th><th>Satuan</th><th>Jenis</th><th>Dept</th><th>Lokasi</th></tr></thead><tbody>${data.map((i, idx) => `<tr><td>${idx+1}</td><td><b>${i.nama_material||'-'}</b></td><td>${i.nama_material_mandarin||'-'}</td><td>${i.spesifikasi||'-'}</td><td>${i.jumlah||1}</td><td>${i.satuan||'Buah'}</td><td>${i.jenis_inventaris||'-'}</td><td>${i.department||'-'}</td><td>${i.lokasi||'-'}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
                 w.document.close();
             }
         }
@@ -1572,49 +1996,86 @@
         function printSingleGeneral(id) {
             const item = rawData.find(x => String(x.id) === String(id));
             if (!item) return;
-            let imgHtml = '';
-            if (item.gambar) {
-                const g = String(item.gambar).trim();
-                const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g);
-                imgHtml = `<div style="margin-top:15px;text-align:center"><img src="${imgUrl}" style="max-width:200px;max-height:150px;border-radius:8px;" onerror="this.style.display='none'" /></div>`;
-            }
             const w = window.open('', '_blank');
-            w.document.write(`
-                <html><head><title>Kartu Aset</title>
-                <style>
-                    body { font-family: Arial; padding: 30px; }
-                    .card { border: 2px solid #4f46e5; border-radius: 12px; padding: 25px; max-width: 500px; margin: 20px auto; }
-                    .header { background: #4f46e5; color: white; padding: 15px; margin: -25px -25px 20px -25px; border-radius: 10px 10px 0 0; text-align: center; }
-                    .info .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; }
-                    .info .row span:first-child { color: #666; } .info .row span:last-child { font-weight: 600; }
-                </style></head><body>
-                <div class="card">
-                    <div class="header"><h1>📋 KARTU ASET</h1><p>PT Magicase</p></div>
-                    <div class="info">
-                        <div class="row"><span>Nama</span><span>${item.nama_material || '-'}</span></div>
-                        <div class="row"><span>材料名称</span><span>${item.nama_material_mandarin || '-'}</span></div>
-                        <div class="row"><span>Spesifikasi</span><span>${item.spesifikasi || '-'}</span></div>
-                        <div class="row"><span>Jumlah</span><span>${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
-                        <div class="row"><span>Jenis</span><span>${item.jenis_inventaris || 'Fixed Asset'}</span></div>
-                        <div class="row"><span>Dept</span><span>${item.department || '-'}</span></div>
-                        <div class="row"><span>Lokasi</span><span>${item.lokasi || '-'}</span></div>
-                    </div>
-                    ${imgHtml}
-                </div>
-                <script>setTimeout(() => window.print(), 500);<\/script>
-                </body></html>
-            `);
+            w.document.write(`<html><head><title>Kartu</title><style>body{font-family:Arial;padding:30px}.card{border:2px solid #4f46e5;border-radius:12px;padding:25px;max-width:500px;margin:20px auto}.header{background:#4f46e5;color:white;padding:15px;margin:-25px -25px 20px -25px;border-radius:10px 10px 0 0;text-align:center}.info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}.info .row span:first-child{color:#666}.info .row span:last-child{font-weight:600}</style></head><body><div class="card"><div class="header"><h1>📋 KARTU ASET</h1></div><div class="info"><div class="row"><span>Nama</span><span>${item.nama_material||'-'}</span></div><div class="row"><span>材料名称</span><span>${item.nama_material_mandarin||'-'}</span></div><div class="row"><span>Spesifikasi</span><span>${item.spesifikasi||'-'}</span></div><div class="row"><span>Jumlah</span><span>${item.jumlah||1} ${item.satuan||'Buah'}</span></div><div class="row"><span>Jenis</span><span>${item.jenis_inventaris||'-'}</span></div><div class="row"><span>Dept</span><span>${item.department||'-'}</span></div><div class="row"><span>Lokasi</span><span>${item.lokasi||'-'}</span></div></div></div><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
             w.document.close();
         }
 
         function exportToExcel() {
             const data = applyFilters(rawData);
-            if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
+            if (data.length === 0) { showToast('Info', 'Kosong', 'info'); return; }
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, activeModule === 'it' ? 'IT_Assets' : 'General');
+            XLSX.utils.book_append_sheet(wb, ws, activeModule === 'it' ? 'IT' : 'General');
             XLSX.writeFile(wb, `Export_${activeModule}_${new Date().toISOString().slice(0,10)}.xlsx`);
             showToast('Sukses', `${data.length} data diexport`, 'success');
+        }
+
+        function exportToPDF() {
+            const data = applyFilters(rawData);
+            if (data.length === 0) { showToast('Info', 'Kosong', 'info'); return; }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4');
+            
+            // Header
+            doc.setFillColor(79, 70, 229);
+            doc.rect(0, 0, 297, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text('LAPORAN ASET - ' + currentPTName, 148, 12, { align: 'center' });
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text('Total: ' + data.length + ' item | Dicetak: ' + new Date().toLocaleString('id-ID'), 148, 20, { align: 'center' });
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(9);
+            
+            // Table
+            let headers, rows;
+            if (activeModule === 'it') {
+                headers = [['No', 'ID', 'User', 'Dept', 'Device', 'Status', 'IP', 'License']];
+                rows = data.map((i, idx) => [idx+1, i.id_aset, i.user, i.dept, i.device, i.status, i.ip_address || '-', [i.license_os, i.license_office].filter(Boolean).join(' / ') || '-']);
+            } else {
+                headers = [['No', 'Nama', '材料名称', 'Spesifikasi', 'Jml', 'Satuan', 'Jenis', 'Dept', 'Lokasi']];
+                rows = data.map((i, idx) => [idx+1, i.nama_material, i.nama_material_mandarin, i.spesifikasi || '-', i.jumlah, i.satuan, i.jenis_inventaris, i.department, i.lokasi]);
+            }
+            
+            doc.autoTable({
+                head: headers, body: rows, startY: 30,
+                theme: 'striped',
+                headStyles: { fillColor: [79, 70, 229], textColor: 255, fontSize: 9 },
+                bodyStyles: { fontSize: 8 },
+                alternateRowStyles: { fillColor: [245, 245, 255] },
+                margin: { top: 30 }
+            });
+            
+            doc.save(`Laporan_${activeModule}_${new Date().toISOString().slice(0,10)}.pdf`);
+            showToast('PDF', 'Laporan PDF berhasil didownload!', 'success');
+        }
+
+        async function downloadAllQR() {
+            const data = applyFilters(rawData).filter(i => i.id_aset);
+            if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
+            showToast('Generating', 'Membuat ZIP QR...', 'info');
+            
+            const zip = new JSZip();
+            for (const item of data) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 300; canvas.height = 300;
+                new QRious({ element: canvas, value: item.id_aset, size: 300, background: 'white', foreground: '#111827' });
+                const dataUrl = canvas.toDataURL('image/png');
+                const base64 = dataUrl.split(',')[1];
+                zip.file(`QR_${item.id_aset}.png`, base64, { base64: true });
+            }
+            
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `QR_Codes_${Date.now()}.zip`;
+            a.click(); URL.revokeObjectURL(url);
+            showToast('Sukses', `${data.length} QR code didownload!`, 'success');
         }
 
         /* ============================================================
@@ -1633,6 +2094,16 @@
                     } else showToast('Tidak Ditemukan', `QR "${txt}" tidak terdaftar.`, 'error');
                 }, () => {});
             } catch(e) { console.warn('Scanner error:', e); }
+        }
+
+        /* ============================================================
+           INIT
+        ============================================================ */
+        document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
+
+        // Register Service Worker (PWA)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(() => console.log('✅ SW Registered')).catch(e => console.warn('SW err:', e));
         }
     </script>
 </body>
