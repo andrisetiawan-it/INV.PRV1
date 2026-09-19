@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enterprise Asset & IT Manager Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/lib/index.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -47,8 +48,6 @@
         .tab-btn.active { background: linear-gradient(135deg, #818cf8, #c084fc); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.3); border-color: transparent; }
         .drop-zone { border: 2px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.02); cursor: pointer; }
         .drop-zone:hover { border-color: #818cf8; background: rgba(99, 102, 241, 0.05); }
-        .progress-bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.05); overflow: hidden; }
-        .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #818cf8, #c084fc); transition: width 0.3s ease; width: 0%; }
         @media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
         @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
     </style>
@@ -577,32 +576,36 @@
 
             for (let item of importData) {
                 let payload = {};
+                const keys = Object.keys(item);
+
                 if (activeModule === 'it') {
                     payload = {
-                        id_aset: item.id_aset || item['ID Aset'] || '',
-                        user: item.user || item.User || '',
-                        dept: item.dept || item.Department || item['Departemen'] || '',
-                        device: item.device || item.Device || '',
-                        specs: item.specs || item.Spesifikasi || '',
-                        status: item.status || item.Status || 'Active',
-                        ip_address: item.ip_address || item['IP Address'] || '',
+                        id_aset: item[keys[0]] || '',
+                        user: item[keys[1]] || '',
+                        dept: item[keys[2]] || '',
+                        device: item[keys[3]] || 'KOMPUTER',
+                        specs: item[keys[4]] || '',
+                        status: item[keys[5]] || 'Active',
+                        ip_address: item[keys[6]] || '',
                         deleted_at: null
                     };
                 } else {
+                    // Mapping berdasarkan index kolom mutlak dari file Excel
                     payload = {
-                        nama_material: item.nama_material || item['Nama Material'] || item['nama material'] || '',
-                        nama_material_mandarin: item.nama_material_mandarin || item['材料名称'] || item['Nama Material Mandarin'] || '',
-                        spesifikasi: item.spesifikasi || item['Spesifikasi'] || '',
-                        jumlah: parseInt(item.jumlah || item['Jumlah']) || 1,
-                        satuan: item.satuan || item['Satuan'] || 'Buah',
-                        keterangan: item.keterangan || item['Keterangan'] || '',
-                        jenis_inventaris: item.jenis_inventaris || item['Jenis Inventaris'] || 'Fixed Asset',
-                        department: item.department || item['Department'] || item['Departemen'] || '',
-                        gambar: item.gambar || item['Gambar'] || '',
-                        lokasi: item.lokasi || item['Lokasi'] || '',
+                        nama_material: item[keys[1]] || item[keys[0]] || '',
+                        nama_material_mandarin: item[keys[2]] || '',
+                        spesifikasi: item[keys[3]] || '',
+                        jumlah: parseInt(item[keys[4]]) || 1,
+                        satuan: item[keys[5]] || 'Buah',
+                        keterangan: item[keys[6]] || '',
+                        jenis_inventaris: item[keys[7]] || 'Fixed Asset',
+                        department: item[keys[8]] || '',
+                        gambar: item[keys[9]] || '',
+                        lokasi: item[keys[10]] || '',
                         deleted_at: null
                     };
-                    if (!payload.nama_material) continue;
+
+                    if (!payload.nama_material || payload.nama_material === 'No' || payload.nama_material === 'Nama Material') continue;
                 }
 
                 const { error } = await supabaseClient.from(targetTable).insert([payload]);
