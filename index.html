@@ -69,6 +69,8 @@
         .filter-btn.warning { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
         .filter-btn.danger { background: rgba(251, 113, 133, 0.1); color: #fb7185; border-color: rgba(251, 113, 133, 0.3); }
         .filter-btn.active { background: rgba(129, 140, 248, 0.2); border-color: #818cf8; color: #818cf8; }
+        .chart-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; transition: all 0.3s ease; }
+        .chart-card:hover { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 8px 24px rgba(99, 102, 241, 0.1); }
         @media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
         @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -221,6 +223,45 @@
                 </div>
             </div>
 
+            <!-- DASHBOARD CHARTS -->
+            <div id="dashboardCharts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div class="chart-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🍩 Status Distribution</h3>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Live</span>
+                    </div>
+                    <div style="height:200px;position:relative"><canvas id="chartStatus"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🏢 Department Distribution</h3>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Top 8</span>
+                    </div>
+                    <div style="height:200px;position:relative"><canvas id="chartDept"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">💻 Device / Kategori</h3>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Pie</span>
+                    </div>
+                    <div style="height:200px;position:relative"><canvas id="chartDevice"></canvas></div>
+                </div>
+                <div class="chart-card lg:col-span-2">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">📈 Asset Growth (per bulan)</h3>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">Last 12 bulan</span>
+                    </div>
+                    <div style="height:220px;position:relative"><canvas id="chartGrowth"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider">🎯 License Status</h3>
+                        <span class="text-[10px] text-gray-500 px-2 py-0.5 rounded bg-white/5">IT Only</span>
+                    </div>
+                    <div style="height:220px;position:relative"><canvas id="chartLicense"></canvas></div>
+                </div>
+            </div>
+
             <!-- ACTIONS -->
             <div class="flex flex-wrap gap-2 mb-4">
                 <button onclick="toggleForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded-xl text-sm border-none">+ Tambah Aset</button>
@@ -277,6 +318,7 @@
         let importData = [];
         let html5QrcodeScanner = null;
         let activeFilter = null;
+        const charts = { status: null, dept: null, device: null, growth: null, license: null };
 
         /* ============================================================
            TOAST
@@ -355,6 +397,7 @@
                 console.log(`📦 Loaded ${rawData.length} rows from ${tableName}`);
                 renderTable(rawData);
                 updateStats(rawData);
+                renderCharts(rawData);
                 if (activeModule === 'it') renderDeptSummary(rawData);
             } catch (err) {
                 console.error(err);
@@ -520,6 +563,369 @@
         }
 
         /* ============================================================
+           CHARTS
+        ============================================================ */
+        function destroyChart(key) {
+            if (charts[key]) { charts[key].destroy(); charts[key] = null; }
+        }
+
+        function renderCharts(data) {
+            const commonOpts = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 800, easing: 'easeOutQuart' },
+                plugins: {
+                    legend: {
+                        labels: { color: '#9ca3af', font: { size: 11, family: 'Inter' }, padding: 10, boxWidth: 12, boxHeight: 12 }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 16, 64, 0.95)',
+                        borderColor: 'rgba(129, 140, 248, 0.3)',
+                        borderWidth: 1,
+                        titleColor: '#fff',
+                        bodyColor: '#e5e7eb',
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: { size: 12, weight: '600' },
+                        bodyFont: { size: 11 }
+                    }
+                }
+            };
+            if (activeModule === 'it') renderITCharts(data, commonOpts);
+            else renderGeneralCharts(data, commonOpts);
+        }
+
+        function renderITCharts(data, commonOpts) {
+            /* STATUS */
+            destroyChart('status');
+            const statusCounts = { Active: 0, Maintenance: 0, Broken: 0 };
+            data.forEach(i => {
+                const s = String(i.status || 'Active');
+                if (statusCounts[s] !== undefined) statusCounts[s]++;
+                else statusCounts.Active++;
+            });
+            charts.status = new Chart(document.getElementById('chartStatus'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Maintenance', 'Broken'],
+                    datasets: [{
+                        data: [statusCounts.Active, statusCounts.Maintenance, statusCounts.Broken],
+                        backgroundColor: ['#34d399', '#fbbf24', '#fb7185'],
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 2,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    cutout: '65%',
+                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
+                }
+            });
+
+            /* DEPT */
+            destroyChart('dept');
+            const deptCounts = {};
+            data.forEach(i => {
+                const d = String(i.dept || 'LAINNYA').toUpperCase();
+                deptCounts[d] = (deptCounts[d] || 0) + 1;
+            });
+            const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            charts.dept = new Chart(document.getElementById('chartDept'), {
+                type: 'bar',
+                data: {
+                    labels: sortedDepts.map(d => d[0]),
+                    datasets: [{
+                        label: 'Jumlah Aset',
+                        data: sortedDepts.map(d => d[1]),
+                        backgroundColor: sortedDepts.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`),
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    plugins: { ...commonOpts.plugins, legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } }
+                    }
+                }
+            });
+
+            /* DEVICE */
+            destroyChart('device');
+            const devCounts = {};
+            data.forEach(i => {
+                const d = String(i.device || 'OTHER').toUpperCase();
+                devCounts[d] = (devCounts[d] || 0) + 1;
+            });
+            const devSorted = Object.entries(devCounts).sort((a, b) => b[1] - a[1]);
+            const palette = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee'];
+            charts.device = new Chart(document.getElementById('chartDevice'), {
+                type: 'pie',
+                data: {
+                    labels: devSorted.map(d => d[0]),
+                    datasets: [{
+                        data: devSorted.map(d => d[1]),
+                        backgroundColor: devSorted.map((_, i) => palette[i % palette.length]),
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
+                }
+            });
+
+            /* GROWTH */
+            destroyChart('growth');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const growth = {};
+            const now = new Date();
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                growth[key] = { label: `${monthNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 };
+            }
+            data.forEach(i => {
+                if (!i.created_at) return;
+                const d = new Date(i.created_at);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                if (growth[key]) growth[key].count++;
+            });
+            const growthArr = Object.values(growth);
+            const growthCtx = document.getElementById('chartGrowth').getContext('2d');
+            const gradient = growthCtx.createLinearGradient(0, 0, 0, 220);
+            gradient.addColorStop(0, 'rgba(129, 140, 248, 0.4)');
+            gradient.addColorStop(1, 'rgba(129, 140, 248, 0.02)');
+            charts.growth = new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: growthArr.map(g => g.label),
+                    datasets: [{
+                        label: 'Aset Baru',
+                        data: growthArr.map(g => g.count),
+                        borderColor: '#818cf8',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#818cf8',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    plugins: { ...commonOpts.plugins, legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } }
+                    }
+                }
+            });
+
+            /* LICENSE */
+            destroyChart('license');
+            const today = new Date();
+            const licCounts = { 'Active': 0, 'Expiring (30d)': 0, 'Expired': 0, 'No License': 0 };
+            data.forEach(i => {
+                if (!i.license_os && !i.license_office && !i.license_av) { licCounts['No License']++; return; }
+                if (!i.license_expiry) { licCounts['Active']++; return; }
+                const exp = new Date(i.license_expiry);
+                const days = Math.ceil((exp - today) / 86400000);
+                if (days < 0) licCounts['Expired']++;
+                else if (days <= 30) licCounts['Expiring (30d)']++;
+                else licCounts['Active']++;
+            });
+            charts.license = new Chart(document.getElementById('chartLicense'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(licCounts),
+                    datasets: [{
+                        data: Object.values(licCounts),
+                        backgroundColor: ['#34d399', '#fbbf24', '#fb7185', '#6b7280'],
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 2,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    cutout: '65%',
+                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
+                }
+            });
+        }
+
+        function renderGeneralCharts(data, commonOpts) {
+            /* JENIS */
+            destroyChart('status');
+            const jenisCounts = {};
+            data.forEach(i => {
+                const j = String(i.jenis_inventaris || 'Other');
+                jenisCounts[j] = (jenisCounts[j] || 0) + 1;
+            });
+            const jenisColors = ['#34d399', '#fbbf24', '#818cf8', '#fb7185', '#22d3ee'];
+            charts.status = new Chart(document.getElementById('chartStatus'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(jenisCounts),
+                    datasets: [{
+                        data: Object.values(jenisCounts),
+                        backgroundColor: Object.keys(jenisCounts).map((_, i) => jenisColors[i % jenisColors.length]),
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 2,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    cutout: '65%',
+                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
+                }
+            });
+
+            /* DEPT */
+            destroyChart('dept');
+            const deptCounts = {};
+            data.forEach(i => {
+                const d = String(i.department || 'LAINNYA').toUpperCase();
+                deptCounts[d] = (deptCounts[d] || 0) + 1;
+            });
+            const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            charts.dept = new Chart(document.getElementById('chartDept'), {
+                type: 'bar',
+                data: {
+                    labels: sortedDepts.map(d => d[0]),
+                    datasets: [{
+                        label: 'Jumlah Item',
+                        data: sortedDepts.map(d => d[1]),
+                        backgroundColor: sortedDepts.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`),
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    plugins: { ...commonOpts.plugins, legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } }
+                    }
+                }
+            });
+
+            /* QTY PER DEPT */
+            destroyChart('device');
+            const qtyPerDept = {};
+            data.forEach(i => {
+                const d = String(i.department || 'LAINNYA').toUpperCase();
+                qtyPerDept[d] = (qtyPerDept[d] || 0) + (parseInt(i.jumlah) || 1);
+            });
+            const qtySorted = Object.entries(qtyPerDept).sort((a, b) => b[1] - a[1]).slice(0, 6);
+            const palette2 = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee'];
+            charts.device = new Chart(document.getElementById('chartDevice'), {
+                type: 'pie',
+                data: {
+                    labels: qtySorted.map(d => d[0]),
+                    datasets: [{
+                        data: qtySorted.map(d => d[1]),
+                        backgroundColor: qtySorted.map((_, i) => palette2[i % palette2.length]),
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
+                }
+            });
+
+            /* GROWTH */
+            destroyChart('growth');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const growth = {};
+            const now = new Date();
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                growth[key] = { label: `${monthNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 };
+            }
+            data.forEach(i => {
+                if (!i.created_at) return;
+                const d = new Date(i.created_at);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                if (growth[key]) growth[key].count++;
+            });
+            const growthArr = Object.values(growth);
+            const growthCtx = document.getElementById('chartGrowth').getContext('2d');
+            const gradient = growthCtx.createLinearGradient(0, 0, 0, 220);
+            gradient.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
+            gradient.addColorStop(1, 'rgba(192, 132, 252, 0.02)');
+            charts.growth = new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: growthArr.map(g => g.label),
+                    datasets: [{
+                        label: 'Item Baru',
+                        data: growthArr.map(g => g.count),
+                        borderColor: '#c084fc',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#c084fc',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    plugins: { ...commonOpts.plugins, legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } }
+                    }
+                }
+            });
+
+            /* TOP 5 DEPT */
+            destroyChart('license');
+            const top5 = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            charts.license = new Chart(document.getElementById('chartLicense'), {
+                type: 'bar',
+                data: {
+                    labels: top5.map(d => d[0]),
+                    datasets: [{
+                        label: 'Jumlah Item',
+                        data: top5.map(d => d[1]),
+                        backgroundColor: ['#f472b6', '#c084fc', '#818cf8', '#22d3ee', '#34d399'],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    indexAxis: 'y',
+                    plugins: { ...commonOpts.plugins, legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        /* ============================================================
            FILTER
         ============================================================ */
         function toggleFilter(type) {
@@ -557,22 +963,22 @@
                     <div><label>Spesifikasi *</label><input type="text" id="it_specs" placeholder="Core i5 / 8GB" /></div>
                     <div><label>Status *</label><select id="it_status"><option>Active</option><option>Maintenance</option><option>Broken</option></select></div>
                     <div><label>IP Address</label><input type="text" id="it_ip" placeholder="192.168.1.10" /></div>
-                    <div><label>MAC Address</label><input type="text" id="it_mac" placeholder="AA:BB:CC:..." /></div>
+                    <div><label>MAC Address</label><input type="text" id="it_mac" /></div>
                     <div><label>Hostname</label><input type="text" id="it_host" /></div>
                     <div><label>License OS</label><input type="text" id="it_los" placeholder="Windows 11 Pro" /></div>
-                    <div><label>License Office</label><input type="text" id="it_loffice" placeholder="Office 2021" /></div>
-                    <div><label>License AV</label><input type="text" id="it_lav" placeholder="Kaspersky" /></div>
+                    <div><label>License Office</label><input type="text" id="it_loffice" /></div>
+                    <div><label>License AV</label><input type="text" id="it_lav" /></div>
                     <div><label>License Expiry</label><input type="date" id="it_lexp" /></div>
                     <div><label>Tanggal Beli</label><input type="date" id="it_pdate" /></div>
                     <div><label>Garansi Expiry</label><input type="date" id="it_wexp" /></div>
-                    <div><label>Monitor Brand</label><input type="text" id="it_mb" placeholder="LG" /></div>
-                    <div><label>Monitor Size</label><input type="text" id="it_ms" placeholder='24"' /></div>
+                    <div><label>Monitor Brand</label><input type="text" id="it_mb" /></div>
+                    <div><label>Monitor Size</label><input type="text" id="it_ms" /></div>
                     <div><label>Monitor Serial</label><input type="text" id="it_msn" /></div>
                     <div><label>Printer Brand</label><input type="text" id="it_pb" /></div>
                     <div><label>Printer Model</label><input type="text" id="it_pm" /></div>
                     <div><label>Printer Serial</label><input type="text" id="it_psn" /></div>
                     <div><label>Mouse Brand</label><input type="text" id="it_mob" /></div>
-                    <div><label>Mouse Type</label><input type="text" id="it_mot" placeholder="Wireless" /></div>
+                    <div><label>Mouse Type</label><input type="text" id="it_mot" /></div>
                     <div><label>Keyboard Brand</label><input type="text" id="it_kb" /></div>
                     <div><label>Keyboard Type</label><input type="text" id="it_kt" /></div>
                     <div class="form-section"><label>Notes</label><textarea id="it_notes" rows="2"></textarea></div>
@@ -592,8 +998,8 @@
                     <div><label>Keterangan</label><input type="text" id="gen_keterangan" /></div>
                     <div><label>Jenis</label><select id="gen_jenis"><option>Fixed Asset</option><option>Consumable</option></select></div>
                     <div><label>Department</label><input type="text" id="gen_dept" placeholder="HRGA" /></div>
-                    <div><label>Link/Nama Gambar</label><input type="text" id="gen_gambar" placeholder="https://... atau nama-file.jpg" /></div>
-                    <div><label>Lokasi</label><input type="text" id="gen_lokasi" placeholder="Ruang Administrasi" /></div>
+                    <div><label>Link/Nama Gambar</label><input type="text" id="gen_gambar" /></div>
+                    <div><label>Lokasi</label><input type="text" id="gen_lokasi" /></div>
                     <div class="form-section flex justify-end gap-2">
                         <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
                         <button type="button" onclick="saveGeneralAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl border-none">💾 Simpan</button>
@@ -610,33 +1016,15 @@
 
         async function saveITAsset() {
             const payload = {
-                id_aset: v('it_id'),
-                user: v('it_user') || '-',
-                dept: v('it_dept'),
-                device: v('it_device'),
-                specs: v('it_specs') || '-',
-                status: v('it_status') || 'Active',
-                ip_address: v('it_ip'),
-                mac_address: v('it_mac'),
-                hostname: v('it_host'),
-                license_os: v('it_los'),
-                license_office: v('it_loffice'),
-                license_av: v('it_lav'),
-                license_expiry: v('it_lexp') || null,
-                purchase_date: v('it_pdate') || null,
-                warranty_expiry: v('it_wexp') || null,
-                monitor_brand: v('it_mb'),
-                monitor_size: v('it_ms'),
-                monitor_serial: v('it_msn'),
-                printer_brand: v('it_pb'),
-                printer_model: v('it_pm'),
-                printer_serial: v('it_psn'),
-                mouse_brand: v('it_mob'),
-                mouse_type: v('it_mot'),
-                keyboard_brand: v('it_kb'),
-                keyboard_type: v('it_kt'),
-                notes: v('it_notes'),
-                deleted_at: null
+                id_aset: v('it_id'), user: v('it_user') || '-', dept: v('it_dept'),
+                device: v('it_device'), specs: v('it_specs') || '-', status: v('it_status') || 'Active',
+                ip_address: v('it_ip'), mac_address: v('it_mac'), hostname: v('it_host'),
+                license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
+                license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
+                monitor_brand: v('it_mb'), monitor_size: v('it_ms'), monitor_serial: v('it_msn'),
+                printer_brand: v('it_pb'), printer_model: v('it_pm'), printer_serial: v('it_psn'),
+                mouse_brand: v('it_mob'), mouse_type: v('it_mot'), keyboard_brand: v('it_kb'), keyboard_type: v('it_kt'),
+                notes: v('it_notes'), deleted_at: null
             };
             if (!payload.id_aset) { showToast('Error', 'ID Aset wajib diisi!', 'error'); return; }
             const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
@@ -646,17 +1034,11 @@
 
         async function saveGeneralAsset() {
             const payload = {
-                nama_material: v('gen_nama'),
-                nama_material_mandarin: v('gen_mandarin'),
-                spesifikasi: v('gen_specs'),
-                jumlah: parseInt(v('gen_jumlah')) || 1,
-                satuan: v('gen_satuan') || 'Buah',
-                keterangan: v('gen_keterangan'),
-                jenis_inventaris: v('gen_jenis'),
-                department: v('gen_dept'),
-                gambar: v('gen_gambar'),
-                lokasi: v('gen_lokasi'),
-                deleted_at: null
+                nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
+                spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
+                satuan: v('gen_satuan') || 'Buah', keterangan: v('gen_keterangan'),
+                jenis_inventaris: v('gen_jenis'), department: v('gen_dept'),
+                gambar: v('gen_gambar'), lokasi: v('gen_lokasi'), deleted_at: null
             };
             if (!payload.nama_material) { showToast('Error', 'Nama Material wajib diisi!', 'error'); return; }
             const { error } = await supabaseClient.from('general_assets').insert([payload]);
@@ -676,8 +1058,8 @@
             const form = document.getElementById('dynamicForm');
             const opt = (val, arr) => arr.map(x => `<option ${x === val ? 'selected' : ''}>${x}</option>`).join('');
             form.innerHTML = `
-                <div><label>ID Aset (readonly)</label><input type="text" id="it_id" value="${item.id_aset || ''}" readonly /></div>
-                <div><label>User *</label><input type="text" id="it_user" value="${item.user || ''}" /></div>
+                <div><label>ID Aset</label><input type="text" id="it_id" value="${item.id_aset || ''}" readonly /></div>
+                <div><label>User</label><input type="text" id="it_user" value="${item.user || ''}" /></div>
                 <div><label>Dept</label><input type="text" id="it_dept" value="${item.dept || ''}" /></div>
                 <div><label>Device</label><select id="it_device">${opt(item.device, ['KOMPUTER','LAPTOP','PRINTER','SERVER'])}</select></div>
                 <div><label>Spesifikasi</label><input type="text" id="it_specs" value="${item.specs || ''}" /></div>
@@ -690,7 +1072,7 @@
                 <div><label>License AV</label><input type="text" id="it_lav" value="${item.license_av || ''}" /></div>
                 <div><label>License Expiry</label><input type="date" id="it_lexp" value="${item.license_expiry || ''}" /></div>
                 <div><label>Tgl Beli</label><input type="date" id="it_pdate" value="${item.purchase_date || ''}" /></div>
-                <div><label>Garansi Expiry</label><input type="date" id="it_wexp" value="${item.warranty_expiry || ''}" /></div>
+                <div><label>Garansi</label><input type="date" id="it_wexp" value="${item.warranty_expiry || ''}" /></div>
                 <div><label>Monitor Brand</label><input type="text" id="it_mb" value="${item.monitor_brand || ''}" /></div>
                 <div><label>Monitor Size</label><input type="text" id="it_ms" value="${item.monitor_size || ''}" /></div>
                 <div><label>Monitor Serial</label><input type="text" id="it_msn" value="${item.monitor_serial || ''}" /></div>
@@ -735,7 +1117,6 @@
                 document.getElementById('it_user').value = item.user || '';
                 document.getElementById('it_dept').value = item.dept || '';
                 document.getElementById('it_specs').value = item.specs || '';
-                document.getElementById('it_ip').value = item.ip_address || '';
             }, 100);
             showToast('Clone', `Copy dari ${id_aset}. Edit ID & simpan.`, 'info');
         }
@@ -743,7 +1124,7 @@
         function transferITAsset(id_aset) {
             const item = rawData.find(x => String(x.id_aset) === String(id_aset));
             if (!item) return;
-            const newUser = prompt(`Transfer aset ${id_aset}\nUser lama: ${item.user}\n\nMasukkan user baru:`, item.user);
+            const newUser = prompt(`Transfer ${id_aset}\nUser lama: ${item.user}\n\nUser baru:`, item.user);
             if (!newUser) return;
             const newDept = prompt(`Dept baru (lama: ${item.dept}):`, item.dept);
             if (!newDept) return;
@@ -866,8 +1247,7 @@
                     monitor_brand: 'LG', monitor_size: '24"', monitor_serial: 'MON123',
                     printer_brand: '', printer_model: '', printer_serial: '',
                     mouse_brand: 'Logitech', mouse_type: 'Wireless',
-                    keyboard_brand: 'Logitech', keyboard_type: 'Mechanical',
-                    notes: ''
+                    keyboard_brand: 'Logitech', keyboard_type: 'Mechanical', notes: ''
                 }];
                 const ws = XLSX.utils.json_to_sheet(sample);
                 const wb = XLSX.utils.book_new();
@@ -974,11 +1354,7 @@
             };
             const toDate = (s) => {
                 if (!s) return null;
-                try {
-                    const d = new Date(s);
-                    if (isNaN(d)) return null;
-                    return d.toISOString().split('T')[0];
-                } catch { return null; }
+                try { const d = new Date(s); if (isNaN(d)) return null; return d.toISOString().split('T')[0]; } catch { return null; }
             };
 
             for (let i = 0; i < importData.length; i++) {
@@ -988,48 +1364,48 @@
 
                 if (activeModule === 'it') {
                     payload = {
-                        id_aset:         pick(item, 'id_aset', 'id', 'idaset', 'id_asset'),
-                        user:            pick(item, 'user', 'nama_user', 'pengguna') || '-',
-                        dept:            pick(item, 'dept', 'department', 'departemen'),
-                        device:          (pick(item, 'device', 'perangkat') || 'KOMPUTER').toUpperCase(),
-                        specs:           pick(item, 'specs', 'spesifikasi', 'spec') || '-',
-                        status:          pick(item, 'status') || 'Active',
-                        ip_address:      pick(item, 'ip_address', 'ip', 'ipaddress'),
-                        mac_address:     pick(item, 'mac_address', 'mac'),
-                        hostname:        pick(item, 'hostname', 'host'),
-                        license_os:      pick(item, 'license_os', 'os'),
-                        license_office:  pick(item, 'license_office', 'office'),
-                        license_av:      pick(item, 'license_av', 'antivirus', 'av'),
-                        license_expiry:  toDate(pick(item, 'license_expiry', 'license_exp', 'expiry')),
-                        purchase_date:   toDate(pick(item, 'purchase_date', 'tgl_beli')),
+                        id_aset: pick(item, 'id_aset', 'id', 'idaset', 'id_asset'),
+                        user: pick(item, 'user', 'nama_user', 'pengguna') || '-',
+                        dept: pick(item, 'dept', 'department', 'departemen'),
+                        device: (pick(item, 'device', 'perangkat') || 'KOMPUTER').toUpperCase(),
+                        specs: pick(item, 'specs', 'spesifikasi', 'spec') || '-',
+                        status: pick(item, 'status') || 'Active',
+                        ip_address: pick(item, 'ip_address', 'ip', 'ipaddress'),
+                        mac_address: pick(item, 'mac_address', 'mac'),
+                        hostname: pick(item, 'hostname', 'host'),
+                        license_os: pick(item, 'license_os', 'os'),
+                        license_office: pick(item, 'license_office', 'office'),
+                        license_av: pick(item, 'license_av', 'antivirus', 'av'),
+                        license_expiry: toDate(pick(item, 'license_expiry', 'license_exp', 'expiry')),
+                        purchase_date: toDate(pick(item, 'purchase_date', 'tgl_beli')),
                         warranty_expiry: toDate(pick(item, 'warranty_expiry', 'garansi')),
-                        monitor_brand:   pick(item, 'monitor_brand'),
-                        monitor_size:    pick(item, 'monitor_size'),
-                        monitor_serial:  pick(item, 'monitor_serial'),
-                        printer_brand:   pick(item, 'printer_brand'),
-                        printer_model:   pick(item, 'printer_model'),
-                        printer_serial:  pick(item, 'printer_serial'),
-                        mouse_brand:     pick(item, 'mouse_brand'),
-                        mouse_type:      pick(item, 'mouse_type'),
-                        keyboard_brand:  pick(item, 'keyboard_brand'),
-                        keyboard_type:   pick(item, 'keyboard_type'),
-                        notes:           pick(item, 'notes', 'keterangan', 'catatan'),
-                        deleted_at:      null
+                        monitor_brand: pick(item, 'monitor_brand'),
+                        monitor_size: pick(item, 'monitor_size'),
+                        monitor_serial: pick(item, 'monitor_serial'),
+                        printer_brand: pick(item, 'printer_brand'),
+                        printer_model: pick(item, 'printer_model'),
+                        printer_serial: pick(item, 'printer_serial'),
+                        mouse_brand: pick(item, 'mouse_brand'),
+                        mouse_type: pick(item, 'mouse_type'),
+                        keyboard_brand: pick(item, 'keyboard_brand'),
+                        keyboard_type: pick(item, 'keyboard_type'),
+                        notes: pick(item, 'notes', 'keterangan', 'catatan'),
+                        deleted_at: null
                     };
                     if (!payload.id_aset) { skipped++; console.warn(`⏭️ Baris ${rowNum}: id_aset kosong`); continue; }
                 } else {
                     payload = {
-                        nama_material:          pick(item, 'nama_material', 'nama', 'material'),
+                        nama_material: pick(item, 'nama_material', 'nama', 'material'),
                         nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称', 'mandarin'),
-                        spesifikasi:            pick(item, 'spesifikasi', 'specs', 'spec'),
-                        jumlah:                 parseInt(pick(item, 'jumlah', 'qty')) || 1,
-                        satuan:                 pick(item, 'satuan', 'unit') || 'Buah',
-                        keterangan:             pick(item, 'keterangan', 'notes'),
-                        jenis_inventaris:       pick(item, 'jenis_inventaris', 'jenis', 'type') || 'Fixed Asset',
-                        department:             pick(item, 'department', 'dept'),
-                        gambar:                 pick(item, 'gambar', 'image', 'foto'),
-                        lokasi:                 pick(item, 'lokasi', 'location'),
-                        deleted_at:             null
+                        spesifikasi: pick(item, 'spesifikasi', 'specs', 'spec'),
+                        jumlah: parseInt(pick(item, 'jumlah', 'qty')) || 1,
+                        satuan: pick(item, 'satuan', 'unit') || 'Buah',
+                        keterangan: pick(item, 'keterangan', 'notes'),
+                        jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis', 'type') || 'Fixed Asset',
+                        department: pick(item, 'department', 'dept'),
+                        gambar: pick(item, 'gambar', 'image', 'foto'),
+                        lokasi: pick(item, 'lokasi', 'location'),
+                        deleted_at: null
                     };
                     const n = String(payload.nama_material || '').toLowerCase();
                     if (!payload.nama_material || n === 'no' || n === 'nama material') { skipped++; continue; }
@@ -1110,7 +1486,6 @@
                 });
         }
 
-        // ✅ PRINT QR SINGLE IT ASSET (LABEL)
         function printQR(id_aset) {
             const item = rawData.find(x => String(x.id_aset) === String(id_aset));
             if (!item) return;
@@ -1143,7 +1518,6 @@
             w.document.close();
         }
 
-        // ✅ PRINT SEMUA LABEL (IT: Grid QR / General: Tabel)
         function printAllLabels() {
             if (activeModule === 'it') {
                 const data = applyFilters(rawData).filter(i => i.id_aset);
@@ -1164,12 +1538,8 @@
                         ${data.map(i => `<div class="label"><h3>${i.id_aset}</h3><p>${i.user || ''}</p><p>${i.dept || ''}</p><canvas data-id="${i.id_aset}"></canvas></div>`).join('')}
                     </div>
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
-                    <script>
-                        document.querySelectorAll('canvas[data-id]').forEach(c => {
-                            new QRious({ element: c, value: c.dataset.id, size: 100 });
-                        });
-                        setTimeout(() => window.print(), 800);
-                    <\/script></body></html>
+                    <script>document.querySelectorAll('canvas[data-id]').forEach(c => { new QRious({ element: c, value: c.dataset.id, size: 100 }); }); setTimeout(() => window.print(), 800);<\/script>
+                    </body></html>
                 `);
                 w.document.close();
             } else {
@@ -1186,44 +1556,16 @@
                         th { background: #4f46e5; color: white; padding: 8px; text-align: left; }
                         td { padding: 6px 8px; border-bottom: 1px solid #ddd; }
                         tr:nth-child(even) { background: #f9f9f9; }
-                        .jenis { padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 600; }
-                        .fixed { background: #d1fae5; color: #065f46; }
-                        .consumable { background: #fef3c7; color: #92400e; }
                         @media print { @page { size: A4 landscape; margin: 10mm; } }
                     </style></head><body>
                     <h1>📋 Daftar Aset PT Magicase Group Indonesia</h1>
-                    <h3>Tanggal Cetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} | Total: ${data.length} item</h3>
+                    <h3>Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')} | Total: ${data.length} item</h3>
                     <table>
-                        <thead><tr>
-                            <th style="width:30px">No</th>
-                            <th>Nama Material</th>
-                            <th>材料名称</th>
-                            <th>Spesifikasi</th>
-                            <th style="width:50px">Jumlah</th>
-                            <th style="width:50px">Satuan</th>
-                            <th>Jenis</th>
-                            <th>Department</th>
-                            <th>Lokasi</th>
-                            <th>Keterangan</th>
-                        </tr></thead>
+                        <thead><tr><th>No</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Lokasi</th><th>Keterangan</th></tr></thead>
                         <tbody>
-                            ${data.map((i, idx) => `<tr>
-                                <td>${idx + 1}</td>
-                                <td><b>${i.nama_material || '-'}</b></td>
-                                <td>${i.nama_material_mandarin || '-'}</td>
-                                <td>${i.spesifikasi || '-'}</td>
-                                <td style="text-align:center">${i.jumlah || 1}</td>
-                                <td>${i.satuan || 'Buah'}</td>
-                                <td><span class="jenis ${(i.jenis_inventaris || '').toLowerCase().includes('fixed') ? 'fixed' : 'consumable'}">${i.jenis_inventaris || 'Fixed Asset'}</span></td>
-                                <td>${i.department || '-'}</td>
-                                <td>${i.lokasi || '-'}</td>
-                                <td>${i.keterangan || '-'}</td>
-                            </tr>`).join('')}
+                            ${data.map((i, idx) => `<tr><td>${idx + 1}</td><td><b>${i.nama_material || '-'}</b></td><td>${i.nama_material_mandarin || '-'}</td><td>${i.spesifikasi || '-'}</td><td style="text-align:center">${i.jumlah || 1}</td><td>${i.satuan || 'Buah'}</td><td>${i.jenis_inventaris || 'Fixed Asset'}</td><td>${i.department || '-'}</td><td>${i.lokasi || '-'}</td><td>${i.keterangan || '-'}</td></tr>`).join('')}
                         </tbody>
                     </table>
-                    <div style="text-align:center;margin-top:20px;font-size:10px;color:#999;">
-                        Enterprise Asset Manager - ${currentPTName}
-                    </div>
                     <script>setTimeout(() => window.print(), 500);<\/script>
                     </body></html>
                 `);
@@ -1232,7 +1574,6 @@
             }
         }
 
-        // ✅ PRINT SINGLE GENERAL ASSET (Kartu)
         function printSingleGeneral(id) {
             const item = rawData.find(x => String(x.id) === String(id));
             if (!item) return;
@@ -1250,31 +1591,23 @@
                     .card { border: 2px solid #4f46e5; border-radius: 12px; padding: 25px; max-width: 500px; margin: 20px auto; }
                     .header { background: #4f46e5; color: white; padding: 15px; margin: -25px -25px 20px -25px; border-radius: 10px 10px 0 0; text-align: center; }
                     .header h1 { margin: 0; font-size: 20px; }
-                    .header p { margin: 5px 0 0; font-size: 12px; opacity: 0.9; }
-                    .info { font-size: 13px; }
-                    .info .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+                    .info .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; }
                     .info .row span:first-child { color: #666; }
                     .info .row span:last-child { font-weight: 600; color: #333; }
-                    .footer { text-align: center; margin-top: 20px; font-size: 10px; color: #999; }
                 </style></head><body>
                 <div class="card">
-                    <div class="header">
-                        <h1>📋 KARTU ASET</h1>
-                        <p>PT Magicase Group Indonesia</p>
-                    </div>
+                    <div class="header"><h1>📋 KARTU ASET</h1><p>PT Magicase Group Indonesia</p></div>
                     <div class="info">
                         <div class="row"><span>Nama Material</span><span>${item.nama_material || '-'}</span></div>
                         <div class="row"><span>材料名称</span><span>${item.nama_material_mandarin || '-'}</span></div>
                         <div class="row"><span>Spesifikasi</span><span>${item.spesifikasi || '-'}</span></div>
                         <div class="row"><span>Jumlah</span><span>${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
-                        <div class="row"><span>Jenis Inventaris</span><span>${item.jenis_inventaris || 'Fixed Asset'}</span></div>
+                        <div class="row"><span>Jenis</span><span>${item.jenis_inventaris || 'Fixed Asset'}</span></div>
                         <div class="row"><span>Department</span><span>${item.department || '-'}</span></div>
                         <div class="row"><span>Lokasi</span><span>${item.lokasi || '-'}</span></div>
                         <div class="row"><span>Keterangan</span><span>${item.keterangan || '-'}</span></div>
-                        <div class="row"><span>Tanggal Cetak</span><span>${new Date().toLocaleDateString('id-ID')}</span></div>
                     </div>
                     ${imgHtml}
-                    <div class="footer">Enterprise Asset Manager</div>
                 </div>
                 <script>setTimeout(() => window.print(), 500);<\/script>
                 </body></html>
