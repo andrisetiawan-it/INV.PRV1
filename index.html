@@ -22,7 +22,12 @@
         .bg-animated { background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px 12px; transition: all 0.3s ease; cursor: pointer; text-align: center; }
-        .stat-card:hover { transform: scale(1.03); border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.05); }
+        .stat-card:hover { transform: scale(1.05); border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.08); }
+        .stat-card.new-dept { animation: newDeptPulse 2s ease-in-out 1; }
+        @keyframes newDeptPulse {
+            0%, 100% { border-color: rgba(255,255,255,0.06); }
+            50% { border-color: #34d399; box-shadow: 0 0 20px rgba(52, 211, 153, 0.5); }
+        }
         .stat-count { font-size: 1.5rem; font-weight: 800; color: #818cf8; }
         .stat-label { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
         .table-wrapper { max-height: 60vh; overflow: auto; border-radius: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); }
@@ -71,6 +76,8 @@
         .filter-btn.active { background: rgba(129, 140, 248, 0.2); border-color: #818cf8; color: #818cf8; }
         .chart-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; transition: all 0.3s ease; }
         .chart-card:hover { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 8px 24px rgba(99, 102, 241, 0.1); }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: livePulse 2s ease-in-out infinite; }
+        @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         @media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
         @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -166,9 +173,10 @@
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2 text-sm">
-                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    <span class="text-gray-300">Connected</span>
+                    <div class="live-dot"></div>
+                    <span class="text-gray-300" id="connectionStatus">Live</span>
                 </div>
+                <button onclick="manualRefresh()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Refresh manual">🔄</button>
                 <button onclick="handleLogout()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">Logout</button>
             </div>
         </nav>
@@ -318,6 +326,9 @@
         let importData = [];
         let html5QrcodeScanner = null;
         let activeFilter = null;
+        let realtimeChannel = null;
+        let autoRefreshTimer = null;
+        let knownDepts = new Set();
         const charts = { status: null, dept: null, device: null, growth: null, license: null };
 
         /* ============================================================
@@ -361,7 +372,12 @@
             else { err.classList.add('hidden'); checkUser(); }
         }
 
-        async function handleLogout() { await supabaseClient.auth.signOut(); window.location.reload(); }
+        async function handleLogout() {
+            if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+            if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
 
         function setPT(table, name) {
             currentPTTable = table;
@@ -371,6 +387,8 @@
             document.getElementById('main-content').classList.remove('hidden');
             loadData();
             initScanner();
+            setupRealtime(table);
+            setupAutoRefresh();
         }
 
         function switchModule(module) {
@@ -381,30 +399,120 @@
             document.getElementById('scannerSection').style.display = module === 'it' ? 'block' : 'none';
             document.getElementById('deptSummarySection').style.display = module === 'it' ? 'block' : 'none';
             activeFilter = null;
+            knownDepts = new Set();
             updateFilterButtons();
+            // Realtime & auto-refresh switch ke table baru
+            const table = module === 'it' ? currentPTTable : 'general_assets';
+            setupRealtime(table);
             loadData();
         }
 
         /* ============================================================
-           LOAD & RENDER
+           REFRESH ALL — Auto-sync semua komponen
         ============================================================ */
-        async function loadData() {
+        async function refreshAll(silent = false) {
             const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
             try {
                 const { data, error } = await supabaseClient.from(tableName).select('*').is('deleted_at', null);
                 if (error) throw error;
+                
+                const oldCount = rawData.length;
                 rawData = data || [];
-                console.log(`📦 Loaded ${rawData.length} rows from ${tableName}`);
-                renderTable(rawData);
+                
+                // Detect dept baru
+                const currentDepts = new Set(
+                    rawData.map(x => (x.dept || x.department || 'N/A').toUpperCase().trim()).filter(Boolean)
+                );
+                const newDepts = [...currentDepts].filter(d => !knownDepts.has(d));
+                
+                if (newDepts.length > 0 && knownDepts.size > 0) {
+                    console.log('🆕 Dept baru terdeteksi:', newDepts);
+                    if (!silent) showToast('Dept Baru!', `${newDepts.join(', ')} telah ditambahkan`, 'success');
+                    newDepts.forEach(d => {
+                        const el = document.querySelector(`[data-dept="${d}"]`);
+                        if (el) el.classList.add('new-dept');
+                    });
+                }
+                knownDepts = currentDepts;
+                
+                console.log(`🔄 Refresh: ${rawData.length} rows | Depts: ${[...currentDepts].join(', ')}`);
+                
+                // Update SEMUA komponen
                 updateStats(rawData);
-                renderCharts(rawData);
                 if (activeModule === 'it') renderDeptSummary(rawData);
+                renderCharts(rawData);
+                renderTable(rawData);
+                
+                updateLastRefresh();
+                
+                if (!silent && oldCount !== rawData.length) {
+                    console.log(`✅ Data berubah: ${oldCount} → ${rawData.length}`);
+                }
             } catch (err) {
-                console.error(err);
-                showToast('Error', 'Gagal memuat data: ' + err.message, 'error');
+                console.error('❌ Refresh error:', err);
+                if (!silent) showToast('Error', 'Gagal refresh data: ' + err.message, 'error');
             }
         }
 
+        async function loadData() {
+            await refreshAll(true);
+        }
+
+        function manualRefresh() {
+            showToast('Refresh', 'Memuat ulang data...', 'info');
+            refreshAll();
+        }
+
+        function updateLastRefresh() {
+            const status = document.getElementById('connectionStatus');
+            if (status) status.innerText = 'Live';
+        }
+
+        /* ============================================================
+           REALTIME + AUTO-REFRESH
+        ============================================================ */
+        function setupRealtime(table) {
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+                realtimeChannel = null;
+            }
+            console.log(`🔌 Realtime subscribe: ${table}`);
+            try {
+                realtimeChannel = supabaseClient
+                    .channel(`public:${table}`)
+                    .on('postgres_changes', 
+                        { event: '*', schema: 'public', table: table }, 
+                        (payload) => {
+                            console.log('🔔 Realtime event:', payload.eventType, payload);
+                            const status = document.getElementById('connectionStatus');
+                            if (status) status.innerText = '⚡ Update...';
+                            setTimeout(() => {
+                                refreshAll(true);
+                                if (status) status.innerText = 'Live';
+                            }, 300);
+                        }
+                    )
+                    .subscribe((status) => {
+                        console.log('📡 Realtime status:', status);
+                    });
+            } catch (err) {
+                console.warn('Realtime error:', err);
+            }
+        }
+
+        function setupAutoRefresh() {
+            if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+            // Backup: auto-refresh tiap 10 detik kalau realtime gagal
+            autoRefreshTimer = setInterval(() => {
+                if (document.getElementById('main-content').classList.contains('hidden')) return;
+                console.log('⏰ Auto-refresh tick');
+                refreshAll(true);
+            }, 10000);
+        }
+
+        /* ============================================================
+           FILTER & SEARCH
+        ============================================================ */
         function applyFilters(data) {
             let filtered = data;
             if (activeFilter === 'expired') {
@@ -422,6 +530,9 @@
             return filtered;
         }
 
+        /* ============================================================
+           RENDER TABLE
+        ============================================================ */
         function renderTable(data) {
             const thead = document.getElementById('tableHead');
             const tbody = document.getElementById('tableBody');
@@ -543,13 +654,13 @@
         function renderDeptSummary(data) {
             const counts = {};
             data.forEach(i => {
-                const d = (i.dept || 'LAINNYA').toUpperCase();
+                const d = (i.dept || 'LAINNYA').toUpperCase().trim();
                 counts[d] = (counts[d] || 0) + 1;
             });
             const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
             const grid = document.getElementById('deptSummaryGrid');
             grid.innerHTML = sorted.map(([dept, count]) => `
-                <div class="stat-card" onclick="filterByDept('${dept}')">
+                <div class="stat-card" data-dept="${dept}" onclick="filterByDept('${dept}')">
                     <div class="stat-label">${dept}</div>
                     <div class="stat-count">${count}</div>
                 </div>
@@ -563,17 +674,23 @@
         }
 
         /* ============================================================
-           CHARTS
+           CHARTS — Auto sync
         ============================================================ */
-        function destroyChart(key) {
-            if (charts[key]) { charts[key].destroy(); charts[key] = null; }
-        }
-
         function renderCharts(data) {
+            console.log(`📊 Render charts: ${data.length} rows`);
+            
+            // Destroy semua chart lama
+            Object.keys(charts).forEach(key => {
+                if (charts[key]) {
+                    try { charts[key].destroy(); } catch(e) { console.warn('Destroy err:', e); }
+                    charts[key] = null;
+                }
+            });
+            
             const commonOpts = {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 800, easing: 'easeOutQuart' },
+                animation: { duration: 600, easing: 'easeOutQuart' },
                 plugins: {
                     legend: {
                         labels: { color: '#9ca3af', font: { size: 11, family: 'Inter' }, padding: 10, boxWidth: 12, boxHeight: 12 }
@@ -585,348 +702,206 @@
                         titleColor: '#fff',
                         bodyColor: '#e5e7eb',
                         padding: 12,
-                        cornerRadius: 8,
-                        titleFont: { size: 12, weight: '600' },
-                        bodyFont: { size: 11 }
+                        cornerRadius: 8
                     }
                 }
             };
+            
             if (activeModule === 'it') renderITCharts(data, commonOpts);
             else renderGeneralCharts(data, commonOpts);
         }
 
         function renderITCharts(data, commonOpts) {
             /* STATUS */
-            destroyChart('status');
-            const statusCounts = { Active: 0, Maintenance: 0, Broken: 0 };
-            data.forEach(i => {
-                const s = String(i.status || 'Active');
-                if (statusCounts[s] !== undefined) statusCounts[s]++;
-                else statusCounts.Active++;
-            });
-            charts.status = new Chart(document.getElementById('chartStatus'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Active', 'Maintenance', 'Broken'],
-                    datasets: [{
-                        data: [statusCounts.Active, statusCounts.Maintenance, statusCounts.Broken],
-                        backgroundColor: ['#34d399', '#fbbf24', '#fb7185'],
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 2,
-                        hoverOffset: 8
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    cutout: '65%',
-                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
-                }
-            });
-
-            /* DEPT */
-            destroyChart('dept');
-            const deptCounts = {};
-            data.forEach(i => {
-                const d = String(i.dept || 'LAINNYA').toUpperCase();
-                deptCounts[d] = (deptCounts[d] || 0) + 1;
-            });
-            const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
-            charts.dept = new Chart(document.getElementById('chartDept'), {
-                type: 'bar',
-                data: {
-                    labels: sortedDepts.map(d => d[0]),
-                    datasets: [{
-                        label: 'Jumlah Aset',
-                        data: sortedDepts.map(d => d[1]),
-                        backgroundColor: sortedDepts.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`),
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    plugins: { ...commonOpts.plugins, legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } }
-                    }
-                }
-            });
-
-            /* DEVICE */
-            destroyChart('device');
-            const devCounts = {};
-            data.forEach(i => {
-                const d = String(i.device || 'OTHER').toUpperCase();
-                devCounts[d] = (devCounts[d] || 0) + 1;
-            });
-            const devSorted = Object.entries(devCounts).sort((a, b) => b[1] - a[1]);
-            const palette = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee'];
-            charts.device = new Chart(document.getElementById('chartDevice'), {
-                type: 'pie',
-                data: {
-                    labels: devSorted.map(d => d[0]),
-                    datasets: [{
-                        data: devSorted.map(d => d[1]),
-                        backgroundColor: devSorted.map((_, i) => palette[i % palette.length]),
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 2,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
-                }
-            });
-
-            /* GROWTH */
-            destroyChart('growth');
-            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            const growth = {};
-            const now = new Date();
-            for (let i = 11; i >= 0; i--) {
-                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                growth[key] = { label: `${monthNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 };
+            const cStatus = document.getElementById('chartStatus');
+            if (cStatus) {
+                const sc = { Active: 0, Maintenance: 0, Broken: 0 };
+                data.forEach(i => {
+                    const s = String(i.status || 'Active');
+                    if (sc[s] !== undefined) sc[s]++; else sc.Active++;
+                });
+                charts.status = new Chart(cStatus, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Active', 'Maintenance', 'Broken'],
+                        datasets: [{ data: [sc.Active, sc.Maintenance, sc.Broken], backgroundColor: ['#34d399', '#fbbf24', '#fb7185'], borderWidth: 2, hoverOffset: 8 }]
+                    },
+                    options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } }
+                });
             }
-            data.forEach(i => {
-                if (!i.created_at) return;
-                const d = new Date(i.created_at);
-                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                if (growth[key]) growth[key].count++;
-            });
-            const growthArr = Object.values(growth);
-            const growthCtx = document.getElementById('chartGrowth').getContext('2d');
-            const gradient = growthCtx.createLinearGradient(0, 0, 0, 220);
-            gradient.addColorStop(0, 'rgba(129, 140, 248, 0.4)');
-            gradient.addColorStop(1, 'rgba(129, 140, 248, 0.02)');
-            charts.growth = new Chart(growthCtx, {
-                type: 'line',
-                data: {
-                    labels: growthArr.map(g => g.label),
-                    datasets: [{
-                        label: 'Aset Baru',
-                        data: growthArr.map(g => g.count),
-                        borderColor: '#818cf8',
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#818cf8',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    plugins: { ...commonOpts.plugins, legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } }
-                    }
+            
+            /* DEPT */
+            const cDept = document.getElementById('chartDept');
+            if (cDept) {
+                const dc = {};
+                data.forEach(i => {
+                    const d = String(i.dept || 'LAINNYA').toUpperCase().trim();
+                    dc[d] = (dc[d] || 0) + 1;
+                });
+                console.log('📊 IT Dept counts:', dc);
+                const sd = Object.entries(dc).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                charts.dept = new Chart(cDept, {
+                    type: 'bar',
+                    data: {
+                        labels: sd.map(d => d[0]),
+                        datasets: [{ label: 'Jumlah', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }]
+                    },
+                    options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } }
+                });
+            }
+            
+            /* DEVICE */
+            const cDevice = document.getElementById('chartDevice');
+            if (cDevice) {
+                const devC = {};
+                data.forEach(i => { const d = String(i.device || 'OTHER').toUpperCase(); devC[d] = (devC[d] || 0) + 1; });
+                const devS = Object.entries(devC).sort((a, b) => b[1] - a[1]);
+                const pal = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee'];
+                charts.device = new Chart(cDevice, {
+                    type: 'pie',
+                    data: { labels: devS.map(d => d[0]), datasets: [{ data: devS.map(d => d[1]), backgroundColor: devS.map((_, i) => pal[i % pal.length]), borderWidth: 2, hoverOffset: 10 }] },
+                    options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } }
+                });
+            }
+            
+            /* GROWTH */
+            const cGrowth = document.getElementById('chartGrowth');
+            if (cGrowth) {
+                const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                const growth = {};
+                const now = new Date();
+                for (let i = 11; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    growth[key] = { label: `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 };
                 }
-            });
-
+                data.forEach(i => {
+                    if (!i.created_at) return;
+                    const d = new Date(i.created_at);
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    if (growth[key]) growth[key].count++;
+                });
+                const ga = Object.values(growth);
+                const ctx = cGrowth.getContext('2d');
+                const grad = ctx.createLinearGradient(0, 0, 0, 220);
+                grad.addColorStop(0, 'rgba(129, 140, 248, 0.4)');
+                grad.addColorStop(1, 'rgba(129, 140, 248, 0.02)');
+                charts.growth = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: ga.map(g => g.label), datasets: [{ label: 'Aset Baru', data: ga.map(g => g.count), borderColor: '#818cf8', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#818cf8', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 8 }] },
+                    options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } }
+                });
+            }
+            
             /* LICENSE */
-            destroyChart('license');
-            const today = new Date();
-            const licCounts = { 'Active': 0, 'Expiring (30d)': 0, 'Expired': 0, 'No License': 0 };
-            data.forEach(i => {
-                if (!i.license_os && !i.license_office && !i.license_av) { licCounts['No License']++; return; }
-                if (!i.license_expiry) { licCounts['Active']++; return; }
-                const exp = new Date(i.license_expiry);
-                const days = Math.ceil((exp - today) / 86400000);
-                if (days < 0) licCounts['Expired']++;
-                else if (days <= 30) licCounts['Expiring (30d)']++;
-                else licCounts['Active']++;
-            });
-            charts.license = new Chart(document.getElementById('chartLicense'), {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(licCounts),
-                    datasets: [{
-                        data: Object.values(licCounts),
-                        backgroundColor: ['#34d399', '#fbbf24', '#fb7185', '#6b7280'],
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 2,
-                        hoverOffset: 8
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    cutout: '65%',
-                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
-                }
-            });
+            const cLic = document.getElementById('chartLicense');
+            if (cLic) {
+                const today = new Date();
+                const lc = { 'Active': 0, 'Expiring (30d)': 0, 'Expired': 0, 'No License': 0 };
+                data.forEach(i => {
+                    if (!i.license_os && !i.license_office && !i.license_av) { lc['No License']++; return; }
+                    if (!i.license_expiry) { lc['Active']++; return; }
+                    const exp = new Date(i.license_expiry);
+                    const days = Math.ceil((exp - today) / 86400000);
+                    if (days < 0) lc['Expired']++;
+                    else if (days <= 30) lc['Expiring (30d)']++;
+                    else lc['Active']++;
+                });
+                charts.license = new Chart(cLic, {
+                    type: 'doughnut',
+                    data: { labels: Object.keys(lc), datasets: [{ data: Object.values(lc), backgroundColor: ['#34d399', '#fbbf24', '#fb7185', '#6b7280'], borderWidth: 2, hoverOffset: 8 }] },
+                    options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } }
+                });
+            }
         }
 
         function renderGeneralCharts(data, commonOpts) {
             /* JENIS */
-            destroyChart('status');
-            const jenisCounts = {};
-            data.forEach(i => {
-                const j = String(i.jenis_inventaris || 'Other');
-                jenisCounts[j] = (jenisCounts[j] || 0) + 1;
-            });
-            const jenisColors = ['#34d399', '#fbbf24', '#818cf8', '#fb7185', '#22d3ee'];
-            charts.status = new Chart(document.getElementById('chartStatus'), {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(jenisCounts),
-                    datasets: [{
-                        data: Object.values(jenisCounts),
-                        backgroundColor: Object.keys(jenisCounts).map((_, i) => jenisColors[i % jenisColors.length]),
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 2,
-                        hoverOffset: 8
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    cutout: '65%',
-                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
-                }
-            });
-
-            /* DEPT */
-            destroyChart('dept');
-            const deptCounts = {};
-            data.forEach(i => {
-                const d = String(i.department || 'LAINNYA').toUpperCase();
-                deptCounts[d] = (deptCounts[d] || 0) + 1;
-            });
-            const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
-            charts.dept = new Chart(document.getElementById('chartDept'), {
-                type: 'bar',
-                data: {
-                    labels: sortedDepts.map(d => d[0]),
-                    datasets: [{
-                        label: 'Jumlah Item',
-                        data: sortedDepts.map(d => d[1]),
-                        backgroundColor: sortedDepts.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`),
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    plugins: { ...commonOpts.plugins, legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } }
-                    }
-                }
-            });
-
-            /* QTY PER DEPT */
-            destroyChart('device');
-            const qtyPerDept = {};
-            data.forEach(i => {
-                const d = String(i.department || 'LAINNYA').toUpperCase();
-                qtyPerDept[d] = (qtyPerDept[d] || 0) + (parseInt(i.jumlah) || 1);
-            });
-            const qtySorted = Object.entries(qtyPerDept).sort((a, b) => b[1] - a[1]).slice(0, 6);
-            const palette2 = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee'];
-            charts.device = new Chart(document.getElementById('chartDevice'), {
-                type: 'pie',
-                data: {
-                    labels: qtySorted.map(d => d[0]),
-                    datasets: [{
-                        data: qtySorted.map(d => d[1]),
-                        backgroundColor: qtySorted.map((_, i) => palette2[i % palette2.length]),
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 2,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } }
-                }
-            });
-
-            /* GROWTH */
-            destroyChart('growth');
-            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            const growth = {};
-            const now = new Date();
-            for (let i = 11; i >= 0; i--) {
-                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                growth[key] = { label: `${monthNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 };
+            const cStatus = document.getElementById('chartStatus');
+            if (cStatus) {
+                const jc = {};
+                data.forEach(i => { const j = String(i.jenis_inventaris || 'Other'); jc[j] = (jc[j] || 0) + 1; });
+                const jcolors = ['#34d399', '#fbbf24', '#818cf8', '#fb7185', '#22d3ee'];
+                charts.status = new Chart(cStatus, {
+                    type: 'doughnut',
+                    data: { labels: Object.keys(jc), datasets: [{ data: Object.values(jc), backgroundColor: Object.keys(jc).map((_, i) => jcolors[i % jcolors.length]), borderWidth: 2, hoverOffset: 8 }] },
+                    options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } }
+                });
             }
-            data.forEach(i => {
-                if (!i.created_at) return;
-                const d = new Date(i.created_at);
-                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                if (growth[key]) growth[key].count++;
-            });
-            const growthArr = Object.values(growth);
-            const growthCtx = document.getElementById('chartGrowth').getContext('2d');
-            const gradient = growthCtx.createLinearGradient(0, 0, 0, 220);
-            gradient.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
-            gradient.addColorStop(1, 'rgba(192, 132, 252, 0.02)');
-            charts.growth = new Chart(growthCtx, {
-                type: 'line',
-                data: {
-                    labels: growthArr.map(g => g.label),
-                    datasets: [{
-                        label: 'Item Baru',
-                        data: growthArr.map(g => g.count),
-                        borderColor: '#c084fc',
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#c084fc',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    plugins: { ...commonOpts.plugins, legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } }
-                    }
+            
+            /* DEPT */
+            const cDept = document.getElementById('chartDept');
+            if (cDept) {
+                const dc = {};
+                data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
+                console.log('📊 General Dept counts:', dc);
+                const sd = Object.entries(dc).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                charts.dept = new Chart(cDept, {
+                    type: 'bar',
+                    data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Jumlah', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] },
+                    options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } }
+                });
+            }
+            
+            /* QTY PER DEPT */
+            const cDevice = document.getElementById('chartDevice');
+            if (cDevice) {
+                const qd = {};
+                data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); qd[d] = (qd[d] || 0) + (parseInt(i.jumlah) || 1); });
+                const qs = Object.entries(qd).sort((a, b) => b[1] - a[1]).slice(0, 6);
+                const pal2 = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee'];
+                charts.device = new Chart(cDevice, {
+                    type: 'pie',
+                    data: { labels: qs.map(d => d[0]), datasets: [{ data: qs.map(d => d[1]), backgroundColor: qs.map((_, i) => pal2[i % pal2.length]), borderWidth: 2, hoverOffset: 10 }] },
+                    options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } }
+                });
+            }
+            
+            /* GROWTH */
+            const cGrowth = document.getElementById('chartGrowth');
+            if (cGrowth) {
+                const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                const growth = {};
+                const now = new Date();
+                for (let i = 11; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    growth[key] = { label: `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, count: 0 };
                 }
-            });
-
+                data.forEach(i => {
+                    if (!i.created_at) return;
+                    const d = new Date(i.created_at);
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    if (growth[key]) growth[key].count++;
+                });
+                const ga = Object.values(growth);
+                const ctx = cGrowth.getContext('2d');
+                const grad = ctx.createLinearGradient(0, 0, 0, 220);
+                grad.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
+                grad.addColorStop(1, 'rgba(192, 132, 252, 0.02)');
+                charts.growth = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: ga.map(g => g.label), datasets: [{ label: 'Item Baru', data: ga.map(g => g.count), borderColor: '#c084fc', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#c084fc', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 8 }] },
+                    options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } }
+                });
+            }
+            
             /* TOP 5 DEPT */
-            destroyChart('license');
-            const top5 = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            charts.license = new Chart(document.getElementById('chartLicense'), {
-                type: 'bar',
-                data: {
-                    labels: top5.map(d => d[0]),
-                    datasets: [{
-                        label: 'Jumlah Item',
-                        data: top5.map(d => d[1]),
-                        backgroundColor: ['#f472b6', '#c084fc', '#818cf8', '#22d3ee', '#34d399'],
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    ...commonOpts,
-                    indexAxis: 'y',
-                    plugins: { ...commonOpts.plugins, legend: { display: false } },
-                    scales: {
-                        x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } }
-                    }
-                }
-            });
+            const cLic = document.getElementById('chartLicense');
+            if (cLic) {
+                const dc = {};
+                data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
+                const top5 = Object.entries(dc).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                charts.license = new Chart(cLic, {
+                    type: 'bar',
+                    data: { labels: top5.map(d => d[0]), datasets: [{ label: 'Item', data: top5.map(d => d[1]), backgroundColor: ['#f472b6', '#c084fc', '#818cf8', '#22d3ee', '#34d399'], borderRadius: 6, borderSkipped: false }] },
+                    options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } } } }
+                });
+            }
         }
 
         /* ============================================================
-           FILTER
+           FILTER BUTTONS
         ============================================================ */
         function toggleFilter(type) {
             activeFilter = activeFilter === type ? null : type;
@@ -958,7 +933,8 @@
                 form.innerHTML = `
                     <div><label>ID Aset *</label><input type="text" id="it_id" placeholder="PC-001" required /></div>
                     <div><label>User *</label><input type="text" id="it_user" placeholder="Nama Karyawan" required /></div>
-                    <div><label>Dept *</label><input type="text" id="it_dept" placeholder="IT" /></div>
+                    <div><label>Dept *</label><input type="text" id="it_dept" placeholder="IT" list="deptList" /></div>
+                    <datalist id="deptList">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
                     <div><label>Device *</label><select id="it_device"><option>KOMPUTER</option><option>LAPTOP</option><option>PRINTER</option><option>SERVER</option></select></div>
                     <div><label>Spesifikasi *</label><input type="text" id="it_specs" placeholder="Core i5 / 8GB" /></div>
                     <div><label>Status *</label><select id="it_status"><option>Active</option><option>Maintenance</option><option>Broken</option></select></div>
@@ -997,7 +973,8 @@
                     <div><label>Satuan</label><input type="text" id="gen_satuan" value="Buah" /></div>
                     <div><label>Keterangan</label><input type="text" id="gen_keterangan" /></div>
                     <div><label>Jenis</label><select id="gen_jenis"><option>Fixed Asset</option><option>Consumable</option></select></div>
-                    <div><label>Department</label><input type="text" id="gen_dept" placeholder="HRGA" /></div>
+                    <div><label>Department</label><input type="text" id="gen_dept" placeholder="HRGA" list="deptListGen" /></div>
+                    <datalist id="deptListGen">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
                     <div><label>Link/Nama Gambar</label><input type="text" id="gen_gambar" /></div>
                     <div><label>Lokasi</label><input type="text" id="gen_lokasi" /></div>
                     <div class="form-section flex justify-end gap-2">
@@ -1010,7 +987,7 @@
         }
 
         /* ============================================================
-           SAVE
+           SAVE — Auto-refresh semua
         ============================================================ */
         function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
@@ -1029,7 +1006,11 @@
             if (!payload.id_aset) { showToast('Error', 'ID Aset wajib diisi!', 'error'); return; }
             const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Sukses', 'IT Aset disimpan!', 'success'); toggleForm(); loadData(); }
+            else {
+                showToast('Sukses', 'IT Aset disimpan!', 'success');
+                toggleForm();
+                await refreshAll(true); // ✅ Auto-sync semua
+            }
         }
 
         async function saveGeneralAsset() {
@@ -1043,11 +1024,15 @@
             if (!payload.nama_material) { showToast('Error', 'Nama Material wajib diisi!', 'error'); return; }
             const { error } = await supabaseClient.from('general_assets').insert([payload]);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Sukses', 'Data disimpan!', 'success'); toggleForm(); loadData(); }
+            else {
+                showToast('Sukses', 'Data disimpan!', 'success');
+                toggleForm();
+                await refreshAll(true); // ✅ Auto-sync semua
+            }
         }
 
         /* ============================================================
-           EDIT / CLONE / TRANSFER / DELETE
+           EDIT / UPDATE / CLONE / TRANSFER / DELETE
         ============================================================ */
         function editITAsset(id_aset) {
             const item = rawData.find(x => String(x.id_aset) === String(id_aset));
@@ -1060,7 +1045,8 @@
             form.innerHTML = `
                 <div><label>ID Aset</label><input type="text" id="it_id" value="${item.id_aset || ''}" readonly /></div>
                 <div><label>User</label><input type="text" id="it_user" value="${item.user || ''}" /></div>
-                <div><label>Dept</label><input type="text" id="it_dept" value="${item.dept || ''}" /></div>
+                <div><label>Dept</label><input type="text" id="it_dept" value="${item.dept || ''}" list="deptList" /></div>
+                <datalist id="deptList">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
                 <div><label>Device</label><select id="it_device">${opt(item.device, ['KOMPUTER','LAPTOP','PRINTER','SERVER'])}</select></div>
                 <div><label>Spesifikasi</label><input type="text" id="it_specs" value="${item.specs || ''}" /></div>
                 <div><label>Status</label><select id="it_status">${opt(item.status, ['Active','Maintenance','Broken'])}</select></div>
@@ -1105,7 +1091,7 @@
             };
             const { error } = await supabaseClient.from(currentPTTable).update(payload).eq('id_aset', id_aset);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Sukses', 'Aset diupdate!', 'success'); toggleForm(); loadData(); }
+            else { showToast('Sukses', 'Aset diupdate!', 'success'); toggleForm(); await refreshAll(true); }
         }
 
         function cloneITAsset(id_aset) {
@@ -1130,7 +1116,7 @@
             if (!newDept) return;
             supabaseClient.from(currentPTTable).update({ user: newUser, dept: newDept }).eq('id_aset', id_aset).then(({ error }) => {
                 if (error) showToast('Gagal', error.message, 'error');
-                else { showToast('Sukses', `Ditransfer ke ${newUser}`, 'success'); loadData(); }
+                else { showToast('Sukses', `Ditransfer ke ${newUser}`, 'success'); refreshAll(true); }
             });
         }
 
@@ -1138,7 +1124,7 @@
             if (!confirm(`Hapus aset ${id_aset}?`)) return;
             const { error } = await supabaseClient.from(currentPTTable).update({ deleted_at: new Date().toISOString() }).eq('id_aset', id_aset);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Terhapus', 'Aset masuk trash', 'info'); loadData(); }
+            else { showToast('Terhapus', 'Aset masuk trash', 'info'); await refreshAll(true); }
         }
 
         function editGeneralAsset(id) {
@@ -1156,7 +1142,8 @@
                 <div><label>Satuan</label><input type="text" id="gen_satuan" value="${item.satuan || 'Buah'}" /></div>
                 <div><label>Keterangan</label><input type="text" id="gen_keterangan" value="${item.keterangan || ''}" /></div>
                 <div><label>Jenis</label><select id="gen_jenis"><option ${item.jenis_inventaris === 'Fixed Asset' ? 'selected' : ''}>Fixed Asset</option><option ${item.jenis_inventaris === 'Consumable' ? 'selected' : ''}>Consumable</option></select></div>
-                <div><label>Department</label><input type="text" id="gen_dept" value="${item.department || ''}" /></div>
+                <div><label>Department</label><input type="text" id="gen_dept" value="${item.department || ''}" list="deptListGen" /></div>
+                <datalist id="deptListGen">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
                 <div><label>Link/Nama Gambar</label><input type="text" id="gen_gambar" value="${item.gambar || ''}" /></div>
                 <div><label>Lokasi</label><input type="text" id="gen_lokasi" value="${item.lokasi || ''}" /></div>
                 <div class="form-section flex justify-end gap-2">
@@ -1177,7 +1164,7 @@
             };
             const { error } = await supabaseClient.from('general_assets').update(payload).eq('id', id);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Sukses', 'Data diupdate!', 'success'); toggleForm(); loadData(); }
+            else { showToast('Sukses', 'Data diupdate!', 'success'); toggleForm(); await refreshAll(true); }
         }
 
         function showDetailGeneral(id) {
@@ -1221,7 +1208,7 @@
             if (!confirm('Hapus data ini?')) return;
             const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
             if (error) showToast('Gagal', error.message, 'error');
-            else { showToast('Terhapus', 'Data masuk trash', 'info'); loadData(); }
+            else { showToast('Terhapus', 'Data masuk trash', 'info'); await refreshAll(true); }
         }
 
         /* ============================================================
@@ -1278,9 +1265,7 @@
                     const sheet = wb.Sheets[wb.SheetNames[0]];
                     const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false, blankrows: false });
                     console.log('🔍 Raw AOA:', aoa);
-
                     if (aoa.length < 2) { showToast('Error', 'File kosong!', 'error'); return; }
-
                     let headerIdx = 0;
                     for (let i = 0; i < Math.min(aoa.length, 10); i++) {
                         const rowText = aoa[i].map(c => String(c).toLowerCase()).join('|');
@@ -1288,8 +1273,6 @@
                             headerIdx = i; break;
                         }
                     }
-                    console.log(`📍 Header di baris ${headerIdx}`);
-
                     const headers = aoa[headerIdx].map(h => String(h).trim());
                     const rows = aoa.slice(headerIdx + 1);
                     const normalized = [];
@@ -1304,14 +1287,11 @@
                         });
                         if (hasValue) normalized.push(obj);
                     });
-
                     const filtered = normalized.filter(r => {
                         const nama = String(r.nama_material || r.no || '').trim().toLowerCase();
                         return nama !== 'no' && nama !== 'nama material' && nama !== '';
                     });
-
                     if (filtered.length === 0) { showToast('Error', 'Tidak ada data valid!', 'error'); return; }
-                    console.log(`✅ ${filtered.length} baris siap`);
                     importData = filtered;
                     showPreview(filtered);
                     showToast('Info', `${filtered.length} baris siap import`, 'info');
@@ -1339,16 +1319,12 @@
         async function confirmImport() {
             if (importData.length === 0) { showToast('Error', 'Data kosong!', 'error'); return; }
             if (!confirm(`Import ${importData.length} data ke database?`)) return;
-
             const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
             let success = 0, failed = 0, skipped = 0;
             const errors = [];
-
             const pick = (item, ...keys) => {
                 for (const k of keys) {
-                    if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== '') {
-                        return String(item[k]).trim();
-                    }
+                    if (item[k] !== undefined && item[k] !== null && String(item[k]).trim() !== '') return String(item[k]).trim();
                 }
                 return '';
             };
@@ -1356,12 +1332,10 @@
                 if (!s) return null;
                 try { const d = new Date(s); if (isNaN(d)) return null; return d.toISOString().split('T')[0]; } catch { return null; }
             };
-
             for (let i = 0; i < importData.length; i++) {
                 const item = importData[i];
                 const rowNum = item.___row || (i + 2);
                 let payload = {};
-
                 if (activeModule === 'it') {
                     payload = {
                         id_aset: pick(item, 'id_aset', 'id', 'idaset', 'id_asset'),
@@ -1392,7 +1366,7 @@
                         notes: pick(item, 'notes', 'keterangan', 'catatan'),
                         deleted_at: null
                     };
-                    if (!payload.id_aset) { skipped++; console.warn(`⏭️ Baris ${rowNum}: id_aset kosong`); continue; }
+                    if (!payload.id_aset) { skipped++; continue; }
                 } else {
                     payload = {
                         nama_material: pick(item, 'nama_material', 'nama', 'material'),
@@ -1410,24 +1384,17 @@
                     const n = String(payload.nama_material || '').toLowerCase();
                     if (!payload.nama_material || n === 'no' || n === 'nama material') { skipped++; continue; }
                 }
-
                 const { error } = await supabaseClient.from(targetTable).insert([payload]);
                 if (!error) success++;
-                else {
-                    failed++;
-                    errors.push(`Baris ${rowNum}: ${error.message}`);
-                    console.error(`❌ Baris ${rowNum}:`, error, payload);
-                }
+                else { failed++; errors.push(`Baris ${rowNum}: ${error.message}`); }
             }
-
             let msg = `✅ ${success} sukses`;
             if (failed > 0) msg += `, ❌ ${failed} gagal`;
             if (skipped > 0) msg += `, ⏭️ ${skipped} skip`;
-            if (failed > 0) showToast('Selesai (ada error)', msg + '. Cek Console F12.', 'error');
+            if (failed > 0) showToast('Selesai (ada error)', msg, 'error');
             else showToast('Sukses!', msg, 'success');
-
             closeBulkImport();
-            loadData();
+            await refreshAll(true);
         }
 
         /* ============================================================
@@ -1467,7 +1434,7 @@
             const queryKey = activeModule === 'it' ? 'id_aset' : 'id';
             const val = isNaN(id) ? id : parseInt(id);
             const { error } = await supabaseClient.from(targetTable).update({ deleted_at: null }).eq(queryKey, val);
-            if (!error) { showToast('Dipulihkan', 'Data dikembalikan', 'success'); closeTrashModal(); loadData(); }
+            if (!error) { showToast('Dipulihkan', 'Data dikembalikan', 'success'); closeTrashModal(); await refreshAll(true); }
             else showToast('Gagal', error.message, 'error');
         }
 
@@ -1493,16 +1460,13 @@
             w.document.write(`
                 <html><head><title>Label - ${id_aset}</title>
                 <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+                    body { font-family: Arial; padding: 20px; text-align: center; }
                     .label { border: 2px dashed #333; padding: 20px; max-width: 400px; margin: 20px auto; border-radius: 12px; }
-                    h1 { font-size: 20px; margin: 5px 0; }
-                    h2 { font-size: 14px; color: #666; font-weight: normal; margin: 5px 0; }
-                    .info { text-align: left; font-size: 12px; margin-top: 15px; }
-                    .info div { padding: 3px 0; border-bottom: 1px solid #eee; }
+                    h1 { font-size: 20px; margin: 5px 0; } h2 { font-size: 14px; color: #666; font-weight: normal; margin: 5px 0; }
+                    .info { text-align: left; font-size: 12px; margin-top: 15px; } .info div { padding: 3px 0; border-bottom: 1px solid #eee; }
                 </style></head><body>
                 <div class="label">
-                    <h1>${item.id_aset}</h1>
-                    <h2>${item.user || ''} · ${item.dept || ''}</h2>
+                    <h1>${item.id_aset}</h1><h2>${item.user || ''} · ${item.dept || ''}</h2>
                     <canvas id="qr"></canvas>
                     <div class="info">
                         <div><b>Device:</b> ${item.device || '-'}</div>
@@ -1521,16 +1485,15 @@
         function printAllLabels() {
             if (activeModule === 'it') {
                 const data = applyFilters(rawData).filter(i => i.id_aset);
-                if (data.length === 0) { showToast('Info', 'Tidak ada data untuk dicetak', 'info'); return; }
+                if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
                 const w = window.open('', '_blank');
                 w.document.write(`
-                    <html><head><title>Cetak Semua Label IT</title>
+                    <html><head><title>Cetak Label IT</title>
                     <style>
                         body { font-family: Arial; padding: 10px; }
                         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
                         .label { border: 1px dashed #333; padding: 10px; text-align: center; page-break-inside: avoid; border-radius: 8px; }
-                        .label h3 { font-size: 12px; margin: 3px 0; }
-                        .label p { font-size: 10px; color: #666; margin: 2px 0; }
+                        .label h3 { font-size: 12px; margin: 3px 0; } .label p { font-size: 10px; color: #666; margin: 2px 0; }
                         canvas { width: 100px !important; height: 100px !important; }
                     </style></head><body>
                     <h2 style="text-align:center">🏷️ Label IT Aset - ${currentPTName}</h2>
@@ -1544,33 +1507,31 @@
                 w.document.close();
             } else {
                 const data = applyFilters(rawData);
-                if (data.length === 0) { showToast('Info', 'Tidak ada data untuk dicetak', 'info'); return; }
+                if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
                 const w = window.open('', '_blank');
                 w.document.write(`
                     <html><head><title>Cetak Aset General</title>
                     <style>
                         body { font-family: Arial; padding: 20px; }
-                        h1 { text-align: center; color: #333; margin-bottom: 5px; }
-                        h3 { text-align: center; color: #666; font-weight: normal; margin-top: 0; }
+                        h1 { text-align: center; color: #333; }
                         table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 20px; }
                         th { background: #4f46e5; color: white; padding: 8px; text-align: left; }
                         td { padding: 6px 8px; border-bottom: 1px solid #ddd; }
                         tr:nth-child(even) { background: #f9f9f9; }
                         @media print { @page { size: A4 landscape; margin: 10mm; } }
                     </style></head><body>
-                    <h1>📋 Daftar Aset PT Magicase Group Indonesia</h1>
-                    <h3>Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')} | Total: ${data.length} item</h3>
+                    <h1>📋 Daftar Aset PT Magicase</h1>
+                    <h3 style="text-align:center;color:#666;font-weight:normal">Total: ${data.length} item | ${new Date().toLocaleDateString('id-ID')}</h3>
                     <table>
-                        <thead><tr><th>No</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Lokasi</th><th>Keterangan</th></tr></thead>
+                        <thead><tr><th>No</th><th>Nama</th><th>材料名称</th><th>Spesifikasi</th><th>Jml</th><th>Satuan</th><th>Jenis</th><th>Dept</th><th>Lokasi</th></tr></thead>
                         <tbody>
-                            ${data.map((i, idx) => `<tr><td>${idx + 1}</td><td><b>${i.nama_material || '-'}</b></td><td>${i.nama_material_mandarin || '-'}</td><td>${i.spesifikasi || '-'}</td><td style="text-align:center">${i.jumlah || 1}</td><td>${i.satuan || 'Buah'}</td><td>${i.jenis_inventaris || 'Fixed Asset'}</td><td>${i.department || '-'}</td><td>${i.lokasi || '-'}</td><td>${i.keterangan || '-'}</td></tr>`).join('')}
+                            ${data.map((i, idx) => `<tr><td>${idx + 1}</td><td><b>${i.nama_material || '-'}</b></td><td>${i.nama_material_mandarin || '-'}</td><td>${i.spesifikasi || '-'}</td><td style="text-align:center">${i.jumlah || 1}</td><td>${i.satuan || 'Buah'}</td><td>${i.jenis_inventaris || 'Fixed Asset'}</td><td>${i.department || '-'}</td><td>${i.lokasi || '-'}</td></tr>`).join('')}
                         </tbody>
                     </table>
                     <script>setTimeout(() => window.print(), 500);<\/script>
                     </body></html>
                 `);
                 w.document.close();
-                showToast('Cetak', `${data.length} data siap dicetak`, 'success');
             }
         }
 
@@ -1585,27 +1546,24 @@
             }
             const w = window.open('', '_blank');
             w.document.write(`
-                <html><head><title>Kartu Aset - ${item.nama_material}</title>
+                <html><head><title>Kartu Aset</title>
                 <style>
                     body { font-family: Arial; padding: 30px; }
                     .card { border: 2px solid #4f46e5; border-radius: 12px; padding: 25px; max-width: 500px; margin: 20px auto; }
                     .header { background: #4f46e5; color: white; padding: 15px; margin: -25px -25px 20px -25px; border-radius: 10px 10px 0 0; text-align: center; }
-                    .header h1 { margin: 0; font-size: 20px; }
                     .info .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; }
-                    .info .row span:first-child { color: #666; }
-                    .info .row span:last-child { font-weight: 600; color: #333; }
+                    .info .row span:first-child { color: #666; } .info .row span:last-child { font-weight: 600; }
                 </style></head><body>
                 <div class="card">
-                    <div class="header"><h1>📋 KARTU ASET</h1><p>PT Magicase Group Indonesia</p></div>
+                    <div class="header"><h1>📋 KARTU ASET</h1><p>PT Magicase</p></div>
                     <div class="info">
-                        <div class="row"><span>Nama Material</span><span>${item.nama_material || '-'}</span></div>
+                        <div class="row"><span>Nama</span><span>${item.nama_material || '-'}</span></div>
                         <div class="row"><span>材料名称</span><span>${item.nama_material_mandarin || '-'}</span></div>
                         <div class="row"><span>Spesifikasi</span><span>${item.spesifikasi || '-'}</span></div>
                         <div class="row"><span>Jumlah</span><span>${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
                         <div class="row"><span>Jenis</span><span>${item.jenis_inventaris || 'Fixed Asset'}</span></div>
-                        <div class="row"><span>Department</span><span>${item.department || '-'}</span></div>
+                        <div class="row"><span>Dept</span><span>${item.department || '-'}</span></div>
                         <div class="row"><span>Lokasi</span><span>${item.lokasi || '-'}</span></div>
-                        <div class="row"><span>Keterangan</span><span>${item.keterangan || '-'}</span></div>
                     </div>
                     ${imgHtml}
                 </div>
@@ -1635,12 +1593,10 @@
                 html5QrcodeScanner.render((txt) => {
                     const found = rawData.find(i => String(i.id_aset || '').toUpperCase() === txt.trim().toUpperCase());
                     if (found) {
-                        showToast('QR Ditemukan', `ID: ${found.id_aset} | User: ${found.user || '-'} | Dept: ${found.dept || '-'}`, 'success');
+                        showToast('QR Ditemukan', `ID: ${found.id_aset} | User: ${found.user || '-'}`, 'success');
                         document.getElementById('searchInput').value = found.id_aset;
                         renderTable(rawData);
-                    } else {
-                        showToast('Tidak Ditemukan', `QR "${txt}" tidak terdaftar.`, 'error');
-                    }
+                    } else showToast('Tidak Ditemukan', `QR "${txt}" tidak terdaftar.`, 'error');
                 }, () => {});
             } catch(e) { console.warn('Scanner error:', e); }
         }
