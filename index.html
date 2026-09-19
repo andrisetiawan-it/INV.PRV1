@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro</title>
+<title>Enterprise Asset Manager Pro v5</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -28,7 +28,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 [data-theme="light"] .table-wrapper { background: rgba(255,255,255,0.9); }
 [data-theme="light"] .table-wrapper thead th { background: rgba(129, 140, 248, 0.15) !important; color: #4f46e5 !important; }
 [data-theme="light"] .table-wrapper tbody td { color: #1f2937; border-color: rgba(0,0,0,0.05); }
-
 .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
 .glass-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; transition: all 0.4s ease; }
 .glass-card:hover { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15); }
@@ -124,6 +123,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .role-manager { background: linear-gradient(135deg, #22d3ee, #06b6d4); color: white; }
 .role-staff { background: rgba(52, 211, 153, 0.2); color: #34d399; }
 .role-viewer { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+.role-auditor { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
 .timeline { position: relative; padding-left: 30px; }
 .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: rgba(129,140,248,0.3); }
 .timeline-item { position: relative; padding-bottom: 20px; }
@@ -156,7 +156,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v4.0 • Enterprise Edition</p>
+<p class="text-gray-500 text-xs mt-6">v5.0 • Enterprise Edition</p>
 </div>
 </div>
 
@@ -181,7 +181,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="closeBulkImport()" class="text-gray-400 hover:text-white text-xl">✕</button>
 </div>
 <div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-<p class="text-blue-300 text-sm mb-2">💡 Download template, isi data, upload kembali.</p>
+<p class="text-blue-300 text-sm mb-2">💡 Download template, isi, upload kembali.</p>
 <button onclick="downloadTemplate()" class="btn bg-blue-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 Download Template</button>
 </div>
 <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
@@ -227,6 +227,22 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 </div>
 
+<!-- USER MANAGEMENT -->
+<div id="userMgmtModal" class="hidden modal-overlay">
+<div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-bold text-white">👥 Kelola User</h2>
+<button onclick="closeUserMgmt()" class="text-gray-400 hover:text-white text-xl">✕</button>
+</div>
+<div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+<p class="text-blue-300 text-sm">💡 <strong>Info:</strong> User login dibuat di <a href="https://supabase.com/dashboard" target="_blank" class="underline font-bold">Supabase → Authentication → Users</a>. Setelah itu, atur role disini.</p>
+</div>
+<button onclick="showAddUserForm()" class="btn bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah User Baru</button>
+<div id="addUserForm"></div>
+<div id="userList" class="space-y-2"></div>
+</div>
+</div>
+
 <!-- MAIN -->
 <div id="main-content" class="hidden">
 <nav class="glass px-6 py-3 flex items-center justify-between sticky top-0 z-50 flex-wrap gap-2">
@@ -247,6 +263,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="showApprovalQueue()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">✅<span id="approvalBadge" class="badge-notif hidden">0</span></button>
 <button onclick="showNotifications()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">🔔<span id="notifBadge" class="badge-notif hidden">0</span></button>
 <button onclick="showLogModal()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">📝</button>
+<button onclick="showUserManagement()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Kelola User">👥</button>
 <button onclick="toggleTheme()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" id="themeBtn">🌙</button>
 <button onclick="toggleLanguage()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" id="langBtn">🌐 ID</button>
 <button onclick="manualRefresh()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">🔄</button>
@@ -255,7 +272,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </nav>
 
 <div class="max-w-[1800px] mx-auto p-4">
-<!-- VIEW TABS -->
 <div class="flex gap-2 mb-4 flex-wrap">
 <button onclick="switchView('table')" id="btnViewTable" class="tab-btn active">📋 Tabel</button>
 <button onclick="switchView('kanban')" id="btnViewKanban" class="tab-btn">📊 Kanban</button>
@@ -268,13 +284,11 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="showSavedReports()" class="tab-btn">📁 Reports</button>
 </div>
 
-<!-- MODULE TABS -->
 <div class="flex gap-3 mb-6 flex-wrap">
 <button onclick="switchModule('it')" id="btnTabIT" class="tab-btn active">💻 IT Computers</button>
 <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 Aset General</button>
 </div>
 
-<!-- SCANNER -->
 <div id="scannerSection" class="mb-6">
 <div class="flex justify-center">
 <div class="glass-card p-4" style="width:100%;max-width:320px;">
@@ -284,12 +298,10 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 </div>
 
-<!-- DEPT SUMMARY -->
 <div id="deptSummarySection" class="mb-6">
 <div id="deptSummaryGrid" class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-10 gap-2"></div>
 </div>
 
-<!-- STATS -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg">📦</div><div><p class="text-gray-400 text-[10px] uppercase font-semibold">Total Item</p><p id="statTotal" class="text-white text-xl font-bold">0</p></div></div></div>
 <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">✨</div><div><p class="text-gray-400 text-[10px] uppercase font-semibold">Active</p><p id="statActive" class="text-white text-xl font-bold">0</p></div></div></div>
@@ -297,7 +309,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg">🏢</div><div><p class="text-gray-400 text-[10px] uppercase font-semibold">Department</p><p id="statDept" class="text-white text-xl font-bold">0</p></div></div></div>
 </div>
 
-<!-- CHARTS -->
 <div id="dashboardCharts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
 <div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">🍩 Status</h3><div style="height:280px;position:relative"><canvas id="chartStatus"></canvas></div></div>
 <div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">🏢 Department</h3><div style="height:280px;position:relative"><canvas id="chartDept"></canvas></div></div>
@@ -307,7 +318,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div class="chart-card lg:col-span-3"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">🔥 Heatmap</h3><div style="height:180px;position:relative"><canvas id="chartHeatmap"></canvas></div></div>
 </div>
 
-<!-- KANBAN -->
 <div id="kanbanContainer" class="hidden mb-6">
 <div class="kanban-board">
 <div class="kanban-col" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Active')"><div class="kanban-col-header"><h3 class="text-emerald-400 font-bold">✅ Active</h3><span class="text-xs text-gray-400" id="kanbanCountActive">0</span></div><div id="kanbanActive"></div></div>
@@ -316,7 +326,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 </div>
 
-<!-- CALENDAR -->
 <div id="calendarContainer" class="hidden glass-card p-4 mb-6">
 <div class="flex justify-between items-center mb-4">
 <button onclick="calendarPrev()" class="btn bg-white/5 text-gray-300 px-3 py-1 rounded-lg border border-white/10">← Prev</button>
@@ -327,13 +336,11 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div id="calendarGrid" class="calendar-grid"></div>
 </div>
 
-<!-- TIMELINE -->
 <div id="timelineContainer" class="hidden glass-card p-6 mb-6">
 <h3 class="text-white font-bold text-lg mb-4">⏱️ Asset Lifecycle Timeline</h3>
 <div id="timelineContent" class="timeline"></div>
 </div>
 
-<!-- ACTIONS -->
 <div class="flex flex-wrap gap-2 mb-4">
 <button onclick="toggleForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded-xl text-sm border-none">+ Tambah Aset</button>
 <button onclick="openBulkImport()" class="btn bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm border-none">📤 Import</button>
@@ -344,7 +351,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="showDeletedAssets()" class="btn bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl text-sm">🗑️ Trash</button>
 </div>
 
-<!-- BULK ACTION BAR -->
 <div id="bulkActionBar" class="hidden glass-card p-3 mb-4 flex items-center gap-3 flex-wrap">
 <span class="text-white text-sm"><strong id="selectedCount">0</strong> item dipilih</span>
 <button onclick="bulkDelete()" class="btn bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs">🗑️ Hapus</button>
@@ -353,7 +359,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="clearSelection()" class="btn bg-white/5 text-gray-300 border border-white/10 px-3 py-1.5 rounded-lg text-xs">✕ Clear</button>
 </div>
 
-<!-- FORM -->
 <div id="formContainer" class="glass-card p-5 mb-4 hidden">
 <div class="flex justify-between items-center mb-3">
 <h2 id="formTitle" class="text-lg font-bold text-white">Input Aset Baru</h2>
@@ -362,7 +367,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <form id="dynamicForm" class="form-grid" onsubmit="return false;"></form>
 </div>
 
-<!-- SEARCH & FILTER -->
 <div class="flex flex-wrap gap-3 mb-4 items-center">
 <input type="text" id="searchInput" placeholder="🔍 Cari ID, User, Dept, IP..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] focus:border-indigo-500 outline-none" />
 <select id="filterDept" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)"><option value="">Semua Dept</option></select>
@@ -373,7 +377,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="clearFilters()" class="filter-btn" style="background:rgba(255,255,255,0.05);color:#9ca3af;border-color:rgba(255,255,255,0.1)">✕ Clear</button>
 </div>
 
-<!-- TABLE -->
 <div class="glass-card overflow-hidden p-1">
 <div class="table-wrapper">
 <table id="mainTable">
@@ -419,11 +422,11 @@ let isOnline = navigator.onLine;
 const charts = { status: null, dept: null, device: null, growth: null, license: null, heatmap: null };
 
 document.documentElement.setAttribute('data-theme', currentTheme);
-const themeBtn = document.getElementById('themeBtn');
-if (themeBtn) themeBtn.innerText = currentTheme === 'dark' ? '🌙' : '☀️';
+const themeBtnEl = document.getElementById('themeBtn');
+if (themeBtnEl) themeBtnEl.innerText = currentTheme === 'dark' ? '🌙' : '☀️';
 
 /* ═══════════════════════════════════════════════════════════
-   TOAST
+   TOAST & CONFETTI
    ═══════════════════════════════════════════════════════════ */
 function showToast(title, message, type = 'info') {
     const container = document.getElementById('toastContainer');
@@ -511,15 +514,32 @@ async function handleLogout() {
    ═══════════════════════════════════════════════════════════ */
 async function loadUserProfile() {
     if (!currentUser?.email) return;
-    const { data } = await supabaseClient.from('user_profiles').select('*').eq('email', currentUser.email).maybeSingle();
+    const { data, error } = await supabaseClient.from('user_profiles').select('*').eq('email', currentUser.email).maybeSingle();
+    if (error) console.warn('Load profile err:', error);
+    
     if (data) {
         userProfile = data;
         userRole = data.role || 'staff';
+        if (data.is_active === false) {
+            showToast('Akun Nonaktif', 'Hubungi admin', 'error');
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+            return;
+        }
+        // Update last login
+        await supabaseClient.from('user_profiles').update({ last_login: new Date().toISOString() }).eq('email', currentUser.email);
     } else {
-        userRole = currentUser.email.includes('admin') ? 'super-admin' : 'staff';
-        await supabaseClient.from('user_profiles').insert([{
-            email: currentUser.email, full_name: currentUser.email.split('@')[0], role: userRole
-        }]).then(() => {});
+        // Auto-register user baru
+        const defaultRole = currentUser.email.includes('admin') ? 'super-admin' : 'staff';
+        userRole = defaultRole;
+        const { error: regErr } = await supabaseClient.from('user_profiles').insert([{
+            email: currentUser.email,
+            full_name: currentUser.email.split('@')[0],
+            role: defaultRole,
+            is_active: true
+        }]);
+        if (regErr) console.warn('Auto-register err:', regErr);
+        else console.log('✅ Auto-registered:', defaultRole);
     }
     updateUserUI();
 }
@@ -871,7 +891,7 @@ function clearSelection() {
     updateBulkBar();
 }
 async function bulkDelete() {
-    if (!hasPermission('delete')) { showToast('Denied', 'Anda tidak punya akses', 'error'); return; }
+    if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm(`Hapus ${selectedRows.size} item?`)) return;
     const table = activeModule === 'it' ? currentPTTable : 'general_assets';
     const key = activeModule === 'it' ? 'id_aset' : 'id';
@@ -879,7 +899,7 @@ async function bulkDelete() {
         const val = isNaN(id) ? id : parseInt(id);
         await supabaseClient.from(table).update({ deleted_at: new Date().toISOString() }).eq(key, val);
     }
-    await logActivity('bulk_delete', table, '', `${selectedRows.size} item dihapus`);
+    await logActivity('bulk_delete', table, '', `${selectedRows.size} item`);
     showToast('Bulk Delete', `${selectedRows.size} item dihapus`, 'success');
     clearSelection();
     await refreshAll(true);
@@ -909,7 +929,7 @@ async function bulkTransfer() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   STATS & DEPT SUMMARY
+   STATS
    ═══════════════════════════════════════════════════════════ */
 function updateStats(data) {
     document.getElementById('statTotal').innerText = data.length;
@@ -1078,15 +1098,44 @@ function renderHeatmap(data, commonOpts) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   FORM (tambah, edit, save, update)
+   FORM - Helper
    ═══════════════════════════════════════════════════════════ */
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
-
 function calcDepreciation(harga, umur) { return harga || 0; }
+
+async function uploadImage(file, prefix = 'img') {
+    if (!file) return null;
+    const ext = file.name.split('.').pop();
+    const fileName = `${prefix}_${Date.now()}.${ext}`;
+    const { data, error } = await supabaseClient.storage.from('aset-images').upload(fileName, file);
+    if (error) { showToast('Upload Gagal', error.message, 'error'); return null; }
+    const { data: urlData } = supabaseClient.storage.from('aset-images').getPublicUrl(fileName);
+    return urlData.publicUrl;
+}
+
+function handleImageSelect(event, previewId) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const preview = document.getElementById(previewId);
+        if (preview) { preview.innerHTML = `<img src="${e.target.result}" class="preview-img">`; preview.classList.remove('hidden'); }
+    };
+    reader.readAsDataURL(file);
+}
+
+function viewImage(url) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.onclick = () => modal.remove();
+    modal.innerHTML = `<img src="${url}" style="max-width:90vw;max-height:90vh;border-radius:12px;">`;
+    document.body.appendChild(modal);
+}
 
 function toggleForm() {
     const fc = document.getElementById('formContainer');
     if (!fc.classList.contains('hidden')) { fc.classList.add('hidden'); return; }
+    if (!hasPermission('create')) { showToast('Denied', 'Anda tidak punya akses tambah', 'error'); return; }
     fc.classList.remove('hidden');
     const form = document.getElementById('dynamicForm');
 
@@ -1164,35 +1213,9 @@ function toggleForm() {
     fc.scrollIntoView({ behavior: 'smooth' });
 }
 
-async function uploadImage(file, prefix = 'img') {
-    if (!file) return null;
-    const ext = file.name.split('.').pop();
-    const fileName = `${prefix}_${Date.now()}.${ext}`;
-    const { data, error } = await supabaseClient.storage.from('aset-images').upload(fileName, file);
-    if (error) { showToast('Upload Gagal', error.message, 'error'); return null; }
-    const { data: urlData } = supabaseClient.storage.from('aset-images').getPublicUrl(fileName);
-    return urlData.publicUrl;
-}
-
-function handleImageSelect(event, previewId) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const preview = document.getElementById(previewId);
-        if (preview) { preview.innerHTML = `<img src="${e.target.result}" class="preview-img">`; preview.classList.remove('hidden'); }
-    };
-    reader.readAsDataURL(file);
-}
-
-function viewImage(url) {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.onclick = () => modal.remove();
-    modal.innerHTML = `<img src="${url}" style="max-width:90vw;max-height:90vh;border-radius:12px;">`;
-    document.body.appendChild(modal);
-}
-
+/* ═══════════════════════════════════════════════════════════
+   SAVE - IT & GENERAL
+   ═══════════════════════════════════════════════════════════ */
 async function saveITAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses tambah', 'error'); return; }
     const imgInput = document.getElementById('it_img_input');
@@ -1257,6 +1280,9 @@ async function saveGeneralAsset() {
     }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   EDIT & UPDATE - IT
+   ═══════════════════════════════════════════════════════════ */
 function editITAsset(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1340,6 +1366,9 @@ async function updateITAsset(id_aset) {
     }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   EDIT & UPDATE - GENERAL
+   ═══════════════════════════════════════════════════════════ */
 function editGeneralAsset(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
@@ -1640,7 +1669,7 @@ async function restoreAsset(id) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   UTILITIES (copy, print, export, scanner)
+   UTILITIES
    ═══════════════════════════════════════════════════════════ */
 document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
 
@@ -1668,7 +1697,7 @@ function printAllLabels() {
         const data = applyFilters(rawData);
         if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
         const w = window.open('', '_blank');
-        w.document.write(`<html><head><title>Cetak General</title><style>body{font-family:Arial;padding:20px}h1{text-align:center}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:20px}th{background:#4f46e5;color:white;padding:8px;text-align:left}td{padding:6px 8px;border-bottom:1px solid #ddd}tr:nth-child(even){background:#f9f9f9}@media print{@page{size:A4 landscape;margin:10mm}}</style></head><body><h1>📋 Daftar Aset PT Magicase</h1><h3 style="text-align:center;color:#666;font-weight:normal">Total: ${data.length} item | ${new Date().toLocaleDateString('id-ID')}</h3><table><thead><tr><th>No</th><th>Nama</th><th>材料名称</th><th>Spesifikasi</th><th>Jml</th><th>Satuan</th><th>Jenis</th><th>Dept</th><th>Lokasi</th></tr></thead><tbody>${data.map((i, idx) => `<tr><td>${idx+1}</td><td><b>${i.nama_material||'-'}</b></td><td>${i.nama_material_mandarin||'-'}</td><td>${i.spesifikasi||'-'}</td><td>${i.jumlah||1}</td><td>${i.satuan||'Buah'}</td><td>${i.jenis_inventaris||'-'}</td><td>${i.department||'-'}</td><td>${i.lokasi||'-'}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
+        w.document.write(`<html><head><title>Cetak General</title><style>body{font-family:Arial;padding:20px}h1{text-align:center}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:20px}th{background:#4f46e5;color:white;padding:8px;text-align:left}td{padding:6px 8px;border-bottom:1px solid #ddd}tr:nth-child(even){background:#f9f9f9}@media print{@page{size:A4 landscape;margin:10mm}}</style></head><body><h1>📋 Daftar Aset</h1><h3 style="text-align:center;color:#666;font-weight:normal">Total: ${data.length} | ${new Date().toLocaleDateString('id-ID')}</h3><table><thead><tr><th>No</th><th>Nama</th><th>材料名称</th><th>Spesifikasi</th><th>Jml</th><th>Satuan</th><th>Jenis</th><th>Dept</th><th>Lokasi</th></tr></thead><tbody>${data.map((i, idx) => `<tr><td>${idx+1}</td><td><b>${i.nama_material||'-'}</b></td><td>${i.nama_material_mandarin||'-'}</td><td>${i.spesifikasi||'-'}</td><td>${i.jumlah||1}</td><td>${i.satuan||'Buah'}</td><td>${i.jenis_inventaris||'-'}</td><td>${i.department||'-'}</td><td>${i.lokasi||'-'}</td></tr>`).join('')}</tbody></table><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
         w.document.close();
     }
 }
@@ -1704,7 +1733,7 @@ function exportToPDF() {
     doc.text('LAPORAN ASET - ' + currentPTName, 148, 12, { align: 'center' });
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
-    doc.text('Total: ' + data.length + ' item | Dicetak: ' + new Date().toLocaleString('id-ID'), 148, 20, { align: 'center' });
+    doc.text('Total: ' + data.length + ' | Dicetak: ' + new Date().toLocaleString('id-ID'), 148, 20, { align: 'center' });
     doc.setTextColor(0, 0, 0);
     let headers, rows;
     if (activeModule === 'it') {
@@ -1750,7 +1779,6 @@ function initScanner() {
     } catch(e) { console.warn('Scanner error:', e); }
 }
 
-// Offline indicator
 window.addEventListener('online', () => { isOnline = true; updateOfflineUI('online'); });
 window.addEventListener('offline', () => { isOnline = false; updateOfflineUI('offline'); });
 function updateOfflineUI(state) {
@@ -1768,7 +1796,132 @@ if ('serviceWorker' in navigator) {
    PART 3: ENTERPRISE FEATURES
    ═══════════════════════════════════════════════════════════ */
 
-/* ─── 1. APPROVAL WORKFLOW ─── */
+/* ─── 1. USER MANAGEMENT ─── */
+async function showUserManagement() {
+    if (userRole !== 'super-admin' && userRole !== 'admin') {
+        showToast('Akses Ditolak', 'Hanya admin yang bisa kelola user', 'error');
+        return;
+    }
+    document.getElementById('userMgmtModal').classList.remove('hidden');
+    await loadUserList();
+}
+
+function closeUserMgmt() {
+    document.getElementById('userMgmtModal').classList.add('hidden');
+    document.getElementById('addUserForm').innerHTML = '';
+}
+
+async function loadUserList() {
+    const { data, error } = await supabaseClient.from('user_profiles').select('*').order('created_at', { ascending: false });
+    const list = document.getElementById('userList');
+    if (error) {
+        list.innerHTML = `<p class="text-rose-400 text-sm">Error: ${error.message}</p>`;
+        return;
+    }
+    if (!data || data.length === 0) {
+        list.innerHTML = `<p class="text-center text-gray-400 py-4">Belum ada user profile.</p>`;
+        return;
+    }
+    list.innerHTML = data.map(u => `
+        <div class="glass-card p-3 flex justify-between items-center flex-wrap gap-2">
+            <div class="flex-1 min-w-[200px]">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div class="text-white text-sm font-semibold">${u.full_name || u.email}</div>
+                    <span class="role-badge role-${u.role}">${(u.role || 'staff').toUpperCase()}</span>
+                    ${!u.is_active ? '<span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-400">NONAKTIF</span>' : ''}
+                </div>
+                <div class="text-gray-400 text-xs">${u.email}</div>
+                ${u.last_login ? `<div class="text-gray-500 text-[10px]">Login: ${new Date(u.last_login).toLocaleString('id-ID')}</div>` : ''}
+            </div>
+            <div class="flex gap-2 items-center flex-wrap">
+                <select onchange="updateUserRole('${u.email}', this.value)" class="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-2 py-1">
+                    <option value="super-admin" ${u.role === 'super-admin' ? 'selected' : ''}>Super Admin</option>
+                    <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                    <option value="manager" ${u.role === 'manager' ? 'selected' : ''}>Manager</option>
+                    <option value="staff" ${u.role === 'staff' ? 'selected' : ''}>Staff</option>
+                    <option value="viewer" ${u.role === 'viewer' ? 'selected' : ''}>Viewer</option>
+                    <option value="auditor" ${u.role === 'auditor' ? 'selected' : ''}>Auditor</option>
+                </select>
+                <button onclick="toggleUserActive('${u.email}', ${u.is_active !== false})" class="text-amber-400 text-xs bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded" title="${u.is_active !== false ? 'Nonaktifkan' : 'Aktifkan'}">${u.is_active !== false ? '🚫' : '✅'}</button>
+                <button onclick="deleteUserProfile('${u.email}')" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function updateUserRole(email, newRole) {
+    if (email === currentUser?.email) {
+        showToast('Ditolak', 'Tidak bisa ubah role sendiri', 'warning');
+        await loadUserList();
+        return;
+    }
+    const { error } = await supabaseClient.from('user_profiles').update({ role: newRole }).eq('email', email);
+    if (error) showToast('Gagal', error.message, 'error');
+    else { showToast('Sukses', `Role ${email} → ${newRole}`, 'success'); await loadUserList(); }
+}
+
+async function toggleUserActive(email, currentActive) {
+    const { error } = await supabaseClient.from('user_profiles').update({ is_active: !currentActive }).eq('email', email);
+    if (error) showToast('Gagal', error.message, 'error');
+    else { showToast('Sukses', `User ${email} ${!currentActive ? 'diaktifkan' : 'dinonaktifkan'}`, 'success'); await loadUserList(); }
+}
+
+async function deleteUserProfile(email) {
+    if (!confirm(`Hapus profile ${email}?\n\nIni cuma hapus profile, user login di Supabase Auth tetap ada.`)) return;
+    const { error } = await supabaseClient.from('user_profiles').delete().eq('email', email);
+    if (error) showToast('Gagal', error.message, 'error');
+    else { showToast('Terhapus', `Profile ${email} dihapus`, 'success'); await loadUserList(); }
+}
+
+function showAddUserForm() {
+    const c = document.getElementById('addUserForm');
+    c.innerHTML = `
+        <div class="glass-card p-4 mb-4 border border-amber-500/30">
+            <p class="text-amber-400 text-xs mb-3">⚠️ Langkah: <strong>1)</strong> Bikin user di <a href="https://supabase.com/dashboard" target="_blank" class="underline">Supabase → Authentication → Users → Add user</a> → <strong>2)</strong> Isi email & password → ✅ Auto Confirm User → <strong>3)</strong> Balik ke sini, isi email yang sama untuk set role.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div><label class="text-xs text-gray-400">Email</label><input type="email" id="new_user_email" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="user@magicase.com" /></div>
+                <div><label class="text-xs text-gray-400">Nama Lengkap</label><input type="text" id="new_user_name" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="Budi Santoso" /></div>
+                <div><label class="text-xs text-gray-400">Role</label>
+                    <select id="new_user_role" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm">
+                        <option value="staff">Staff</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Admin</option>
+                        <option value="viewer">Viewer</option>
+                        <option value="auditor">Auditor</option>
+                        <option value="super-admin">Super Admin</option>
+                    </select>
+                </div>
+                <div><label class="text-xs text-gray-400">Department (opsional)</label>
+                    <input type="text" id="new_user_dept" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="IT / HRGA" />
+                </div>
+            </div>
+            <div class="flex gap-2 mt-3">
+                <button onclick="saveNewUserProfile()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
+                <button onclick="document.getElementById('addUserForm').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
+            </div>
+        </div>
+    `;
+}
+
+async function saveNewUserProfile() {
+    const email = document.getElementById('new_user_email').value.trim();
+    const full_name = document.getElementById('new_user_name').value.trim();
+    const role = document.getElementById('new_user_role').value;
+    const dept = document.getElementById('new_user_dept').value.trim();
+    if (!email) { showToast('Error', 'Email wajib diisi', 'error'); return; }
+    const { error } = await supabaseClient.from('user_profiles').upsert([{
+        email, full_name: full_name || email.split('@')[0], role,
+        allowed_depts: dept ? [dept] : null, is_active: true
+    }], { onConflict: 'email' });
+    if (error) showToast('Gagal', error.message, 'error');
+    else {
+        showToast('Sukses', `User ${email} (${role}) ditambahkan`, 'success');
+        document.getElementById('addUserForm').innerHTML = '';
+        await loadUserList();
+    }
+}
+
+/* ─── 2. APPROVAL WORKFLOW ─── */
 async function requestApproval(table, recordData, action) {
     if (hasPermission('approve')) return true;
     await supabaseClient.from('approval_queue').insert([{
@@ -1800,15 +1953,14 @@ async function showApprovalQueue() {
             </div>
             ${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Tidak ada approval.</p>' :
             `<table class="w-full text-xs">
-                <thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Aksi</th><th class="p-2">Data</th><th class="p-2">Status</th><th class="p-2">Aksi</th></tr></thead>
+                <thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Aksi</th><th class="p-2">Status</th><th class="p-2">Aksi</th></tr></thead>
                 <tbody>${data.map(item => `
                     <tr class="border-t border-white/5">
                         <td class="p-2 text-gray-400">${new Date(item.requested_at).toLocaleString('id-ID')}</td>
                         <td class="p-2 text-indigo-300">${item.requested_by}</td>
                         <td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${item.action_type}</span></td>
-                        <td class="p-2 text-gray-300 text-[10px]">${JSON.stringify(item.record_data).substring(0, 50)}...</td>
                         <td class="p-2">${item.status === 'pending' ? '⏳' : item.status === 'approved' ? '✅' : '❌'} ${item.status}</td>
-                        <td class="p-2">${item.status === 'pending' ? `
+                        <td class="p-2">${item.status === 'pending' && hasPermission('approve') ? `
                             <button onclick="approveRequest(${item.id}, true)" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs">✅</button>
                             <button onclick="approveRequest(${item.id}, false)" class="text-rose-400 bg-rose-500/10 px-2 py-1 rounded text-xs ml-1">❌</button>
                         ` : '-'}</td>
@@ -1835,7 +1987,7 @@ async function approveRequest(id, approve) {
     await refreshAll(true);
 }
 
-/* ─── 2. ASSET LIFECYCLE ─── */
+/* ─── 3. ASSET LIFECYCLE ─── */
 async function logLifecycle(assetId, assetTable, eventType, eventData = {}) {
     try {
         await supabaseClient.from('asset_lifecycle').insert([{
@@ -1875,7 +2027,7 @@ function showTimeline(assetId, assetTable) {
         });
 }
 
-/* ─── 3. MAINTENANCE LOG ─── */
+/* ─── 4. MAINTENANCE LOG ─── */
 async function showMaintenanceModal() {
     const { data } = await supabaseClient.from('maintenance_log').select('*').order('maintenance_date', { ascending: false }).limit(100);
     const modal = document.createElement('div');
@@ -1942,7 +2094,7 @@ async function saveMaintenance() {
     }
 }
 
-/* ─── 4. WEBHOOKS ─── */
+/* ─── 5. WEBHOOKS ─── */
 async function showWebhooks() {
     const { data } = await supabaseClient.from('webhooks').select('*');
     const modal = document.createElement('div');
@@ -1973,7 +2125,7 @@ function addWebhookForm() {
         <div class="glass-card p-4 mb-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div><label class="text-xs text-gray-400">Nama</label><input type="text" id="wh_name" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="Notif HRD" /></div>
-                <div><label class="text-xs text-gray-400">Event</label><select id="wh_event" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>asset.created</option><option>asset.updated</option><option>asset.deleted</option><option>maintenance.due</option></select></div>
+                <div><label class="text-xs text-gray-400">Event</label><select id="wh_event" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>asset.created</option><option>asset.updated</option><option>asset.deleted</option></select></div>
                 <div class="md:col-span-2"><label class="text-xs text-gray-400">URL</label><input type="text" id="wh_url" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" placeholder="https://hooks.slack.com/..." /></div>
             </div>
             <button onclick="saveWebhook()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button>
@@ -2005,21 +2157,19 @@ async function triggerWebhooks(event, data) {
         const { data: hooks } = await supabaseClient.from('webhooks').select('*').eq('event_type', event).eq('is_active', true);
         (hooks || []).forEach(h => {
             fetch(h.url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ event, data, timestamp: new Date().toISOString() })
             }).catch(() => {});
         });
     } catch (err) { console.warn('Webhook trigger fail:', err); }
 }
 
-/* ─── 5. ANALYTICS DASHBOARD ─── */
+/* ─── 6. ANALYTICS DASHBOARD ─── */
 async function showAnalytics() {
     const totalValue = rawData.reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
     const totalCost = rawData.reduce((s, i) => s + (parseFloat(i.harga_beli) || 0), 0);
     const depresiasi = totalCost - totalValue;
     const maintenanceDue = rawData.filter(i => i.maintenance_next_date && new Date(i.maintenance_next_date) < new Date()).length;
-    
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
@@ -2076,7 +2226,7 @@ async function renderAnalyticsCharts(data) {
     }
 }
 
-/* ─── 6. SAVED REPORTS ─── */
+/* ─── 7. SAVED REPORTS ─── */
 async function showSavedReports() {
     const { data } = await supabaseClient.from('saved_reports').select('*').order('created_at', { ascending: false });
     const modal = document.createElement('div');
@@ -2120,11 +2270,7 @@ async function runSavedReport(id) {
     const { data } = await supabaseClient.from('saved_reports').select('*').eq('id', id).single();
     if (data?.config?.columns) {
         const cols = data.config.columns;
-        const selected = rawData.map(row => {
-            const o = {};
-            cols.forEach(c => o[c] = row[c] || '');
-            return o;
-        });
+        const selected = rawData.map(row => { const o = {}; cols.forEach(c => o[c] = row[c] || ''); return o; });
         const ws = XLSX.utils.json_to_sheet(selected);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, data.report_name.substring(0, 20));
@@ -2139,29 +2285,27 @@ async function deleteSavedReport(id) {
     showSavedReports();
 }
 
-/* ─── 7. VIEW SWITCHER (Table/Kanban/Calendar/Timeline) ─── */
+/* ─── 8. VIEW SWITCHER ─── */
 function switchView(view) {
     currentView = view;
     document.getElementById('btnViewTable').className = view === 'table' ? 'tab-btn active' : 'tab-btn';
     document.getElementById('btnViewKanban').className = view === 'kanban' ? 'tab-btn active' : 'tab-btn';
     document.getElementById('btnViewCalendar').className = view === 'calendar' ? 'tab-btn active' : 'tab-btn';
     document.getElementById('btnViewTimeline').className = view === 'timeline' ? 'tab-btn active' : 'tab-btn';
-    
     const tableWrapper = document.querySelector('.table-wrapper');
     if (tableWrapper) tableWrapper.parentElement.style.display = view === 'table' ? 'block' : 'none';
     document.getElementById('kanbanContainer').classList.toggle('hidden', view !== 'kanban');
     document.getElementById('calendarContainer').classList.toggle('hidden', view !== 'calendar');
     document.getElementById('timelineContainer').classList.toggle('hidden', view !== 'timeline');
-    
     if (view === 'kanban') renderKanban();
     if (view === 'calendar') renderCalendar();
     if (view === 'timeline') renderTimeline();
 }
 
-/* ─── 8. KANBAN VIEW ─── */
+/* ─── 9. KANBAN VIEW ─── */
 function renderKanban() {
     if (activeModule !== 'it') {
-        document.getElementById('kanbanActive').innerHTML = '';
+        document.getElementById('kanbanActive').innerHTML = '<p class="text-gray-500 text-xs text-center py-4">Kanban hanya untuk modul IT</p>';
         document.getElementById('kanbanMaint').innerHTML = '';
         document.getElementById('kanbanBroken').innerHTML = '';
         document.getElementById('kanbanCountActive').innerText = '0';
@@ -2175,7 +2319,6 @@ function renderKanban() {
         if (columns[status]) columns[status].push(item);
         else columns.Active.push(item);
     });
-    
     const renderCard = (item) => `
         <div class="kanban-card" draggable="true" ondragstart="handleKanbanDrag(event, '${item.id_aset}')">
             <div class="flex justify-between items-start mb-2">
@@ -2186,7 +2329,6 @@ function renderKanban() {
             <div class="text-gray-400 text-xs">${item.device || '-'} · ${item.dept || '-'}</div>
             ${item.specs ? `<div class="text-gray-500 text-[10px] mt-1">${item.specs}</div>` : ''}
         </div>`;
-    
     document.getElementById('kanbanActive').innerHTML = columns.Active.map(renderCard).join('');
     document.getElementById('kanbanMaint').innerHTML = columns.Maintenance.map(renderCard).join('');
     document.getElementById('kanbanBroken').innerHTML = columns.Broken.map(renderCard).join('');
@@ -2213,27 +2355,20 @@ async function handleKanbanDrop(event, newStatus) {
     renderKanban();
 }
 
-/* ─── 9. CALENDAR VIEW ─── */
+/* ─── 10. CALENDAR VIEW ─── */
 function renderCalendar() {
     const year = calendarDate.getFullYear();
     const month = calendarDate.getMonth();
     const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     document.getElementById('calendarTitle').innerText = `${monthNames[month]} ${year}`;
-    
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
     let html = '';
-    
     for (let i = 0; i < firstDay; i++) html += '<div></div>';
-    
     for (let d = 1; d <= daysInMonth; d++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const events = rawData.filter(i => {
-            const created = i.created_at?.split('T')[0];
-            const maint = i.maintenance_next_date;
-            return created === dateStr || maint === dateStr;
-        });
+        const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
         html += `
             <div class="calendar-day ${isToday ? 'today' : ''} ${events.length > 0 ? 'has-event' : ''}" onclick="showDayEvents('${dateStr}')">
@@ -2254,7 +2389,7 @@ function showDayEvents(dateStr) {
     showToast('Events', `${events.length} event pada ${dateStr}`, 'info');
 }
 
-/* ─── 10. TIMELINE VIEW ─── */
+/* ─── 11. TIMELINE VIEW ─── */
 async function renderTimeline() {
     const { data } = await supabaseClient.from('asset_lifecycle').select('*').order('event_date', { ascending: false }).limit(30);
     const container = document.getElementById('timelineContent');
@@ -2272,7 +2407,7 @@ async function renderTimeline() {
     `).join('');
 }
 
-/* ─── 11. COMMAND PALETTE ─── */
+/* ─── 12. COMMAND PALETTE ─── */
 function openCommandPalette() {
     document.querySelector('.cmd-palette')?.remove();
     const cmd = document.createElement('div');
@@ -2307,8 +2442,8 @@ function updateCmdList(query) {
         { icon: '🔗', text: 'Webhooks', action: () => showWebhooks() },
         { icon: '📁', text: 'Saved Reports', action: () => showSavedReports() },
         { icon: '📝', text: 'Activity Log', action: () => showLogModal() },
+        { icon: '👥', text: 'Kelola User', action: () => showUserManagement() },
         { icon: '🌙', text: 'Toggle Theme', action: () => toggleTheme() },
-        { icon: '🌐', text: 'Toggle Language', action: () => toggleLanguage() },
         { icon: '📊', text: 'Kanban View', action: () => switchView('kanban') },
         { icon: '📅', text: 'Calendar View', action: () => switchView('calendar') },
         { icon: '⏱️', text: 'Timeline View', action: () => switchView('timeline') },
@@ -2347,14 +2482,13 @@ function runCmd(idx) {
     if (item) item.action();
 }
 
-/* ─── 12. EXECUTIVE DASHBOARD ─── */
+/* ─── 13. EXECUTIVE DASHBOARD ─── */
 async function showExecutiveDashboard() {
     const { data: itData } = await supabaseClient.from('inventaris_p1').select('*').is('deleted_at', null);
     const { data: genData } = await supabaseClient.from('general_assets').select('*').is('deleted_at', null);
     const itCount = itData?.length || 0;
     const genCount = genData?.length || 0;
     const totalNilai = [...(itData||[]), ...(genData||[])].reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
-    
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
@@ -2382,7 +2516,7 @@ async function showExecutiveDashboard() {
     document.body.appendChild(modal);
 }
 
-/* ─── 13. KEYBOARD SHORTCUTS ─── */
+/* ─── 14. KEYBOARD SHORTCUTS ─── */
 document.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openCommandPalette(); }
     if (e.key === 'Escape') document.querySelector('.cmd-palette')?.remove();
@@ -2391,14 +2525,14 @@ document.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); exportToPDF(); }
 });
 
-/* ─── 14. INIT ─── */
+/* ─── 15. INIT ─── */
 window.addEventListener('load', () => {
     setTimeout(() => {
         if (currentUser) loadUserProfile();
     }, 500);
 });
 
-console.log('🚀 Enterprise Asset Manager v4.0 LOADED');
+console.log('🚀 Enterprise Asset Manager v5.0 LOADED');
 </script>
 </body>
 </html>
