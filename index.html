@@ -23,7 +23,6 @@
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px 12px; transition: all 0.3s ease; cursor: pointer; text-align: center; }
         .stat-card:hover { transform: scale(1.03); border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.05); }
-        .stat-card.active { border-color: rgba(99, 102, 241, 0.6); background: rgba(99, 102, 241, 0.1); }
         .stat-count { font-size: 1.5rem; font-weight: 800; color: #818cf8; }
         .stat-label { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
         .table-wrapper { max-height: 60vh; overflow: auto; border-radius: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); }
@@ -46,7 +45,6 @@
         .form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus { border-color: #818cf8; background: rgba(129, 140, 248, 0.05); }
         .form-grid select option { background: #1a1040; color: white; }
         .form-section { grid-column: 1 / -1; margin-top: 8px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); }
-        .form-section-title { color: #818cf8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; max-width: 400px; }
         .toast { padding: 14px 18px; border-radius: 12px; margin-bottom: 10px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
@@ -474,7 +472,8 @@
                             <td>
                                 <div class="flex gap-1 justify-center flex-wrap">
                                     <button onclick="editGeneralAsset(${item.id})" class="btn-action edit">✏️ Edit</button>
-                                    <button onclick="showDetailGeneral(${item.id})" class="btn-action label">👁️ Detail</button>
+                                    <button onclick="printSingleGeneral(${item.id})" class="btn-action label">🖨️ Cetak</button>
+                                    <button onclick="showDetailGeneral(${item.id})" class="btn-action transfer">👁️ Detail</button>
                                     <button onclick="deleteGeneralItem(${item.id})" class="btn-action delete">🗑️ Hapus</button>
                                 </div>
                             </td>
@@ -514,11 +513,8 @@
             `).join('');
         }
 
-        let deptFilter = null;
         function filterByDept(dept) {
-            deptFilter = dept;
-            const kw = document.getElementById('searchInput');
-            kw.value = dept;
+            document.getElementById('searchInput').value = dept;
             renderTable(rawData);
             showToast('Filter', `Menampilkan dept: ${dept}`, 'info');
         }
@@ -533,7 +529,6 @@
         }
         function clearFilters() {
             activeFilter = null;
-            deptFilter = null;
             document.getElementById('searchInput').value = '';
             updateFilterButtons();
             renderTable(rawData);
@@ -734,30 +729,27 @@
         function cloneITAsset(id_aset) {
             const item = rawData.find(x => String(x.id_aset) === String(id_aset));
             if (!item) return;
-            const newItem = { ...item };
-            delete newItem.id;
-            delete newItem.created_at;
-            newItem.id_aset = item.id_aset + '-COPY';
-            showToast('Clone', `Copy dari ${id_aset}, edit ID lalu simpan`, 'info');
             toggleForm();
             setTimeout(() => {
-                document.getElementById('it_id').value = newItem.id_aset;
-                document.getElementById('it_user').value = newItem.user || '';
-                document.getElementById('it_dept').value = newItem.dept || '';
-                document.getElementById('it_specs').value = newItem.specs || '';
+                document.getElementById('it_id').value = item.id_aset + '-COPY';
+                document.getElementById('it_user').value = item.user || '';
+                document.getElementById('it_dept').value = item.dept || '';
+                document.getElementById('it_specs').value = item.specs || '';
+                document.getElementById('it_ip').value = item.ip_address || '';
             }, 100);
+            showToast('Clone', `Copy dari ${id_aset}. Edit ID & simpan.`, 'info');
         }
 
         function transferITAsset(id_aset) {
             const item = rawData.find(x => String(x.id_aset) === String(id_aset));
             if (!item) return;
-            const newUser = prompt(`Transfer aset ${id_aset}\n\nUser lama: ${item.user}\nDept lama: ${item.dept}\n\nMasukkan user baru:`, item.user);
+            const newUser = prompt(`Transfer aset ${id_aset}\nUser lama: ${item.user}\n\nMasukkan user baru:`, item.user);
             if (!newUser) return;
             const newDept = prompt(`Dept baru (lama: ${item.dept}):`, item.dept);
             if (!newDept) return;
             supabaseClient.from(currentPTTable).update({ user: newUser, dept: newDept }).eq('id_aset', id_aset).then(({ error }) => {
                 if (error) showToast('Gagal', error.message, 'error');
-                else { showToast('Sukses', `Aset ditransfer ke ${newUser}`, 'success'); loadData(); }
+                else { showToast('Sukses', `Ditransfer ke ${newUser}`, 'success'); loadData(); }
             });
         }
 
@@ -852,7 +844,7 @@
         }
 
         /* ============================================================
-           BULK IMPORT — FIX TOTAL
+           BULK IMPORT
         ============================================================ */
         function openBulkImport() {
             document.getElementById('importModalTitle').innerText = activeModule === 'it' ? '(IT Computers)' : '(Aset PT Magicase)';
@@ -909,7 +901,6 @@
 
                     if (aoa.length < 2) { showToast('Error', 'File kosong!', 'error'); return; }
 
-                    // Auto-detect header row
                     let headerIdx = 0;
                     for (let i = 0; i < Math.min(aoa.length, 10); i++) {
                         const rowText = aoa[i].map(c => String(c).toLowerCase()).join('|');
@@ -1119,6 +1110,7 @@
                 });
         }
 
+        // ✅ PRINT QR SINGLE IT ASSET (LABEL)
         function printQR(id_aset) {
             const item = rawData.find(x => String(x.id_aset) === String(id_aset));
             if (!item) return;
@@ -1151,31 +1143,141 @@
             w.document.close();
         }
 
+        // ✅ PRINT SEMUA LABEL (IT: Grid QR / General: Tabel)
         function printAllLabels() {
-            const data = applyFilters(rawData).filter(i => i.id_aset);
-            if (data.length === 0) { showToast('Info', 'Tidak ada data untuk dicetak', 'info'); return; }
+            if (activeModule === 'it') {
+                const data = applyFilters(rawData).filter(i => i.id_aset);
+                if (data.length === 0) { showToast('Info', 'Tidak ada data untuk dicetak', 'info'); return; }
+                const w = window.open('', '_blank');
+                w.document.write(`
+                    <html><head><title>Cetak Semua Label IT</title>
+                    <style>
+                        body { font-family: Arial; padding: 10px; }
+                        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+                        .label { border: 1px dashed #333; padding: 10px; text-align: center; page-break-inside: avoid; border-radius: 8px; }
+                        .label h3 { font-size: 12px; margin: 3px 0; }
+                        .label p { font-size: 10px; color: #666; margin: 2px 0; }
+                        canvas { width: 100px !important; height: 100px !important; }
+                    </style></head><body>
+                    <h2 style="text-align:center">🏷️ Label IT Aset - ${currentPTName}</h2>
+                    <div class="grid">
+                        ${data.map(i => `<div class="label"><h3>${i.id_aset}</h3><p>${i.user || ''}</p><p>${i.dept || ''}</p><canvas data-id="${i.id_aset}"></canvas></div>`).join('')}
+                    </div>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
+                    <script>
+                        document.querySelectorAll('canvas[data-id]').forEach(c => {
+                            new QRious({ element: c, value: c.dataset.id, size: 100 });
+                        });
+                        setTimeout(() => window.print(), 800);
+                    <\/script></body></html>
+                `);
+                w.document.close();
+            } else {
+                const data = applyFilters(rawData);
+                if (data.length === 0) { showToast('Info', 'Tidak ada data untuk dicetak', 'info'); return; }
+                const w = window.open('', '_blank');
+                w.document.write(`
+                    <html><head><title>Cetak Aset General</title>
+                    <style>
+                        body { font-family: Arial; padding: 20px; }
+                        h1 { text-align: center; color: #333; margin-bottom: 5px; }
+                        h3 { text-align: center; color: #666; font-weight: normal; margin-top: 0; }
+                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 20px; }
+                        th { background: #4f46e5; color: white; padding: 8px; text-align: left; }
+                        td { padding: 6px 8px; border-bottom: 1px solid #ddd; }
+                        tr:nth-child(even) { background: #f9f9f9; }
+                        .jenis { padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 600; }
+                        .fixed { background: #d1fae5; color: #065f46; }
+                        .consumable { background: #fef3c7; color: #92400e; }
+                        @media print { @page { size: A4 landscape; margin: 10mm; } }
+                    </style></head><body>
+                    <h1>📋 Daftar Aset PT Magicase Group Indonesia</h1>
+                    <h3>Tanggal Cetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} | Total: ${data.length} item</h3>
+                    <table>
+                        <thead><tr>
+                            <th style="width:30px">No</th>
+                            <th>Nama Material</th>
+                            <th>材料名称</th>
+                            <th>Spesifikasi</th>
+                            <th style="width:50px">Jumlah</th>
+                            <th style="width:50px">Satuan</th>
+                            <th>Jenis</th>
+                            <th>Department</th>
+                            <th>Lokasi</th>
+                            <th>Keterangan</th>
+                        </tr></thead>
+                        <tbody>
+                            ${data.map((i, idx) => `<tr>
+                                <td>${idx + 1}</td>
+                                <td><b>${i.nama_material || '-'}</b></td>
+                                <td>${i.nama_material_mandarin || '-'}</td>
+                                <td>${i.spesifikasi || '-'}</td>
+                                <td style="text-align:center">${i.jumlah || 1}</td>
+                                <td>${i.satuan || 'Buah'}</td>
+                                <td><span class="jenis ${(i.jenis_inventaris || '').toLowerCase().includes('fixed') ? 'fixed' : 'consumable'}">${i.jenis_inventaris || 'Fixed Asset'}</span></td>
+                                <td>${i.department || '-'}</td>
+                                <td>${i.lokasi || '-'}</td>
+                                <td>${i.keterangan || '-'}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                    <div style="text-align:center;margin-top:20px;font-size:10px;color:#999;">
+                        Enterprise Asset Manager - ${currentPTName}
+                    </div>
+                    <script>setTimeout(() => window.print(), 500);<\/script>
+                    </body></html>
+                `);
+                w.document.close();
+                showToast('Cetak', `${data.length} data siap dicetak`, 'success');
+            }
+        }
+
+        // ✅ PRINT SINGLE GENERAL ASSET (Kartu)
+        function printSingleGeneral(id) {
+            const item = rawData.find(x => String(x.id) === String(id));
+            if (!item) return;
+            let imgHtml = '';
+            if (item.gambar) {
+                const g = String(item.gambar).trim();
+                const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g);
+                imgHtml = `<div style="margin-top:15px;text-align:center"><img src="${imgUrl}" style="max-width:200px;max-height:150px;border-radius:8px;" onerror="this.style.display='none'" /></div>`;
+            }
             const w = window.open('', '_blank');
             w.document.write(`
-                <html><head><title>Cetak Semua Label</title>
+                <html><head><title>Kartu Aset - ${item.nama_material}</title>
                 <style>
-                    body { font-family: Arial; padding: 10px; }
-                    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-                    .label { border: 1px dashed #333; padding: 10px; text-align: center; page-break-inside: avoid; border-radius: 8px; }
-                    .label h3 { font-size: 12px; margin: 3px 0; }
-                    .label p { font-size: 10px; color: #666; margin: 2px 0; }
-                    canvas { width: 100px !important; height: 100px !important; }
+                    body { font-family: Arial; padding: 30px; }
+                    .card { border: 2px solid #4f46e5; border-radius: 12px; padding: 25px; max-width: 500px; margin: 20px auto; }
+                    .header { background: #4f46e5; color: white; padding: 15px; margin: -25px -25px 20px -25px; border-radius: 10px 10px 0 0; text-align: center; }
+                    .header h1 { margin: 0; font-size: 20px; }
+                    .header p { margin: 5px 0 0; font-size: 12px; opacity: 0.9; }
+                    .info { font-size: 13px; }
+                    .info .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+                    .info .row span:first-child { color: #666; }
+                    .info .row span:last-child { font-weight: 600; color: #333; }
+                    .footer { text-align: center; margin-top: 20px; font-size: 10px; color: #999; }
                 </style></head><body>
-                <h2 style="text-align:center">🏷️ Label Aset - ${currentPTName}</h2>
-                <div class="grid">
-                    ${data.map(i => `<div class="label"><h3>${i.id_aset}</h3><p>${i.user || ''}</p><p>${i.dept || ''}</p><canvas class="qr-${i.id_aset}" data-id="${i.id_aset}"></canvas></div>`).join('')}
+                <div class="card">
+                    <div class="header">
+                        <h1>📋 KARTU ASET</h1>
+                        <p>PT Magicase Group Indonesia</p>
+                    </div>
+                    <div class="info">
+                        <div class="row"><span>Nama Material</span><span>${item.nama_material || '-'}</span></div>
+                        <div class="row"><span>材料名称</span><span>${item.nama_material_mandarin || '-'}</span></div>
+                        <div class="row"><span>Spesifikasi</span><span>${item.spesifikasi || '-'}</span></div>
+                        <div class="row"><span>Jumlah</span><span>${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
+                        <div class="row"><span>Jenis Inventaris</span><span>${item.jenis_inventaris || 'Fixed Asset'}</span></div>
+                        <div class="row"><span>Department</span><span>${item.department || '-'}</span></div>
+                        <div class="row"><span>Lokasi</span><span>${item.lokasi || '-'}</span></div>
+                        <div class="row"><span>Keterangan</span><span>${item.keterangan || '-'}</span></div>
+                        <div class="row"><span>Tanggal Cetak</span><span>${new Date().toLocaleDateString('id-ID')}</span></div>
+                    </div>
+                    ${imgHtml}
+                    <div class="footer">Enterprise Asset Manager</div>
                 </div>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
-                <script>
-                    document.querySelectorAll('canvas[data-id]').forEach(c => {
-                        new QRious({ element: c, value: c.dataset.id, size: 100 });
-                    });
-                    setTimeout(() => window.print(), 800);
-                <\/script></body></html>
+                <script>setTimeout(() => window.print(), 500);<\/script>
+                </body></html>
             `);
             w.document.close();
         }
