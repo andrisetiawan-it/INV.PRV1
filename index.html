@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v8</title>
+<title>Enterprise Asset Manager Pro v8.1</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -33,6 +33,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .glass-card:hover { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15); }
 .gradient-text { background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .bg-animated { background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+[data-theme="light"] .bg-animated { background: linear-gradient(-45deg, #e0e7ff, #f3e8ff, #fce7f3, #e0e7ff); }
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px 12px; cursor: pointer; text-align: center; }
 .stat-card:hover { transform: scale(1.05); border-color: rgba(99, 102, 241, 0.5); }
@@ -60,7 +61,8 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .toast-error { background: rgba(251, 113, 133, 0.15); border-color: rgba(251, 113, 133, 0.3); }
 .toast-info { background: rgba(96, 165, 250, 0.15); border-color: rgba(96, 165, 250, 0.3); }
 .toast-warning { background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.3); }
-.tab-btn { padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 0.78rem; cursor: pointer; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #9ca3af; white-space: nowrap; }
+.tab-btn { padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 0.78rem; cursor: pointer; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #9ca3af; white-space: nowrap; transition: all 0.2s; }
+.tab-btn:hover { background: rgba(255,255,255,0.08); }
 .tab-btn.active { background: linear-gradient(135deg, #818cf8, #c084fc); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.3); border-color: transparent; }
 .btn-action { padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; border: 1px solid transparent; font-weight: 600; }
 .btn-action.edit { background: rgba(96, 165, 250, 0.15); color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); }
@@ -70,9 +72,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .drop-zone { border: 2px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.02); cursor: pointer; }
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
 .filter-btn { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1px solid; }
-.filter-btn.warning { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
-.filter-btn.danger { background: rgba(251, 113, 133, 0.1); color: #fb7185; border-color: rgba(251, 113, 133, 0.3); }
-.filter-btn.active { background: rgba(129, 140, 248, 0.2); border-color: #818cf8; color: #818cf8; }
 .chart-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: livePulse 2s infinite; }
 @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
@@ -112,7 +111,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v8.0 • Auto-Code from Material Name</p>
+<p class="text-gray-500 text-xs mt-6">v8.1 • Auto-Code from Material Name</p>
 </div>
 </div>
 
@@ -222,6 +221,20 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </nav>
 
 <div class="max-w-[1800px] mx-auto p-4">
+<!-- VIEW TABS -->
+<div class="flex gap-2 mb-4 flex-wrap">
+<button onclick="switchView('table')" id="btnViewTable" class="tab-btn active">📋 Tabel</button>
+<button onclick="switchView('kanban')" id="btnViewKanban" class="tab-btn">📊 Kanban</button>
+<button onclick="switchView('calendar')" id="btnViewCalendar" class="tab-btn">📅 Kalender</button>
+<button onclick="switchView('timeline')" id="btnViewTimeline" class="tab-btn">⏱️ Timeline</button>
+<button onclick="showExecutiveDashboard()" class="tab-btn">📊 Eksekutif</button>
+<button onclick="showAnalytics()" class="tab-btn">📈 Analytics</button>
+<button onclick="showMaintenanceModal()" class="tab-btn">🔧 Maintenance</button>
+<button onclick="showWebhooks()" class="tab-btn">🔗 Webhooks</button>
+<button onclick="showSavedReports()" class="tab-btn">📁 Reports</button>
+</div>
+
+<!-- MODULE TABS -->
 <div class="flex gap-3 mb-6 flex-wrap">
 <button onclick="switchModule('it')" id="btnTabIT" class="tab-btn active">💻 IT Computers</button>
 <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 Aset General</button>
@@ -250,9 +263,61 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div id="dashboardCharts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
 <div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">🍩 Status</h3><div style="height:280px;position:relative"><canvas id="chartStatus"></canvas></div></div>
 <div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">🏢 Department</h3><div style="height:280px;position:relative"><canvas id="chartDept"></canvas></div></div>
-<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">💻 Device</h3><div style="height:280px;position:relative"><canvas id="chartDevice"></canvas></div></div>
+<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">💻 Device / Kategori</h3><div style="height:280px;position:relative"><canvas id="chartDevice"></canvas></div></div>
 <div class="chart-card lg:col-span-2"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">📈 Growth</h3><div style="height:280px;position:relative"><canvas id="chartGrowth"></canvas></div></div>
-<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">🎯 License</h3><div style="height:280px;position:relative"><canvas id="chartLicense"></canvas></div></div>
+<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">🎯 License / Kategori</h3><div style="height:280px;position:relative"><canvas id="chartLicense"></canvas></div></div>
+</div>
+
+<!-- KANBAN VIEW -->
+<div id="kanbanContainer" class="hidden mb-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Active')">
+<div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
+<h3 class="text-emerald-400 font-bold">✅ Active</h3>
+<span class="text-xs text-gray-400" id="kanbanCountActive">0</span>
+</div>
+<div id="kanbanActive"></div>
+</div>
+<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Maintenance')">
+<div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
+<h3 class="text-amber-400 font-bold">🔧 Maintenance</h3>
+<span class="text-xs text-gray-400" id="kanbanCountMaint">0</span>
+</div>
+<div id="kanbanMaint"></div>
+</div>
+<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Broken')">
+<div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
+<h3 class="text-rose-400 font-bold">❌ Broken</h3>
+<span class="text-xs text-gray-400" id="kanbanCountBroken">0</span>
+</div>
+<div id="kanbanBroken"></div>
+</div>
+</div>
+</div>
+
+<!-- CALENDAR VIEW -->
+<div id="calendarContainer" class="hidden glass-card p-4 mb-6">
+<div class="flex justify-between items-center mb-4">
+<button onclick="calendarPrev()" class="btn bg-white/5 text-gray-300 px-3 py-1 rounded-lg border border-white/10">← Prev</button>
+<h3 id="calendarTitle" class="text-white font-bold text-lg"></h3>
+<button onclick="calendarNext()" class="btn bg-white/5 text-gray-300 px-3 py-1 rounded-lg border border-white/10">Next →</button>
+</div>
+<div class="grid grid-cols-7 gap-1 mb-2">
+<div class="text-center text-xs text-gray-400 font-semibold py-1">Min</div>
+<div class="text-center text-xs text-gray-400 font-semibold py-1">Sen</div>
+<div class="text-center text-xs text-gray-400 font-semibold py-1">Sel</div>
+<div class="text-center text-xs text-gray-400 font-semibold py-1">Rab</div>
+<div class="text-center text-xs text-gray-400 font-semibold py-1">Kam</div>
+<div class="text-center text-xs text-gray-400 font-semibold py-1">Jum</div>
+<div class="text-center text-xs text-gray-400 font-semibold py-1">Sab</div>
+</div>
+<div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
+</div>
+
+<!-- TIMELINE VIEW -->
+<div id="timelineContainer" class="hidden glass-card p-6 mb-6">
+<h3 class="text-white font-bold text-lg mb-4">⏱️ Asset Lifecycle Timeline</h3>
+<div id="timelineContent"></div>
 </div>
 
 <div class="flex flex-wrap gap-2 mb-4">
@@ -278,8 +343,8 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 
 <div class="flex flex-wrap gap-3 mb-4 items-center">
-<input type="text" id="searchInput" placeholder="🔍 Cari..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] outline-none" />
-<select id="filterDept" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)"><option value="">Semua Dept</option></select>
+<input type="text" id="searchInput" placeholder="🔍 Cari..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] outline-none p-2" />
+<select id="filterDept" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl p-2" onchange="renderTable(rawData)"><option value="">Semua Dept</option></select>
 <button onclick="clearFilters()" class="filter-btn" style="background:rgba(255,255,255,0.05);color:#9ca3af;border-color:rgba(255,255,255,0.1)">✕ Clear</button>
 </div>
 
@@ -295,9 +360,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   CONFIG
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ CONFIG ═══ */
 const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -306,10 +369,10 @@ const STORAGE_BUCKET_URL = 'https://xsqabypdhudqwyeegfci.supabase.co/storage/v1/
 let currentPTTable = '';
 let currentPTName = '';
 let activeModule = 'it';
+let currentView = 'table';
 let rawData = [];
 let importData = [];
 let html5QrcodeScanner = null;
-let activeFilter = null;
 let realtimeChannel = null;
 let autoRefreshTimer = null;
 let knownDepts = new Set();
@@ -318,71 +381,31 @@ let currentTheme = localStorage.getItem('theme') || 'dark';
 let selectedRows = new Set();
 let userRole = 'staff';
 let userProfile = null;
+let calendarDate = new Date();
+let draggedAssetId = null;
 const charts = { status: null, dept: null, device: null, growth: null, license: null };
 
 document.documentElement.setAttribute('data-theme', currentTheme);
 const themeBtnEl = document.getElementById('themeBtn');
 if (themeBtnEl) themeBtnEl.innerText = currentTheme === 'dark' ? '🌙' : '☀️';
 
-/* ═══════════════════════════════════════════════════════════
-   AUTO KATEGORI DARI NAMA MATERIAL
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ KATEGORI MAP ═══ */
 const KATEGORI_MAP = [
-    // Elektronik
-    { keywords: ['televisi', 'tv', 'led', 'monitor', 'display', 'screen'], kat: 'ELV' },
-    { keywords: ['air conditioner', 'ac', 'pendingin', 'kulkas', 'refrigerator', 'freezer', 'dispenser'], kat: 'AC' },
+    { keywords: ['televisi', 'tv', 'led', 'display', 'screen', 'proyektor', 'projector'], kat: 'ELV' },
+    { keywords: ['air conditioner', ' ac ', 'pendingin', 'kulkas', 'refrigerator', 'freezer', 'dispenser', 'ups', 'stabilizer', 'inverter', 'genset'], kat: 'ELV' },
     { keywords: ['komputer', 'pc', 'laptop', 'notebook', 'netbook', 'macbook', 'chromebook'], kat: 'COM' },
     { keywords: ['printer', 'scanner', 'fotocopy', 'copier', 'plotter'], kat: 'PRN' },
-    { keywords: ['proyektor', 'projector', 'lcd', 'layar', 'infocus'], kat: 'ELV' },
-    { keywords: ['radio', 'speaker', 'sound', 'audio', 'microphone', 'mic'], kat: 'ELV' },
-    { keywords: ['kamera', 'camera', 'cctv', 'webcam'], kat: 'ELV' },
-    { keywords: ['hp', 'handphone', 'smartphone', 'telepon', 'phone', 'iphone'], kat: 'TEL' },
-    { keywords: ['router', 'switch', 'hub', 'modem', 'wifi', 'access point', 'server', 'nas'], kat: 'TEL' },
-    { keywords: ['ups', 'stabilizer', 'inverter', 'genset', 'generator'], kat: 'ELV' },
-    
-    // Furniture
-    { keywords: ['meja', 'table', 'desk', 'workstation', 'counter'], kat: 'FUR' },
-    { keywords: ['kursi', 'chair', 'stool', 'sofa', 'bangku'], kat: 'FUR' },
-    { keywords: ['lemari', 'cabinet', 'locker', 'rak', 'shelf', 'almari'], kat: 'FUR' },
-    { keywords: ['tempat tidur', 'bed', 'spring bed', 'kasur', 'matras'], kat: 'FUR' },
-    { keywords: ['papan tulis', 'whiteboard', 'blackboard', 'partisi', 'sekat'], kat: 'FUR' },
-    { keywords: ['laci', 'drawer', 'filing', 'arsip'], kat: 'FUR' },
-    
-    // Kendaraan
-    { keywords: ['motor', 'mobil', 'truk', 'truck', 'van', 'pickup', 'kendaraan', 'vehicle', 'car'], kat: 'VEH' },
-    { keywords: ['sepeda', 'bicycle', 'bike', 'skuter'], kat: 'VEH' },
-    { keywords: ['forklift', 'troli', 'trolley', 'kereta dorong'], kat: 'VEH' },
-    
-    // Mesin
-    { keywords: ['mesin', 'machine', 'motor listrik', 'pompa', 'pump', 'compressor', 'kompresor'], kat: 'MAC' },
-    { keywords: ['conveyor', 'ban berjalan', 'produksi'], kat: 'MAC' },
-    { keywords: ['las', 'welding', 'bor', 'drill', 'gerinda', 'grinder'], kat: 'MAC' },
-    
-    // Tools
-    { keywords: ['tang', 'kunci', 'obeng', 'palu', 'gunting', 'cutter', 'pisau'], kat: 'TOO' },
-    { keywords: ['tool', 'tools', 'perkakas', 'peralatan'], kat: 'TOO' },
-    { keywords: ['tangga', 'ladder', 'scaffolding'], kat: 'TOO' },
-    
-    // Kitchen
-    { keywords: ['kulkas', 'refrigerator', 'freezer', 'microwave', 'oven', 'kompor', 'stove'], kat: 'KIT' },
-    { keywords: ['rice cooker', 'magic com', 'dispenser', 'water heater', 'pemanas'], kat: 'KIT' },
-    { keywords: ['piring', 'gelas', 'sendok', 'garpu', 'mangkok', 'kitchen'], kat: 'KIT' },
-    
-    // Safety
-    { keywords: ['apar', 'fire extinguisher', 'pemadam', 'alarm', 'smoke detector'], kat: 'SAF' },
-    { keywords: ['helm', 'sarung tangan', 'masker', 'safety', 'pelindung', 'ear plug'], kat: 'SAF' },
-    { keywords: ['p3k', 'first aid', 'kotak obat'], kat: 'SAF' },
-    { keywords: ['cctv', 'security', 'keamanan'], kat: 'SAF' },
-    
-    // Lighting
+    { keywords: ['radio', 'speaker', 'sound', 'audio', 'microphone', 'kamera', 'camera', 'cctv', 'webcam'], kat: 'ELV' },
+    { keywords: ['hp', 'handphone', 'smartphone', 'telepon', 'phone', 'iphone', 'router', 'switch', 'modem', 'wifi', 'server', 'nas'], kat: 'TEL' },
+    { keywords: ['meja', 'table', 'desk', 'workstation', 'counter', 'kursi', 'chair', 'stool', 'sofa', 'bangku', 'lemari', 'cabinet', 'locker', 'rak', 'shelf', 'almari', 'laci', 'drawer', 'filing', 'arsip', 'papan tulis', 'whiteboard', 'partisi', 'sekat'], kat: 'FUR' },
+    { keywords: ['motor', 'mobil', 'truk', 'truck', 'van', 'pickup', 'kendaraan', 'vehicle', 'car', 'sepeda', 'bicycle', 'forklift', 'troli', 'trolley'], kat: 'VEH' },
+    { keywords: ['mesin', 'machine', 'pompa', 'pump', 'compressor', 'kompresor', 'conveyor', 'las', 'welding', 'bor', 'drill', 'gerinda', 'grinder'], kat: 'MAC' },
+    { keywords: ['tang', 'kunci', 'obeng', 'palu', 'gunting', 'cutter', 'pisau', 'tool', 'perkakas', 'tangga', 'ladder'], kat: 'TOO' },
+    { keywords: ['kulkas', 'microwave', 'oven', 'kompor', 'stove', 'rice cooker', 'magic com', 'water heater', 'piring', 'gelas', 'sendok'], kat: 'KIT' },
+    { keywords: ['apar', 'fire extinguisher', 'pemadam', 'alarm', 'smoke detector', 'helm', 'sarung tangan', 'masker', 'safety', 'p3k', 'first aid'], kat: 'SAF' },
     { keywords: ['lampu', 'light', 'lamp', 'neon', 'downlight'], kat: 'LGT' },
-    
-    // Water
-    { keywords: ['tandon', 'tank', 'pompa air', 'water pump', 'keran'], kat: 'WTR' },
-    
-    // Office
-    { keywords: ['atk', 'stationery', 'tinta', 'kertas', 'paper', 'pena', 'pensil', 'bulpen'], kat: 'OFF' },
-    { keywords: ['stampel', 'stempel', 'binder', 'clip'], kat: 'OFF' }
+    { keywords: ['tandon', 'tank', 'keran', 'water'], kat: 'WTR' },
+    { keywords: ['atk', 'stationery', 'tinta', 'kertas', 'paper', 'pena', 'pensil', 'bulpen', 'stampel', 'binder', 'clip'], kat: 'OFF' }
 ];
 
 function detectKategori(namaMaterial) {
@@ -390,62 +413,37 @@ function detectKategori(namaMaterial) {
     const nama = String(namaMaterial).toLowerCase().trim();
     for (const item of KATEGORI_MAP) {
         for (const kw of item.keywords) {
-            if (nama.includes(kw.toLowerCase())) {
-                return item.kat;
-            }
+            if (nama.includes(kw)) return item.kat;
         }
     }
     return 'GEN';
 }
 
-/* ═══════════════════════════════════════════════════════════
-   GENERATE KODE: MGI.DEPT.KAT.BULANTAHUN.NNN
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ GENERATE KODE ═══ */
 async function generateKodeInventoryPreview(dept = null, namaMaterial = null) {
     try {
         const now = new Date();
         const bulan = String(now.getMonth() + 1).padStart(2, '0');
         const tahun = now.getFullYear();
         const periode = `${bulan}${tahun}`;
-        
         const deptValue = dept || document.getElementById('gen_dept')?.value || 'UMUM';
         const deptUpper = String(deptValue).trim().toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UMUM';
-        
-        // Auto-detect kategori dari nama material
         const namaValue = namaMaterial || document.getElementById('gen_nama')?.value || '';
         const kategori = detectKategori(namaValue);
-        
         const prefix = `MGI.${deptUpper}.${kategori}.${periode}.`;
-        
-        const { data } = await supabaseClient
-            .from('general_assets')
-            .select('kode_inventory')
-            .like('kode_inventory', `${prefix}%`)
-            .order('kode_inventory', { ascending: false })
-            .limit(50);
-        
+        const { data } = await supabaseClient.from('general_assets').select('kode_inventory').like('kode_inventory', `${prefix}%`).order('kode_inventory', { ascending: false }).limit(50);
         let maxNum = 0;
         (data || []).forEach(item => {
-            const match = String(item.kode_inventory).match(
-                new RegExp(`MGI\\.${deptUpper}\\.${kategori}\\.${periode}\\.(\\d+)`)
-            );
-            if (match) {
-                const num = parseInt(match[1]);
-                if (num > maxNum) maxNum = num;
-            }
+            const match = String(item.kode_inventory).match(new RegExp(`MGI\\.${deptUpper}\\.${kategori}\\.${periode}\\.(\\d+)`));
+            if (match) { const num = parseInt(match[1]); if (num > maxNum) maxNum = num; }
         });
-        
-        const nextNum = maxNum + 1;
-        return `${prefix}${String(nextNum).padStart(3, '0')}`;
+        return `${prefix}${String(maxNum + 1).padStart(3, '0')}`;
     } catch (err) {
-        console.warn('Generate kode err:', err);
         const now = new Date();
         const periode = `${String(now.getMonth() + 1).padStart(2, '0')}${now.getFullYear()}`;
         return `MGI.UMUM.GEN.${periode}.001`;
     }
 }
-
-/* Auto-update kode saat nama material / dept berubah */
 async function autoUpdateKode() {
     const kodeInput = document.getElementById('gen_kode');
     if (!kodeInput) return;
@@ -457,17 +455,14 @@ async function autoUpdateKode() {
             const nama = document.getElementById('gen_nama')?.value || '';
             const newKode = await generateKodeInventoryPreview(dept, nama);
             if (kodeInput.dataset.manualEdited !== 'true') kodeInput.value = newKode;
-        } catch (err) { console.warn(err); }
+        } catch (err) {}
     }, 500);
 }
-
 document.addEventListener('input', function(e) {
     if (e.target && e.target.id === 'gen_kode') e.target.dataset.manualEdited = 'true';
 }, true);
 
-/* ═══════════════════════════════════════════════════════════
-   TOAST / CONFETTI
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ TOAST ═══ */
 function showToast(title, message, type = 'info') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -495,12 +490,9 @@ function toggleTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     document.getElementById('themeBtn').innerText = currentTheme === 'dark' ? '🌙' : '☀️';
     localStorage.setItem('theme', currentTheme);
-    showToast('Theme', `Mode ${currentTheme === 'dark' ? 'Gelap' : 'Terang'}`, 'info');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   AUTH
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ AUTH ═══ */
 supabaseClient.auth.onAuthStateChange((event, session) => { if (session) checkUser(); });
 checkUser();
 async function checkUser() {
@@ -527,14 +519,11 @@ async function handleLogin() {
 async function handleLogout() {
     if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-    await logActivity('logout', '', '', 'User logout');
     await supabaseClient.auth.signOut();
     window.location.reload();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   USER PROFILE
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ USER PROFILE ═══ */
 async function loadUserProfile() {
     if (!currentUser?.email) return;
     const { data } = await supabaseClient.from('user_profiles').select('*').eq('email', currentUser.email).maybeSingle();
@@ -547,16 +536,12 @@ async function loadUserProfile() {
             window.location.reload();
             return;
         }
-        await supabaseClient.from('user_profiles').update({ last_login: new Date().toISOString() }).eq('email', currentUser.email);
     } else {
         const defaultRole = currentUser.email.includes('admin') ? 'super-admin' : 'staff';
         userRole = defaultRole;
-        await supabaseClient.from('user_profiles').insert([{
-            email: currentUser.email, full_name: currentUser.email.split('@')[0], role: defaultRole, is_active: true
-        }]);
+        await supabaseClient.from('user_profiles').insert([{ email: currentUser.email, full_name: currentUser.email.split('@')[0], role: defaultRole, is_active: true }]);
     }
     updateUserUI();
-    setTimeout(() => { updateMyReqBadge(); updateApprovalBadge(); }, 1000);
 }
 function updateUserUI() {
     const emailEl = document.getElementById('userEmail');
@@ -576,9 +561,7 @@ function hasPermission(action) {
     return (perms[userRole] || perms.staff).includes(action);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PT & MODULE
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ PT & MODULE ═══ */
 function setPT(table, name) {
     currentPTTable = table;
     currentPTName = name;
@@ -597,7 +580,6 @@ function switchModule(module) {
     document.getElementById('formContainer').classList.add('hidden');
     document.getElementById('scannerSection').style.display = module === 'it' ? 'block' : 'none';
     document.getElementById('deptSummarySection').style.display = module === 'it' ? 'block' : 'none';
-    activeFilter = null;
     knownDepts = new Set();
     selectedRows.clear();
     updateBulkBar();
@@ -606,14 +588,10 @@ function switchModule(module) {
     loadData();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ACTIVITY LOG
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ ACTIVITY LOG ═══ */
 async function logActivity(action, tableName, recordId, detail) {
     try {
-        await supabaseClient.from('activity_log').insert([{
-            user_email: currentUser?.email || 'unknown', action, table_name: tableName, record_id: recordId, detail
-        }]);
+        await supabaseClient.from('activity_log').insert([{ user_email: currentUser?.email || 'unknown', action, table_name: tableName, record_id: recordId, detail }]);
     } catch (err) {}
 }
 async function showLogModal() {
@@ -628,9 +606,7 @@ async function showLogModal() {
 }
 function closeLogModal() { document.getElementById('logModal').classList.add('hidden'); }
 
-/* ═══════════════════════════════════════════════════════════
-   NOTIFICATIONS
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ NOTIFIKASI ═══ */
 function checkNotifications(data) {
     const today = new Date();
     const notifications = [];
@@ -638,8 +614,8 @@ function checkNotifications(data) {
         if (i.license_expiry) {
             const exp = new Date(i.license_expiry);
             const days = Math.ceil((exp - today) / 86400000);
-            if (days < 0) notifications.push({ type: 'error', msg: `${i.id_aset}: Lisensi EXPIRED ${Math.abs(days)} hari` });
-            else if (days <= 7) notifications.push({ type: 'warning', msg: `${i.id_aset}: Lisensi expiring ${days} hari` });
+            if (days < 0) notifications.push({ type: 'error', msg: `${i.id_aset}: EXPIRED ${Math.abs(days)} hari` });
+            else if (days <= 7) notifications.push({ type: 'warning', msg: `${i.id_aset}: expiring ${days} hari` });
         }
     });
     const badge = document.getElementById('notifBadge');
@@ -656,9 +632,7 @@ function showNotifications() {
     document.body.appendChild(modal);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   REFRESH
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ REFRESH ═══ */
 async function refreshAll(silent = false) {
     const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
     try {
@@ -666,10 +640,6 @@ async function refreshAll(silent = false) {
         if (error) throw error;
         rawData = data || [];
         const currentDepts = new Set(rawData.map(x => (x.dept || x.department || 'N/A').toUpperCase().trim()).filter(Boolean));
-        const newDepts = [...currentDepts].filter(d => !knownDepts.has(d));
-        if (newDepts.length > 0 && knownDepts.size > 0) {
-            if (!silent) showToast('Dept Baru!', `${newDepts.join(', ')}`, 'success');
-        }
         knownDepts = currentDepts;
         updateStats(rawData);
         if (activeModule === 'it') renderDeptSummary(rawData);
@@ -677,13 +647,15 @@ async function refreshAll(silent = false) {
         renderTable(rawData);
         updateFilterOptions();
         checkNotifications(rawData);
+        if (currentView === 'kanban') renderKanban();
+        if (currentView === 'calendar') renderCalendar();
     } catch (err) {
         console.error('Refresh error:', err);
         if (!silent) showToast('Error', err.message, 'error');
     }
 }
 async function loadData() { await refreshAll(true); }
-function manualRefresh() { showToast('Refresh', 'Memuat ulang...', 'info'); refreshAll(); }
+function manualRefresh() { refreshAll(); }
 
 function updateFilterOptions() {
     const depts = new Set(rawData.map(x => x.dept || x.department).filter(Boolean));
@@ -695,9 +667,7 @@ function setupRealtime(table) {
     try {
         realtimeChannel = supabaseClient.channel(`public:${table}`)
             .on('postgres_changes', { event: '*', schema: 'public', table: table }, () => {
-                const status = document.getElementById('connectionStatus');
-                if (status) status.innerText = '⚡ Update...';
-                setTimeout(() => { refreshAll(true); if (status) status.innerText = 'Live'; }, 300);
+                setTimeout(() => refreshAll(true), 300);
             }).subscribe();
     } catch (err) {}
 }
@@ -709,9 +679,7 @@ function setupAutoRefresh() {
     }, 15000);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FILTER
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ FILTER ═══ */
 function applyFilters(data) {
     let filtered = data;
     const deptFilter = document.getElementById('filterDept')?.value;
@@ -722,9 +690,7 @@ function applyFilters(data) {
 }
 function clearFilters() { document.getElementById('searchInput').value = ''; document.getElementById('filterDept').value = ''; renderTable(rawData); }
 
-/* ═══════════════════════════════════════════════════════════
-   RENDER TABLE
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ RENDER TABLE ═══ */
 function renderTable(data) {
     const thead = document.getElementById('tableHead');
     const tbody = document.getElementById('tableBody');
@@ -794,9 +760,7 @@ function renderTable(data) {
     updateBulkBar();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   BULK SELECT
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ BULK SELECT ═══ */
 function toggleSelectAll(el) { document.querySelectorAll('.row-check').forEach(c => { c.checked = el.checked; if (el.checked) selectedRows.add(c.dataset.id); else selectedRows.delete(c.dataset.id); }); updateBulkBar(); }
 function toggleRow(el, id) { if (el.checked) selectedRows.add(String(id)); else selectedRows.delete(String(id)); updateBulkBar(); }
 function updateBulkBar() { const bar = document.getElementById('bulkActionBar'); const cnt = document.getElementById('selectedCount'); if (cnt) cnt.innerText = selectedRows.size; if (bar) bar.classList.toggle('hidden', selectedRows.size === 0); }
@@ -807,15 +771,12 @@ async function bulkDelete() {
     const table = activeModule === 'it' ? currentPTTable : 'general_assets';
     const key = activeModule === 'it' ? 'id_aset' : 'id';
     for (const id of [...selectedRows]) { const val = isNaN(id) ? id : parseInt(id); await supabaseClient.from(table).update({ deleted_at: new Date().toISOString() }).eq(key, val); }
-    await logActivity('bulk_delete', table, '', `${selectedRows.size} item`);
     showToast('Bulk Delete', `${selectedRows.size} item dihapus`, 'success');
     clearSelection();
     await refreshAll(true);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STATS
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ STATS ═══ */
 function updateStats(data) {
     document.getElementById('statTotal').innerText = data.length;
     document.getElementById('statActive').innerText = data.filter(i => { const s = String(i.status || i.jenis_inventaris || '').toLowerCase(); return s.includes('active') || s.includes('fixed'); }).length;
@@ -827,13 +788,11 @@ function renderDeptSummary(data) {
     const counts = {};
     data.forEach(i => { const d = (i.dept || 'LAINNYA').toUpperCase().trim(); counts[d] = (counts[d] || 0) + 1; });
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    document.getElementById('deptSummaryGrid').innerHTML = sorted.map(([dept, count]) => `<div class="stat-card" data-dept="${dept}" onclick="filterByDept('${dept}')"><div class="stat-label">${dept}</div><div class="stat-count">${count}</div></div>`).join('');
+    document.getElementById('deptSummaryGrid').innerHTML = sorted.map(([dept, count]) => `<div class="stat-card" onclick="filterByDept('${dept}')"><div class="stat-label">${dept}</div><div class="stat-count">${count}</div></div>`).join('');
 }
 function filterByDept(dept) { document.getElementById('searchInput').value = dept; renderTable(rawData); showToast('Filter', `Dept: ${dept}`, 'info'); }
 
-/* ═══════════════════════════════════════════════════════════
-   CHARTS
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ CHARTS ═══ */
 function renderCharts(data) {
     Object.keys(charts).forEach(key => { if (charts[key]) { try { charts[key].destroy(); } catch(e) {} charts[key] = null; } });
     const commonOpts = {
@@ -858,6 +817,7 @@ function renderITCharts(data, commonOpts) {
         const dc = {};
         data.forEach(i => { const d = String(i.dept || 'LAINNYA').toUpperCase(); dc[d] = (dc[d] || 0) + 1; });
         const sd = Object.entries(dc).sort((a, b) => b[1] - a[1]);
+        cDept.parentElement.style.height = Math.max(280, sd.length * 32) + 'px';
         charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6 }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } } } });
     }
     const cDevice = document.getElementById('chartDevice');
@@ -943,9 +903,7 @@ function renderGeneralCharts(data, commonOpts) {
     }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   HELPERS
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ HELPERS ═══ */
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 function calcDepreciation(harga, umur) { return harga || 0; }
 async function uploadImage(file, prefix = 'img') {
@@ -975,9 +933,119 @@ function viewImage(url) {
     document.body.appendChild(modal);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FORM
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ VIEW SWITCHER ═══ */
+function switchView(view) {
+    currentView = view;
+    ['table','kanban','calendar','timeline'].forEach(v => {
+        const btn = document.getElementById('btnView' + v.charAt(0).toUpperCase() + v.slice(1));
+        if (btn) btn.className = view === v ? 'tab-btn active' : 'tab-btn';
+    });
+    const tableWrapper = document.querySelector('.table-wrapper');
+    if (tableWrapper) tableWrapper.parentElement.style.display = view === 'table' ? 'block' : 'none';
+    document.getElementById('kanbanContainer').classList.toggle('hidden', view !== 'kanban');
+    document.getElementById('calendarContainer').classList.toggle('hidden', view !== 'calendar');
+    document.getElementById('timelineContainer').classList.toggle('hidden', view !== 'timeline');
+    if (view === 'kanban') renderKanban();
+    if (view === 'calendar') renderCalendar();
+    if (view === 'timeline') renderTimeline();
+}
+
+/* ═══ KANBAN ═══ */
+function renderKanban() {
+    if (activeModule !== 'it') {
+        document.getElementById('kanbanActive').innerHTML = '<p class="text-gray-500 text-xs text-center py-4">Kanban hanya untuk modul IT</p>';
+        document.getElementById('kanbanMaint').innerHTML = '';
+        document.getElementById('kanbanBroken').innerHTML = '';
+        document.getElementById('kanbanCountActive').innerText = '0';
+        document.getElementById('kanbanCountMaint').innerText = '0';
+        document.getElementById('kanbanCountBroken').innerText = '0';
+        return;
+    }
+    const columns = { Active: [], Maintenance: [], Broken: [] };
+    rawData.forEach(item => {
+        const status = String(item.status || 'Active');
+        if (columns[status]) columns[status].push(item);
+        else columns.Active.push(item);
+    });
+    const renderCard = (item) => `
+        <div class="glass-card p-3 mb-2 cursor-grab hover:border-indigo-400" draggable="true" ondragstart="handleKanbanDrag(event, '${item.id_aset}')">
+            <div class="flex justify-between items-start mb-1">
+                <span class="text-indigo-300 font-mono text-xs">${item.id_aset}</span>
+                <button onclick="editITAsset('${item.id_aset}')" class="text-blue-400 text-xs">✏️</button>
+            </div>
+            <div class="text-white text-sm font-semibold">${item.user || '-'}</div>
+            <div class="text-gray-400 text-xs">${item.device || '-'} · ${item.dept || '-'}</div>
+        </div>`;
+    document.getElementById('kanbanActive').innerHTML = columns.Active.map(renderCard).join('');
+    document.getElementById('kanbanMaint').innerHTML = columns.Maintenance.map(renderCard).join('');
+    document.getElementById('kanbanBroken').innerHTML = columns.Broken.map(renderCard).join('');
+    document.getElementById('kanbanCountActive').innerText = columns.Active.length;
+    document.getElementById('kanbanCountMaint').innerText = columns.Maintenance.length;
+    document.getElementById('kanbanCountBroken').innerText = columns.Broken.length;
+}
+function handleKanbanDrag(event, assetId) { draggedAssetId = assetId; }
+async function handleKanbanDrop(event, newStatus) {
+    event.preventDefault();
+    if (!draggedAssetId) return;
+    if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses', 'error'); draggedAssetId = null; return; }
+    await supabaseClient.from(currentPTTable).update({ status: newStatus }).eq('id_aset', draggedAssetId);
+    await logActivity('status_change', currentPTTable, draggedAssetId, `Status → ${newStatus}`);
+    showToast('Sukses', `Status → ${newStatus}`, 'success');
+    draggedAssetId = null;
+    await refreshAll(true);
+    renderKanban();
+}
+
+/* ═══ CALENDAR ═══ */
+function renderCalendar() {
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    document.getElementById('calendarTitle').innerText = `${monthNames[month]} ${year}`;
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    let html = '';
+    for (let i = 0; i < firstDay; i++) html += '<div></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
+        const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+        html += `<div class="glass-card p-2 min-h-[80px] cursor-pointer hover:border-indigo-400 ${isToday ? 'border-emerald-500' : ''} ${events.length > 0 ? 'bg-indigo-500/5' : ''}" onclick="showDayEvents('${dateStr}')">
+            <div class="text-white text-xs font-bold">${d}</div>
+            ${events.slice(0, 2).map(e => `<div class="text-[9px] text-indigo-300 truncate">${e.id_aset || e.kode_inventory || e.nama_material || 'Item'}</div>`).join('')}
+            ${events.length > 2 ? `<div class="text-[9px] text-gray-400">+${events.length - 2} lagi</div>` : ''}
+        </div>`;
+    }
+    document.getElementById('calendarGrid').innerHTML = html;
+}
+function calendarPrev() { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(); }
+function calendarNext() { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); }
+function showDayEvents(dateStr) {
+    const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
+    if (events.length === 0) { showToast('Info', 'Tidak ada event', 'info'); return; }
+    showToast('Events', `${events.length} event pada ${dateStr}`, 'info');
+}
+
+/* ═══ TIMELINE ═══ */
+async function renderTimeline() {
+    const { data } = await supabaseClient.from('asset_lifecycle').select('*').order('event_date', { ascending: false }).limit(30);
+    const container = document.getElementById('timelineContent');
+    if (!data || data.length === 0) { container.innerHTML = '<p class="text-gray-400 text-sm">Belum ada lifecycle event.</p>'; return; }
+    container.innerHTML = data.map(e => `
+        <div class="flex gap-3 pb-4 border-l-2 border-indigo-500/30 pl-4 ml-2 relative">
+            <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-500 border-2 border-[#0a0e1a]"></div>
+            <div class="flex-1">
+                <div class="text-white text-sm font-semibold">${e.event_type}</div>
+                <div class="text-indigo-300 text-xs">${e.asset_id}</div>
+                <div class="text-gray-400 text-xs">${new Date(e.event_date).toLocaleString('id-ID')}</div>
+                <div class="text-gray-500 text-[10px]">by ${e.created_by}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+/* ═══ FORM ═══ */
 async function toggleForm() {
     const fc = document.getElementById('formContainer');
     if (!fc.classList.contains('hidden')) { fc.classList.add('hidden'); return; }
@@ -1048,9 +1116,7 @@ async function toggleForm() {
     fc.scrollIntoView({ behavior: 'smooth' });
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SAVE
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ SAVE ═══ */
 async function saveITAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     const harga = parseFloat(v('it_harga')) || 0;
@@ -1069,7 +1135,6 @@ async function saveITAsset() {
         if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
         showToast('⏳ Menunggu Approval', 'Data dikirim ke manager', 'info');
         toggleForm();
-        updateMyReqBadge();
         return;
     }
     const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
@@ -1103,7 +1168,6 @@ async function saveGeneralAsset() {
         if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
         showToast('⏳ Menunggu Approval', `${payload.kode_inventory} dikirim`, 'info');
         toggleForm();
-        updateMyReqBadge();
         return;
     }
     const { error } = await supabaseClient.from('general_assets').insert([payload]);
@@ -1117,9 +1181,7 @@ async function saveGeneralAsset() {
     }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   EDIT & UPDATE
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ EDIT ═══ */
 function editITAsset(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1168,7 +1230,7 @@ function editGeneralAsset(id) {
         <div>
             <label>Kode Inventory *</label>
             <input type="text" id="gen_kode" value="${item.kode_inventory || ''}" />
-            <p class="text-[10px] text-purple-400 mt-1">Kategori terdeteksi: <strong>${kat}</strong></p>
+            <p class="text-[10px] text-purple-400 mt-1">Kategori: <strong>${kat}</strong></p>
         </div>
         <div><label>Nama Material *</label><input type="text" id="gen_nama" value="${item.nama_material || ''}" /></div>
         <div><label>材料名称</label><input type="text" id="gen_mandarin" value="${item.nama_material_mandarin || ''}" /></div>
@@ -1209,9 +1271,7 @@ async function updateGeneralAsset(id) {
     else { showToast('Sukses', 'Data diupdate!', 'success'); toggleForm(); await refreshAll(true); }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   DELETE
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ DELETE ═══ */
 async function deleteItem(id_aset) {
     if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm(`Hapus aset ${id_aset}?`)) return;
@@ -1253,9 +1313,7 @@ function showDetailGeneral(id) {
     document.body.appendChild(modal);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   IMPORT
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ IMPORT ═══ */
 function openBulkImport() {
     document.getElementById('bulkImportModal').classList.remove('hidden');
     document.getElementById('importPreview').classList.add('hidden');
@@ -1356,9 +1414,7 @@ async function confirmImport() {
     await refreshAll(true);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   TRASH
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ TRASH ═══ */
 async function showDeletedAssets() {
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
     const { data: trash } = await supabaseClient.from(targetTable).select('*').not('deleted_at', 'is', null);
@@ -1379,13 +1435,9 @@ async function restoreAsset(id) {
     if (!error) { showToast('Dipulihkan', '', 'success'); closeTrashModal(); await refreshAll(true); }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   UTILS
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ UTILS ═══ */
 document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success'));
-}
+function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success')); }
 function printSingleGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
@@ -1415,9 +1467,49 @@ function initScanner() {
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 
-/* ═══════════════════════════════════════════════════════════
-   APPROVAL & USER MGMT (SIMPLE)
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ STUB MODALS ═══ */
+async function showMaintenanceModal() { showToast('Info', 'Maintenance Log - coming soon', 'info'); }
+async function showWebhooks() { showToast('Info', 'Webhooks - coming soon', 'info'); }
+async function showSavedReports() { showToast('Info', 'Saved Reports - coming soon', 'info'); }
+async function showAnalytics() {
+    const totalValue = rawData.reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-white">📈 Analytics</h2>
+            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total Aset</div></div>
+            <div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Total Nilai</div></div>
+        </div>
+    </div>`;
+    document.body.appendChild(modal);
+}
+async function showExecutiveDashboard() {
+    const { data: itData } = await supabaseClient.from('inventaris_p1').select('*').is('deleted_at', null);
+    const { data: genData } = await supabaseClient.from('general_assets').select('*').is('deleted_at', null);
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-white">📊 Dashboard Eksekutif</h2>
+            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏢</div><div class="text-2xl font-bold text-indigo-400">${itData?.length || 0}</div><div class="text-xs text-gray-400">Aset IT</div></div>
+            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">📋</div><div class="text-2xl font-bold text-purple-400">${genData?.length || 0}</div><div class="text-xs text-gray-400">Aset General</div></div>
+            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">💰</div><div class="text-2xl font-bold text-emerald-400">Rp ${([...(itData||[]), ...(genData||[])].reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0)/1000000).toFixed(0)}Jt</div><div class="text-xs text-gray-400">Nilai</div></div>
+            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏬</div><div class="text-2xl font-bold text-amber-400">2</div><div class="text-xs text-gray-400">PT</div></div>
+        </div>
+    </div>`;
+    document.body.appendChild(modal);
+}
+
+/* ═══ APPROVAL & USER MGMT ═══ */
 async function showApprovalQueue() {
     const { data } = await supabaseClient.from('approval_queue').select('*').order('requested_at', { ascending: false }).limit(50);
     const modal = document.createElement('div');
@@ -1435,9 +1527,7 @@ async function approveRequest(id, approve) {
     document.querySelector('.modal-overlay')?.remove();
     await refreshAll(true);
 }
-async function updateApprovalBadge() { const badge = document.getElementById('approvalBadge'); if (badge) badge.classList.add('hidden'); }
 async function showMyRequests() { showToast('Info', 'Request Saya', 'info'); }
-async function updateMyReqBadge() { const badge = document.getElementById('myReqBadge'); if (badge) badge.classList.add('hidden'); }
 async function showUserManagement() { document.getElementById('userMgmtModal').classList.remove('hidden'); await loadUserList(); }
 function closeUserMgmt() { document.getElementById('userMgmtModal').classList.add('hidden'); }
 async function loadUserList() {
@@ -1454,7 +1544,7 @@ async function saveNewUserProfile() {
     await loadUserList();
 }
 
-console.log('🚀 Enterprise Asset Manager v8.0 LOADED');
+console.log('🚀 Enterprise Asset Manager v8.1 LOADED');
 </script>
 </body>
 </html>
