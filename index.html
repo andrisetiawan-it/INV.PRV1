@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v7</title>
+<title>Enterprise Asset Manager Pro v8</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -33,33 +33,24 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .glass-card:hover { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15); }
 .gradient-text { background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .bg-animated { background: linear-gradient(-45deg, #0a0e1a, #1a1040, #0a1a2e, #0a0e1a); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
-[data-theme="light"] .bg-animated { background: linear-gradient(-45deg, #e0e7ff, #f3e8ff, #fce7f3, #e0e7ff); }
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px 12px; transition: all 0.3s ease; cursor: pointer; text-align: center; }
-.stat-card:hover { transform: scale(1.05); border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.08); }
-.stat-card.new-dept { animation: newDeptPulse 2s ease-in-out 1; }
-@keyframes newDeptPulse { 0%, 100% { border-color: rgba(255,255,255,0.06); } 50% { border-color: #34d399; box-shadow: 0 0 20px rgba(52, 211, 153, 0.5); } }
+.stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px 12px; cursor: pointer; text-align: center; }
+.stat-card:hover { transform: scale(1.05); border-color: rgba(99, 102, 241, 0.5); }
 .stat-count { font-size: 1.5rem; font-weight: 800; color: #818cf8; }
-.stat-label { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.stat-label { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; font-weight: 600; }
 .table-wrapper { max-height: 60vh; overflow: auto; border-radius: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); }
 .table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
-.table-wrapper thead th { position: sticky; top: 0; z-index: 20; background: rgba(26, 16, 64, 0.98) !important; backdrop-filter: blur(10px); color: #c4b5fd !important; font-weight: 600; padding: 10px 8px; text-transform: uppercase; font-size: 0.58rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
-.table-wrapper tbody td { padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #e5e7eb; font-size: 0.7rem; vertical-align: middle; text-align: center; }
+.table-wrapper thead th { position: sticky; top: 0; z-index: 20; background: rgba(26, 16, 64, 0.98) !important; color: #c4b5fd !important; font-weight: 600; padding: 10px 8px; text-transform: uppercase; font-size: 0.58rem; text-align: center; white-space: nowrap; }
+.table-wrapper tbody td { padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #e5e7eb; font-size: 0.7rem; text-align: center; }
 .table-wrapper tbody tr:hover { background: rgba(99, 102, 241, 0.05); }
 .table-wrapper input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; accent-color: #818cf8; }
-.badge-status { padding: 3px 10px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; display: inline-block; }
-.badge-status.active { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
-.badge-status.maintenance { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
-.badge-status.broken { background: rgba(251, 113, 133, 0.2); color: #fb7185; border: 1px solid rgba(251, 113, 133, 0.3); }
-.qr-code { width: 42px; height: 42px; border-radius: 6px; background: white; padding: 2px; display: inline-block; cursor: pointer; transition: transform 0.2s; }
-.qr-code:hover { transform: scale(1.15); }
+.badge-status { padding: 3px 10px; border-radius: 20px; font-weight: 600; font-size: 0.6rem; display: inline-block; background: rgba(52, 211, 153, 0.2); color: #34d399; }
+.qr-code { width: 42px; height: 42px; border-radius: 6px; background: white; padding: 2px; display: inline-block; cursor: pointer; }
 .login-box { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 40px; width: 100%; max-width: 420px; }
 .login-box input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 12px 16px; width: 100%; outline: none; }
-.login-box input:focus { border-color: #818cf8; }
 .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .form-grid label { color: #9ca3af; font-size: 0.6rem; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; }
-.form-grid input, .form-grid select, .form-grid textarea { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: white; border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; width: 100%; outline: none; transition: all 0.2s; }
-.form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus { border-color: #818cf8; background: rgba(129, 140, 248, 0.05); }
+.form-grid input, .form-grid select, .form-grid textarea { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: white; border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; width: 100%; outline: none; }
 .form-grid select option { background: #1a1040; color: white; }
 .form-section { grid-column: 1 / -1; margin-top: 8px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); }
 .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; max-width: 400px; }
@@ -69,33 +60,25 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .toast-error { background: rgba(251, 113, 133, 0.15); border-color: rgba(251, 113, 133, 0.3); }
 .toast-info { background: rgba(96, 165, 250, 0.15); border-color: rgba(96, 165, 250, 0.3); }
 .toast-warning { background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.3); }
-.tab-btn { padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 0.78rem; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #9ca3af; white-space: nowrap; }
-.tab-btn:hover { background: rgba(255,255,255,0.08); }
+.tab-btn { padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 0.78rem; cursor: pointer; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #9ca3af; white-space: nowrap; }
 .tab-btn.active { background: linear-gradient(135deg, #818cf8, #c084fc); color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.3); border-color: transparent; }
-.btn-action { padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; font-weight: 600; white-space: nowrap; }
-.btn-action:hover { transform: translateY(-1px); }
+.btn-action { padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; border: 1px solid transparent; font-weight: 600; }
 .btn-action.edit { background: rgba(96, 165, 250, 0.15); color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); }
 .btn-action.label { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
-.btn-action.clone { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
 .btn-action.transfer { background: rgba(34, 211, 238, 0.15); color: #22d3ee; border-color: rgba(34, 211, 238, 0.3); }
 .btn-action.delete { background: rgba(251, 113, 133, 0.15); color: #fb7185; border-color: rgba(251, 113, 133, 0.3); }
-.drop-zone { border: 2px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.02); cursor: pointer; transition: all 0.3s; }
-.drop-zone:hover { border-color: #818cf8; background: rgba(99, 102, 241, 0.05); }
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.filter-btn { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid; }
+.drop-zone { border: 2px dashed rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.02); cursor: pointer; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
+.filter-btn { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1px solid; }
 .filter-btn.warning { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
 .filter-btn.danger { background: rgba(251, 113, 133, 0.1); color: #fb7185; border-color: rgba(251, 113, 133, 0.3); }
 .filter-btn.active { background: rgba(129, 140, 248, 0.2); border-color: #818cf8; color: #818cf8; }
-.chart-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; transition: all 0.3s ease; }
-.live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: livePulse 2s ease-in-out infinite; }
+.chart-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: livePulse 2s infinite; }
 @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-.upload-box { border: 2px dashed rgba(99, 102, 241, 0.4); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(99,102,241,0.03); }
-.upload-box:hover { border-color: #818cf8; background: rgba(99,102,241,0.08); }
-.preview-img { max-width: 120px; max-height: 120px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: transform 0.2s; }
-.preview-img:hover { transform: scale(1.05); }
-.badge-notif { position: absolute; top: -4px; right: -4px; background: #fb7185; color: white; font-size: 10px; border-radius: 10px; padding: 2px 6px; font-weight: 700; animation: badgePulse 2s ease-in-out infinite; }
-@keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+.upload-box { border: 2px dashed rgba(99, 102, 241, 0.4); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; background: rgba(99,102,241,0.03); }
+.preview-img { max-width: 120px; max-height: 120px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; }
+.badge-notif { position: absolute; top: -4px; right: -4px; background: #fb7185; color: white; font-size: 10px; border-radius: 10px; padding: 2px 6px; font-weight: 700; }
 .role-badge { padding: 3px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
 .role-super-admin { background: linear-gradient(135deg, #f472b6, #c084fc); color: white; }
 .role-admin { background: linear-gradient(135deg, #818cf8, #6366f1); color: white; }
@@ -103,15 +86,14 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .role-staff { background: rgba(52, 211, 153, 0.2); color: #34d399; }
 .role-viewer { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
 .role-auditor { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-.kpi-card { background: linear-gradient(135deg, rgba(129,140,248,0.15), rgba(192,132,252,0.1)); border: 1px solid rgba(129,140,248,0.3); border-radius: 16px; padding: 20px; position: relative; overflow: hidden; }
+.kpi-card { background: linear-gradient(135deg, rgba(129,140,248,0.15), rgba(192,132,252,0.1)); border: 1px solid rgba(129,140,248,0.3); border-radius: 16px; padding: 20px; }
 .kpi-value { font-size: 2rem; font-weight: 800; color: #818cf8; line-height: 1; }
 .kpi-label { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; font-weight: 600; margin-top: 4px; }
 .confetti { position: fixed; width: 10px; height: 10px; background: #818cf8; animation: confettiFall 3s linear forwards; z-index: 99999; pointer-events: none; }
 @keyframes confettiFall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
 @media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
-@media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } .stat-count { font-size: 1.2rem; } }
+@media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
 ::-webkit-scrollbar-thumb { background: rgba(129, 140, 248, 0.3); border-radius: 4px; }
 </style>
 </head>
@@ -130,7 +112,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v7.0 • Enterprise Edition</p>
+<p class="text-gray-500 text-xs mt-6">v8.0 • Auto-Code from Material Name</p>
 </div>
 </div>
 
@@ -150,7 +132,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div id="bulkImportModal" class="hidden modal-overlay">
 <div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
 <div class="flex justify-between items-center mb-4">
-<h2 class="text-xl font-bold text-white">📤 Import Massal <span id="importModalTitle" class="text-indigo-400 text-sm"></span></h2>
+<h2 class="text-xl font-bold text-white">📤 Import Massal</h2>
 <button onclick="closeBulkImport()" class="text-gray-400 hover:text-white text-xl">✕</button>
 </div>
 <div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
@@ -162,7 +144,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" onchange="handleFileUpload(event)" />
 </div>
 <div id="importPreview" class="hidden mt-4">
-<h3 class="text-white font-semibold text-sm mb-2">📋 Preview (<span id="previewCount">0</span> baris)</h3>
+<h3 class="text-white font-semibold text-sm mb-2">📋 Preview</h3>
 <div class="overflow-auto max-h-48 rounded-xl border border-white/10">
 <table class="w-full text-xs">
 <thead class="bg-white/5 sticky top-0"><tr id="previewHeader"></tr></thead>
@@ -184,7 +166,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <h2 class="text-xl font-bold text-white">🗑️ Trash</h2>
 <button onclick="closeTrashModal()" class="text-gray-400 hover:text-white text-xl">✕</button>
 </div>
-<div id="trashBody" class="space-y-2"></div>
+<div id="trashBody"></div>
 </div>
 </div>
 
@@ -206,10 +188,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <h2 class="text-xl font-bold text-white">👥 Kelola User</h2>
 <button onclick="closeUserMgmt()" class="text-gray-400 hover:text-white text-xl">✕</button>
 </div>
-<div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-<p class="text-blue-300 text-sm">💡 Bikin user dulu di Supabase → Authentication → Users. Setelah itu atur role disini.</p>
-</div>
-<button onclick="showAddUserForm()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah User Baru</button>
+<button onclick="showAddUserForm()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah User</button>
 <div id="addUserForm"></div>
 <div id="userList" class="space-y-2"></div>
 </div>
@@ -231,12 +210,11 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <span class="text-xs text-gray-300" id="userEmail">-</span>
 <span id="userRoleBadge" class="role-badge role-staff">STAFF</span>
 </div>
-<button onclick="openCommandPalette()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Ctrl+K">🔍</button>
-<button onclick="showApprovalQueue()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Approval Queue">✅<span id="approvalBadge" class="badge-notif hidden">0</span></button>
-<button onclick="showMyRequests()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Request Saya">📤<span id="myReqBadge" class="badge-notif hidden">0</span></button>
+<button onclick="showApprovalQueue()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">✅<span id="approvalBadge" class="badge-notif hidden">0</span></button>
+<button onclick="showMyRequests()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">📤<span id="myReqBadge" class="badge-notif hidden">0</span></button>
 <button onclick="showNotifications()" class="relative text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">🔔<span id="notifBadge" class="badge-notif hidden">0</span></button>
 <button onclick="showLogModal()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">📝</button>
-<button onclick="showUserManagement()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Kelola User">👥</button>
+<button onclick="showUserManagement()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">👥</button>
 <button onclick="toggleTheme()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" id="themeBtn">🌙</button>
 <button onclick="manualRefresh()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">🔄</button>
 <button onclick="handleLogout()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">Logout</button>
@@ -244,12 +222,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </nav>
 
 <div class="max-w-[1800px] mx-auto p-4">
-<div class="flex gap-2 mb-4 flex-wrap">
-<button onclick="showAnalytics()" class="tab-btn">📈 Analytics</button>
-<button onclick="showMaintenanceModal()" class="tab-btn">🔧 Maintenance</button>
-<button onclick="showExecutiveDashboard()" class="tab-btn">📊 Eksekutif</button>
-</div>
-
 <div class="flex gap-3 mb-6 flex-wrap">
 <button onclick="switchModule('it')" id="btnTabIT" class="tab-btn active">💻 IT Computers</button>
 <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 Aset General</button>
@@ -269,25 +241,23 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-<div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg">📦</div><div><p class="text-gray-400 text-[10px] uppercase font-semibold">Total Item</p><p id="statTotal" class="text-white text-xl font-bold">0</p></div></div></div>
-<div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">✨</div><div><p class="text-gray-400 text-[10px] uppercase font-semibold">Active</p><p id="statActive" class="text-white text-xl font-bold">0</p></div></div></div>
-<div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">⚠️</div><div><p class="text-gray-400 text-[10px] uppercase font-semibold">Maintenance</p><p id="statMaint" class="text-white text-xl font-bold">0</p></div></div></div>
-<div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg">🏢</div><div><p class="text-gray-400 text-[10px] uppercase font-semibold">Department</p><p id="statDept" class="text-white text-xl font-bold">0</p></div></div></div>
+<div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg">📦</div><div><p class="text-gray-400 text-[10px] uppercase">Total Item</p><p id="statTotal" class="text-white text-xl font-bold">0</p></div></div></div>
+<div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">✨</div><div><p class="text-gray-400 text-[10px] uppercase">Active</p><p id="statActive" class="text-white text-xl font-bold">0</p></div></div></div>
+<div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">⚠️</div><div><p class="text-gray-400 text-[10px] uppercase">Maintenance</p><p id="statMaint" class="text-white text-xl font-bold">0</p></div></div></div>
+<div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg">🏢</div><div><p class="text-gray-400 text-[10px] uppercase">Department</p><p id="statDept" class="text-white text-xl font-bold">0</p></div></div></div>
 </div>
 
 <div id="dashboardCharts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">🍩 Status</h3><div style="height:280px;position:relative"><canvas id="chartStatus"></canvas></div></div>
-<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">🏢 Department</h3><div style="height:280px;position:relative"><canvas id="chartDept"></canvas></div></div>
-<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">💻 Device</h3><div style="height:280px;position:relative"><canvas id="chartDevice"></canvas></div></div>
-<div class="chart-card lg:col-span-2"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">📈 Growth</h3><div style="height:280px;position:relative"><canvas id="chartGrowth"></canvas></div></div>
-<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">🎯 License</h3><div style="height:280px;position:relative"><canvas id="chartLicense"></canvas></div></div>
+<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">🍩 Status</h3><div style="height:280px;position:relative"><canvas id="chartStatus"></canvas></div></div>
+<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">🏢 Department</h3><div style="height:280px;position:relative"><canvas id="chartDept"></canvas></div></div>
+<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">💻 Device</h3><div style="height:280px;position:relative"><canvas id="chartDevice"></canvas></div></div>
+<div class="chart-card lg:col-span-2"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">📈 Growth</h3><div style="height:280px;position:relative"><canvas id="chartGrowth"></canvas></div></div>
+<div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">🎯 License</h3><div style="height:280px;position:relative"><canvas id="chartLicense"></canvas></div></div>
 </div>
 
 <div class="flex flex-wrap gap-2 mb-4">
 <button onclick="toggleForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded-xl text-sm border-none">+ Tambah Aset</button>
 <button onclick="openBulkImport()" class="btn bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm border-none">📤 Import</button>
-<button onclick="printAllLabels()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">🖨️ Cetak</button>
-<button onclick="downloadAllQR()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📥 QR ZIP</button>
 <button onclick="exportToExcel()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📊 Excel</button>
 <button onclick="exportToPDF()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📄 PDF</button>
 <button onclick="showDeletedAssets()" class="btn bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl text-sm">🗑️ Trash</button>
@@ -296,8 +266,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div id="bulkActionBar" class="hidden glass-card p-3 mb-4 flex items-center gap-3 flex-wrap">
 <span class="text-white text-sm"><strong id="selectedCount">0</strong> item dipilih</span>
 <button onclick="bulkDelete()" class="btn bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs">🗑️ Hapus</button>
-<button onclick="bulkExport()" class="btn bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs">📊 Export</button>
-<button onclick="bulkTransfer()" class="btn bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-3 py-1.5 rounded-lg text-xs">🔄 Transfer</button>
 <button onclick="clearSelection()" class="btn bg-white/5 text-gray-300 border border-white/10 px-3 py-1.5 rounded-lg text-xs">✕ Clear</button>
 </div>
 
@@ -310,11 +278,8 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 
 <div class="flex flex-wrap gap-3 mb-4 items-center">
-<input type="text" id="searchInput" placeholder="🔍 Cari..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] focus:border-indigo-500 outline-none" />
+<input type="text" id="searchInput" placeholder="🔍 Cari..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] outline-none" />
 <select id="filterDept" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)"><option value="">Semua Dept</option></select>
-<select id="filterDevice" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)"><option value="">Semua Device</option></select>
-<button onclick="toggleFilter('expiring')" id="btnFilterExpiring" class="filter-btn warning">⚠️ Expiring</button>
-<button onclick="toggleFilter('expired')" id="btnFilterExpired" class="filter-btn danger">🔴 Expired</button>
 <button onclick="clearFilters()" class="filter-btn" style="background:rgba(255,255,255,0.05);color:#9ca3af;border-color:rgba(255,255,255,0.1)">✕ Clear</button>
 </div>
 
@@ -326,12 +291,13 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </table>
 </div>
 </div>
-
 </div>
 </div>
 
 <script>
-/* ═══ CONFIG ═══ */
+/* ═══════════════════════════════════════════════════════════
+   CONFIG
+   ═══════════════════════════════════════════════════════════ */
 const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -358,7 +324,150 @@ document.documentElement.setAttribute('data-theme', currentTheme);
 const themeBtnEl = document.getElementById('themeBtn');
 if (themeBtnEl) themeBtnEl.innerText = currentTheme === 'dark' ? '🌙' : '☀️';
 
-/* TOAST */
+/* ═══════════════════════════════════════════════════════════
+   AUTO KATEGORI DARI NAMA MATERIAL
+   ═══════════════════════════════════════════════════════════ */
+const KATEGORI_MAP = [
+    // Elektronik
+    { keywords: ['televisi', 'tv', 'led', 'monitor', 'display', 'screen'], kat: 'ELV' },
+    { keywords: ['air conditioner', 'ac', 'pendingin', 'kulkas', 'refrigerator', 'freezer', 'dispenser'], kat: 'AC' },
+    { keywords: ['komputer', 'pc', 'laptop', 'notebook', 'netbook', 'macbook', 'chromebook'], kat: 'COM' },
+    { keywords: ['printer', 'scanner', 'fotocopy', 'copier', 'plotter'], kat: 'PRN' },
+    { keywords: ['proyektor', 'projector', 'lcd', 'layar', 'infocus'], kat: 'ELV' },
+    { keywords: ['radio', 'speaker', 'sound', 'audio', 'microphone', 'mic'], kat: 'ELV' },
+    { keywords: ['kamera', 'camera', 'cctv', 'webcam'], kat: 'ELV' },
+    { keywords: ['hp', 'handphone', 'smartphone', 'telepon', 'phone', 'iphone'], kat: 'TEL' },
+    { keywords: ['router', 'switch', 'hub', 'modem', 'wifi', 'access point', 'server', 'nas'], kat: 'TEL' },
+    { keywords: ['ups', 'stabilizer', 'inverter', 'genset', 'generator'], kat: 'ELV' },
+    
+    // Furniture
+    { keywords: ['meja', 'table', 'desk', 'workstation', 'counter'], kat: 'FUR' },
+    { keywords: ['kursi', 'chair', 'stool', 'sofa', 'bangku'], kat: 'FUR' },
+    { keywords: ['lemari', 'cabinet', 'locker', 'rak', 'shelf', 'almari'], kat: 'FUR' },
+    { keywords: ['tempat tidur', 'bed', 'spring bed', 'kasur', 'matras'], kat: 'FUR' },
+    { keywords: ['papan tulis', 'whiteboard', 'blackboard', 'partisi', 'sekat'], kat: 'FUR' },
+    { keywords: ['laci', 'drawer', 'filing', 'arsip'], kat: 'FUR' },
+    
+    // Kendaraan
+    { keywords: ['motor', 'mobil', 'truk', 'truck', 'van', 'pickup', 'kendaraan', 'vehicle', 'car'], kat: 'VEH' },
+    { keywords: ['sepeda', 'bicycle', 'bike', 'skuter'], kat: 'VEH' },
+    { keywords: ['forklift', 'troli', 'trolley', 'kereta dorong'], kat: 'VEH' },
+    
+    // Mesin
+    { keywords: ['mesin', 'machine', 'motor listrik', 'pompa', 'pump', 'compressor', 'kompresor'], kat: 'MAC' },
+    { keywords: ['conveyor', 'ban berjalan', 'produksi'], kat: 'MAC' },
+    { keywords: ['las', 'welding', 'bor', 'drill', 'gerinda', 'grinder'], kat: 'MAC' },
+    
+    // Tools
+    { keywords: ['tang', 'kunci', 'obeng', 'palu', 'gunting', 'cutter', 'pisau'], kat: 'TOO' },
+    { keywords: ['tool', 'tools', 'perkakas', 'peralatan'], kat: 'TOO' },
+    { keywords: ['tangga', 'ladder', 'scaffolding'], kat: 'TOO' },
+    
+    // Kitchen
+    { keywords: ['kulkas', 'refrigerator', 'freezer', 'microwave', 'oven', 'kompor', 'stove'], kat: 'KIT' },
+    { keywords: ['rice cooker', 'magic com', 'dispenser', 'water heater', 'pemanas'], kat: 'KIT' },
+    { keywords: ['piring', 'gelas', 'sendok', 'garpu', 'mangkok', 'kitchen'], kat: 'KIT' },
+    
+    // Safety
+    { keywords: ['apar', 'fire extinguisher', 'pemadam', 'alarm', 'smoke detector'], kat: 'SAF' },
+    { keywords: ['helm', 'sarung tangan', 'masker', 'safety', 'pelindung', 'ear plug'], kat: 'SAF' },
+    { keywords: ['p3k', 'first aid', 'kotak obat'], kat: 'SAF' },
+    { keywords: ['cctv', 'security', 'keamanan'], kat: 'SAF' },
+    
+    // Lighting
+    { keywords: ['lampu', 'light', 'lamp', 'neon', 'downlight'], kat: 'LGT' },
+    
+    // Water
+    { keywords: ['tandon', 'tank', 'pompa air', 'water pump', 'keran'], kat: 'WTR' },
+    
+    // Office
+    { keywords: ['atk', 'stationery', 'tinta', 'kertas', 'paper', 'pena', 'pensil', 'bulpen'], kat: 'OFF' },
+    { keywords: ['stampel', 'stempel', 'binder', 'clip'], kat: 'OFF' }
+];
+
+function detectKategori(namaMaterial) {
+    if (!namaMaterial) return 'GEN';
+    const nama = String(namaMaterial).toLowerCase().trim();
+    for (const item of KATEGORI_MAP) {
+        for (const kw of item.keywords) {
+            if (nama.includes(kw.toLowerCase())) {
+                return item.kat;
+            }
+        }
+    }
+    return 'GEN';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GENERATE KODE: MGI.DEPT.KAT.BULANTAHUN.NNN
+   ═══════════════════════════════════════════════════════════ */
+async function generateKodeInventoryPreview(dept = null, namaMaterial = null) {
+    try {
+        const now = new Date();
+        const bulan = String(now.getMonth() + 1).padStart(2, '0');
+        const tahun = now.getFullYear();
+        const periode = `${bulan}${tahun}`;
+        
+        const deptValue = dept || document.getElementById('gen_dept')?.value || 'UMUM';
+        const deptUpper = String(deptValue).trim().toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UMUM';
+        
+        // Auto-detect kategori dari nama material
+        const namaValue = namaMaterial || document.getElementById('gen_nama')?.value || '';
+        const kategori = detectKategori(namaValue);
+        
+        const prefix = `MGI.${deptUpper}.${kategori}.${periode}.`;
+        
+        const { data } = await supabaseClient
+            .from('general_assets')
+            .select('kode_inventory')
+            .like('kode_inventory', `${prefix}%`)
+            .order('kode_inventory', { ascending: false })
+            .limit(50);
+        
+        let maxNum = 0;
+        (data || []).forEach(item => {
+            const match = String(item.kode_inventory).match(
+                new RegExp(`MGI\\.${deptUpper}\\.${kategori}\\.${periode}\\.(\\d+)`)
+            );
+            if (match) {
+                const num = parseInt(match[1]);
+                if (num > maxNum) maxNum = num;
+            }
+        });
+        
+        const nextNum = maxNum + 1;
+        return `${prefix}${String(nextNum).padStart(3, '0')}`;
+    } catch (err) {
+        console.warn('Generate kode err:', err);
+        const now = new Date();
+        const periode = `${String(now.getMonth() + 1).padStart(2, '0')}${now.getFullYear()}`;
+        return `MGI.UMUM.GEN.${periode}.001`;
+    }
+}
+
+/* Auto-update kode saat nama material / dept berubah */
+async function autoUpdateKode() {
+    const kodeInput = document.getElementById('gen_kode');
+    if (!kodeInput) return;
+    if (kodeInput.dataset.manualEdited === 'true') return;
+    clearTimeout(window.__autoKodeTimer);
+    window.__autoKodeTimer = setTimeout(async () => {
+        try {
+            const dept = document.getElementById('gen_dept')?.value || '';
+            const nama = document.getElementById('gen_nama')?.value || '';
+            const newKode = await generateKodeInventoryPreview(dept, nama);
+            if (kodeInput.dataset.manualEdited !== 'true') kodeInput.value = newKode;
+        } catch (err) { console.warn(err); }
+    }, 500);
+}
+
+document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'gen_kode') e.target.dataset.manualEdited = 'true';
+}, true);
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST / CONFETTI
+   ═══════════════════════════════════════════════════════════ */
 function showToast(title, message, type = 'info') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -389,7 +498,9 @@ function toggleTheme() {
     showToast('Theme', `Mode ${currentTheme === 'dark' ? 'Gelap' : 'Terang'}`, 'info');
 }
 
-/* ═══ AUTH ═══ */
+/* ═══════════════════════════════════════════════════════════
+   AUTH
+   ═══════════════════════════════════════════════════════════ */
 supabaseClient.auth.onAuthStateChange((event, session) => { if (session) checkUser(); });
 checkUser();
 async function checkUser() {
@@ -421,7 +532,9 @@ async function handleLogout() {
     window.location.reload();
 }
 
-/* ═══ USER PROFILE ═══ */
+/* ═══════════════════════════════════════════════════════════
+   USER PROFILE
+   ═══════════════════════════════════════════════════════════ */
 async function loadUserProfile() {
     if (!currentUser?.email) return;
     const { data } = await supabaseClient.from('user_profiles').select('*').eq('email', currentUser.email).maybeSingle();
@@ -463,7 +576,9 @@ function hasPermission(action) {
     return (perms[userRole] || perms.staff).includes(action);
 }
 
-/* ═══ PT & MODULE ═══ */
+/* ═══════════════════════════════════════════════════════════
+   PT & MODULE
+   ═══════════════════════════════════════════════════════════ */
 function setPT(table, name) {
     currentPTTable = table;
     currentPTName = name;
@@ -486,25 +601,25 @@ function switchModule(module) {
     knownDepts = new Set();
     selectedRows.clear();
     updateBulkBar();
-    updateFilterButtons();
     const table = module === 'it' ? currentPTTable : 'general_assets';
     setupRealtime(table);
     loadData();
 }
 
-/* ═══ ACTIVITY LOG ═══ */
+/* ═══════════════════════════════════════════════════════════
+   ACTIVITY LOG
+   ═══════════════════════════════════════════════════════════ */
 async function logActivity(action, tableName, recordId, detail) {
     try {
         await supabaseClient.from('activity_log').insert([{
             user_email: currentUser?.email || 'unknown', action, table_name: tableName, record_id: recordId, detail
         }]);
-    } catch (err) { console.warn('Log fail:', err); }
+    } catch (err) {}
 }
 async function showLogModal() {
-    const { data, error } = await supabaseClient.from('activity_log').select('*').order('created_at', { ascending: false }).limit(100);
+    const { data } = await supabaseClient.from('activity_log').select('*').order('created_at', { ascending: false }).limit(100);
     const modal = document.getElementById('logModal');
     const body = document.getElementById('logBody');
-    if (error) { showToast('Error', error.message, 'error'); return; }
     if (!data || data.length === 0) { body.innerHTML = '<p class="text-center py-6 text-gray-400">Belum ada log.</p>'; }
     else {
         body.innerHTML = `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Aksi</th><th class="p-2">Detail</th></tr></thead><tbody>${data.map(l => `<tr class="border-t border-white/5"><td class="p-2 text-gray-400">${new Date(l.created_at).toLocaleString('id-ID')}</td><td class="p-2 text-indigo-300">${l.user_email}</td><td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${l.action}</span></td><td class="p-2 text-gray-300">${l.detail || l.record_id || '-'}</td></tr>`).join('')}</tbody></table>`;
@@ -513,7 +628,9 @@ async function showLogModal() {
 }
 function closeLogModal() { document.getElementById('logModal').classList.add('hidden'); }
 
-/* ═══ NOTIFICATIONS ═══ */
+/* ═══════════════════════════════════════════════════════════
+   NOTIFICATIONS
+   ═══════════════════════════════════════════════════════════ */
 function checkNotifications(data) {
     const today = new Date();
     const notifications = [];
@@ -535,11 +652,13 @@ function showNotifications() {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">🔔 Notifikasi (${notifs.length})</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div><div class="space-y-2">${notifs.map(n => `<div class="p-3 rounded-xl border ${n.type === 'error' ? 'bg-rose-500/10 border-rose-500/30 text-rose-300' : 'bg-amber-500/10 border-amber-500/30 text-amber-300'}">${n.type === 'error' ? '🔴' : '⚠️'} ${n.msg}</div>`).join('')}</div></div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">🔔 Notifikasi</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div><div class="space-y-2">${notifs.map(n => `<div class="p-3 rounded-xl border ${n.type === 'error' ? 'bg-rose-500/10 border-rose-500/30 text-rose-300' : 'bg-amber-500/10 border-amber-500/30 text-amber-300'}">${n.msg}</div>`).join('')}</div></div>`;
     document.body.appendChild(modal);
 }
 
-/* ═══ REFRESH ═══ */
+/* ═══════════════════════════════════════════════════════════
+   REFRESH
+   ═══════════════════════════════════════════════════════════ */
 async function refreshAll(silent = false) {
     const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
     try {
@@ -550,7 +669,6 @@ async function refreshAll(silent = false) {
         const newDepts = [...currentDepts].filter(d => !knownDepts.has(d));
         if (newDepts.length > 0 && knownDepts.size > 0) {
             if (!silent) showToast('Dept Baru!', `${newDepts.join(', ')}`, 'success');
-            setTimeout(() => { newDepts.forEach(d => { const el = document.querySelector(`[data-dept="${d}"]`); if (el) el.classList.add('new-dept'); }); }, 100);
         }
         knownDepts = currentDepts;
         updateStats(rawData);
@@ -560,7 +678,7 @@ async function refreshAll(silent = false) {
         updateFilterOptions();
         checkNotifications(rawData);
     } catch (err) {
-        console.error('❌ Refresh error:', err);
+        console.error('Refresh error:', err);
         if (!silent) showToast('Error', err.message, 'error');
     }
 }
@@ -569,11 +687,8 @@ function manualRefresh() { showToast('Refresh', 'Memuat ulang...', 'info'); refr
 
 function updateFilterOptions() {
     const depts = new Set(rawData.map(x => x.dept || x.department).filter(Boolean));
-    const devices = new Set(rawData.map(x => x.device).filter(Boolean));
     const deptSelect = document.getElementById('filterDept');
-    const devSelect = document.getElementById('filterDevice');
     if (deptSelect) deptSelect.innerHTML = '<option value="">Semua Dept</option>' + [...depts].sort().map(d => `<option value="${d}">${d}</option>`).join('');
-    if (devSelect) devSelect.innerHTML = '<option value="">Semua Device</option>' + [...devices].sort().map(d => `<option value="${d}">${d}</option>`).join('');
 }
 function setupRealtime(table) {
     if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
@@ -584,7 +699,7 @@ function setupRealtime(table) {
                 if (status) status.innerText = '⚡ Update...';
                 setTimeout(() => { refreshAll(true); if (status) status.innerText = 'Live'; }, 300);
             }).subscribe();
-    } catch (err) { console.warn('Realtime err:', err); }
+    } catch (err) {}
 }
 function setupAutoRefresh() {
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
@@ -594,28 +709,22 @@ function setupAutoRefresh() {
     }, 15000);
 }
 
-/* ═══ FILTER ═══ */
+/* ═══════════════════════════════════════════════════════════
+   FILTER
+   ═══════════════════════════════════════════════════════════ */
 function applyFilters(data) {
     let filtered = data;
-    if (activeFilter === 'expired') { const today = new Date(); filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) < today); }
-    else if (activeFilter === 'expiring') { const today = new Date(); const next30 = new Date(); next30.setDate(next30.getDate() + 30); filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) >= today && new Date(i.license_expiry) <= next30); }
     const deptFilter = document.getElementById('filterDept')?.value;
     if (deptFilter) filtered = filtered.filter(i => (i.dept || i.department) === deptFilter);
-    const devFilter = document.getElementById('filterDevice')?.value;
-    if (devFilter) filtered = filtered.filter(i => i.device === devFilter);
     const kw = document.getElementById('searchInput')?.value.toLowerCase().trim();
     if (kw) filtered = filtered.filter(item => Object.values(item).filter(Boolean).join(' ').toLowerCase().includes(kw));
     return filtered;
 }
-function toggleFilter(type) { activeFilter = activeFilter === type ? null : type; updateFilterButtons(); renderTable(rawData); }
-function clearFilters() { activeFilter = null; document.getElementById('searchInput').value = ''; document.getElementById('filterDept').value = ''; document.getElementById('filterDevice').value = ''; updateFilterButtons(); renderTable(rawData); }
-function updateFilterButtons() {
-    const e = document.getElementById('btnFilterExpired'); const x = document.getElementById('btnFilterExpiring');
-    if (e) e.classList.toggle('active', activeFilter === 'expired');
-    if (x) x.classList.toggle('active', activeFilter === 'expiring');
-}
+function clearFilters() { document.getElementById('searchInput').value = ''; document.getElementById('filterDept').value = ''; renderTable(rawData); }
 
-/* ═══ RENDER TABLE ═══ */
+/* ═══════════════════════════════════════════════════════════
+   RENDER TABLE
+   ═══════════════════════════════════════════════════════════ */
 function renderTable(data) {
     const thead = document.getElementById('tableHead');
     const tbody = document.getElementById('tableBody');
@@ -626,14 +735,13 @@ function renderTable(data) {
         tbody.innerHTML = filtered.map(item => {
             const statusClass = String(item.status || 'active').toLowerCase();
             let licBadge = [item.license_os, item.license_office, item.license_av].filter(Boolean).join(' · ') || '-';
-            if (item.license_expiry) { const exp = new Date(item.license_expiry); const days = Math.ceil((exp - new Date()) / 86400000); if (days < 0) licBadge += ` 🔴`; else if (days <= 30) licBadge += ` ⚠️`; }
             const imgUrl = item.gambar_url ? (item.gambar_url.startsWith('http') ? item.gambar_url : STORAGE_BUCKET_URL + item.gambar_url) : '';
             const imgCell = imgUrl ? `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.style.display='none'">` : '-';
             const nilai = item.nilai_sekarang || 0;
             const nilaiFmt = nilai > 0 ? `Rp ${(nilai/1000000).toFixed(1)}Jt` : '-';
             return `<tr>
-                <td><input type="checkbox" class="row-check" data-id="${item.id_aset}" ${selectedRows.has(item.id_aset) ? 'checked' : ''} onchange="toggleRow(this, '${item.id_aset}')"></td>
-                <td><canvas class="qr-code" data-value="${item.id_aset}" width="42" height="42" onclick="printQR('${item.id_aset}')"></canvas></td>
+                <td><input type="checkbox" class="row-check" data-id="${item.id_aset}" onchange="toggleRow(this, '${item.id_aset}')"></td>
+                <td><canvas class="qr-code" data-value="${item.id_aset}" width="42" height="42"></canvas></td>
                 <td class="font-mono text-indigo-300" style="cursor:pointer" onclick="copyToClipboard('${item.id_aset}')">${item.id_aset} 📋</td>
                 <td>${item.user || '-'}</td>
                 <td><span class="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${item.dept || '-'}</span></td>
@@ -651,17 +759,19 @@ function renderTable(data) {
         }).join('');
         document.querySelectorAll('canvas.qr-code').forEach(c => { try { new QRious({ element: c, value: c.dataset.value || 'N/A', size: 42, background: 'white', foreground: '#111827' }); } catch(e){} });
     } else {
-        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>No</th><th>Kode Inventory</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
-        if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="14" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
+        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>No</th><th>Kode Inventory</th><th>Kategori</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
+        if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="15" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
         tbody.innerHTML = filtered.map((item, idx) => {
             let gambarCell = '-';
             if (item.gambar) { const g = String(item.gambar).trim(); const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); gambarCell = `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.parentElement.innerHTML='-'">`; }
             const nilai = item.nilai_sekarang || 0;
             const nilaiFmt = nilai > 0 ? `Rp ${(nilai/1000000).toFixed(1)}Jt` : '-';
+            const kat = item.kategori || detectKategori(item.nama_material);
             return `<tr>
-                <td><input type="checkbox" class="row-check" data-id="${item.id}" ${selectedRows.has(String(item.id)) ? 'checked' : ''} onchange="toggleRow(this, '${item.id}')"></td>
+                <td><input type="checkbox" class="row-check" data-id="${item.id}" onchange="toggleRow(this, '${item.id}')"></td>
                 <td>${idx + 1}</td>
                 <td class="font-mono text-indigo-300 text-xs" style="cursor:pointer" onclick="copyToClipboard('${item.kode_inventory || ''}')" title="Klik copy">${item.kode_inventory || '-'} 📋</td>
+                <td><span class="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">${kat}</span></td>
                 <td class="font-semibold" style="text-align:left">${item.nama_material || '-'}</td>
                 <td class="text-gray-400" style="text-align:left">${item.nama_material_mandarin || '-'}</td>
                 <td>${item.spesifikasi || '-'}</td>
@@ -684,7 +794,9 @@ function renderTable(data) {
     updateBulkBar();
 }
 
-/* ═══ BULK SELECT ═══ */
+/* ═══════════════════════════════════════════════════════════
+   BULK SELECT
+   ═══════════════════════════════════════════════════════════ */
 function toggleSelectAll(el) { document.querySelectorAll('.row-check').forEach(c => { c.checked = el.checked; if (el.checked) selectedRows.add(c.dataset.id); else selectedRows.delete(c.dataset.id); }); updateBulkBar(); }
 function toggleRow(el, id) { if (el.checked) selectedRows.add(String(id)); else selectedRows.delete(String(id)); updateBulkBar(); }
 function updateBulkBar() { const bar = document.getElementById('bulkActionBar'); const cnt = document.getElementById('selectedCount'); if (cnt) cnt.innerText = selectedRows.size; if (bar) bar.classList.toggle('hidden', selectedRows.size === 0); }
@@ -700,28 +812,10 @@ async function bulkDelete() {
     clearSelection();
     await refreshAll(true);
 }
-async function bulkExport() {
-    const selected = rawData.filter(i => selectedRows.has(String(i.id || i.id_aset)));
-    if (selected.length === 0) return;
-    const ws = XLSX.utils.json_to_sheet(selected);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Selected');
-    XLSX.writeFile(wb, `Bulk_Export_${Date.now()}.xlsx`);
-    showToast('Export', `${selected.length} item`, 'success');
-}
-async function bulkTransfer() {
-    const newDept = prompt('Transfer semua ke dept:');
-    if (!newDept) return;
-    const table = activeModule === 'it' ? currentPTTable : 'general_assets';
-    const key = activeModule === 'it' ? 'id_aset' : 'id';
-    const deptField = activeModule === 'it' ? 'dept' : 'department';
-    for (const id of [...selectedRows]) { const val = isNaN(id) ? id : parseInt(id); await supabaseClient.from(table).update({ [deptField]: newDept }).eq(key, val); }
-    showToast('Transfer', `${selectedRows.size} → ${newDept}`, 'success');
-    clearSelection();
-    await refreshAll(true);
-}
 
-/* ═══ STATS ═══ */
+/* ═══════════════════════════════════════════════════════════
+   STATS
+   ═══════════════════════════════════════════════════════════ */
 function updateStats(data) {
     document.getElementById('statTotal').innerText = data.length;
     document.getElementById('statActive').innerText = data.filter(i => { const s = String(i.status || i.jenis_inventaris || '').toLowerCase(); return s.includes('active') || s.includes('fixed'); }).length;
@@ -732,18 +826,20 @@ function updateStats(data) {
 function renderDeptSummary(data) {
     const counts = {};
     data.forEach(i => { const d = (i.dept || 'LAINNYA').toUpperCase().trim(); counts[d] = (counts[d] || 0) + 1; });
-    const sorted = Object.entries(counts).sort((a, b) => { if (b[1] !== a[1]) return b[1] - a[1]; return a[0].localeCompare(b[0]); });
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     document.getElementById('deptSummaryGrid').innerHTML = sorted.map(([dept, count]) => `<div class="stat-card" data-dept="${dept}" onclick="filterByDept('${dept}')"><div class="stat-label">${dept}</div><div class="stat-count">${count}</div></div>`).join('');
 }
 function filterByDept(dept) { document.getElementById('searchInput').value = dept; renderTable(rawData); showToast('Filter', `Dept: ${dept}`, 'info'); }
 
-/* ═══ CHARTS ═══ */
+/* ═══════════════════════════════════════════════════════════
+   CHARTS
+   ═══════════════════════════════════════════════════════════ */
 function renderCharts(data) {
     Object.keys(charts).forEach(key => { if (charts[key]) { try { charts[key].destroy(); } catch(e) {} charts[key] = null; } });
     const commonOpts = {
         responsive: true, maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: currentTheme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 11 }, padding: 10, boxWidth: 12, boxHeight: 12 } },
+            legend: { labels: { color: currentTheme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 11 }, padding: 10, boxWidth: 12 } },
             tooltip: { backgroundColor: 'rgba(26, 16, 64, 0.95)', borderColor: 'rgba(129, 140, 248, 0.3)', borderWidth: 1, padding: 12, cornerRadius: 8 }
         }
     };
@@ -760,10 +856,9 @@ function renderITCharts(data, commonOpts) {
     const cDept = document.getElementById('chartDept');
     if (cDept) {
         const dc = {};
-        data.forEach(i => { const d = String(i.dept || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
-        const sd = Object.entries(dc).sort((a, b) => { if (b[1] !== a[1]) return b[1] - a[1]; return a[0].localeCompare(b[0]); });
-        cDept.parentElement.style.height = Math.max(280, sd.length * 32) + 'px';
-        charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Jumlah', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 11, weight: '600' } }, grid: { display: false } } } } });
+        data.forEach(i => { const d = String(i.dept || 'LAINNYA').toUpperCase(); dc[d] = (dc[d] || 0) + 1; });
+        const sd = Object.entries(dc).sort((a, b) => b[1] - a[1]);
+        charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6 }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } } } });
     }
     const cDevice = document.getElementById('chartDevice');
     if (cDevice) {
@@ -771,7 +866,7 @@ function renderITCharts(data, commonOpts) {
         data.forEach(i => { const d = String(i.device || 'OTHER').toUpperCase(); devC[d] = (devC[d] || 0) + 1; });
         const devS = Object.entries(devC).sort((a, b) => b[1] - a[1]);
         const pal = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee'];
-        charts.device = new Chart(cDevice, { type: 'pie', data: { labels: devS.map(d => d[0]), datasets: [{ data: devS.map(d => d[1]), backgroundColor: devS.map((_, i) => pal[i % pal.length]), borderWidth: 2, hoverOffset: 10 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
+        charts.device = new Chart(cDevice, { type: 'pie', data: { labels: devS.map(d => d[0]), datasets: [{ data: devS.map(d => d[1]), backgroundColor: devS.map((_, i) => pal[i % pal.length]), borderWidth: 2 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
     }
     const cGrowth = document.getElementById('chartGrowth');
     if (cGrowth) {
@@ -785,7 +880,7 @@ function renderITCharts(data, commonOpts) {
         const grad = ctx.createLinearGradient(0, 0, 0, 220);
         grad.addColorStop(0, 'rgba(129, 140, 248, 0.4)');
         grad.addColorStop(1, 'rgba(129, 140, 248, 0.02)');
-        charts.growth = new Chart(ctx, { type: 'line', data: { labels: ga.map(g => g.label), datasets: [{ data: ga.map(g => g.count), borderColor: '#818cf8', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#818cf8', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } } });
+        charts.growth = new Chart(ctx, { type: 'line', data: { labels: ga.map(g => g.label), datasets: [{ data: ga.map(g => g.count), borderColor: '#818cf8', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } } } });
     }
     const cLic = document.getElementById('chartLicense');
     if (cLic) {
@@ -798,7 +893,7 @@ function renderITCharts(data, commonOpts) {
             const days = Math.ceil((exp - today) / 86400000);
             if (days < 0) lc['Expired']++; else if (days <= 30) lc['Expiring']++; else lc['Active']++;
         });
-        charts.license = new Chart(cLic, { type: 'doughnut', data: { labels: Object.keys(lc), datasets: [{ data: Object.values(lc), backgroundColor: ['#34d399', '#fbbf24', '#fb7185', '#6b7280'], borderWidth: 2, hoverOffset: 8 }] }, options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
+        charts.license = new Chart(cLic, { type: 'doughnut', data: { labels: Object.keys(lc), datasets: [{ data: Object.values(lc), backgroundColor: ['#34d399', '#fbbf24', '#fb7185', '#6b7280'], borderWidth: 2 }] }, options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
     }
 }
 function renderGeneralCharts(data, commonOpts) {
@@ -807,23 +902,23 @@ function renderGeneralCharts(data, commonOpts) {
         const jc = {};
         data.forEach(i => { const j = String(i.jenis_inventaris || 'Other'); jc[j] = (jc[j] || 0) + 1; });
         const jcolors = ['#34d399', '#fbbf24', '#818cf8', '#fb7185', '#22d3ee'];
-        charts.status = new Chart(cStatus, { type: 'doughnut', data: { labels: Object.keys(jc), datasets: [{ data: Object.values(jc), backgroundColor: Object.keys(jc).map((_, i) => jcolors[i % jcolors.length]), borderWidth: 2, hoverOffset: 8 }] }, options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
+        charts.status = new Chart(cStatus, { type: 'doughnut', data: { labels: Object.keys(jc), datasets: [{ data: Object.values(jc), backgroundColor: Object.keys(jc).map((_, i) => jcolors[i % jcolors.length]), borderWidth: 2 }] }, options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
     }
     const cDept = document.getElementById('chartDept');
     if (cDept) {
         const dc = {};
-        data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
-        const sd = Object.entries(dc).sort((a, b) => { if (b[1] !== a[1]) return b[1] - a[1]; return a[0].localeCompare(b[0]); });
+        data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase(); dc[d] = (dc[d] || 0) + 1; });
+        const sd = Object.entries(dc).sort((a, b) => b[1] - a[1]);
         cDept.parentElement.style.height = Math.max(280, sd.length * 32) + 'px';
-        charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Item', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 11, weight: '600' } }, grid: { display: false } } } } });
+        charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6 }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } } } });
     }
     const cDevice = document.getElementById('chartDevice');
     if (cDevice) {
-        const qd = {};
-        data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); qd[d] = (qd[d] || 0) + (parseInt(i.jumlah) || 1); });
-        const qs = Object.entries(qd).sort((a, b) => b[1] - a[1]).slice(0, 6);
-        const pal2 = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee'];
-        charts.device = new Chart(cDevice, { type: 'pie', data: { labels: qs.map(d => d[0]), datasets: [{ data: qs.map(d => d[1]), backgroundColor: qs.map((_, i) => pal2[i % pal2.length]), borderWidth: 2, hoverOffset: 10 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
+        const kc = {};
+        data.forEach(i => { const k = i.kategori || detectKategori(i.nama_material); kc[k] = (kc[k] || 0) + 1; });
+        const ks = Object.entries(kc).sort((a, b) => b[1] - a[1]);
+        const pal = ['#818cf8', '#c084fc', '#f472b6', '#fb923c', '#34d399', '#22d3ee', '#fbbf24', '#a78bfa'];
+        charts.device = new Chart(cDevice, { type: 'pie', data: { labels: ks.map(d => d[0]), datasets: [{ data: ks.map(d => d[1]), backgroundColor: ks.map((_, i) => pal[i % pal.length]), borderWidth: 2 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
     }
     const cGrowth = document.getElementById('chartGrowth');
     if (cGrowth) {
@@ -837,18 +932,20 @@ function renderGeneralCharts(data, commonOpts) {
         const grad = ctx.createLinearGradient(0, 0, 0, 220);
         grad.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
         grad.addColorStop(1, 'rgba(192, 132, 252, 0.02)');
-        charts.growth = new Chart(ctx, { type: 'line', data: { labels: ga.map(g => g.label), datasets: [{ data: ga.map(g => g.count), borderColor: '#c084fc', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#c084fc', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } } });
+        charts.growth = new Chart(ctx, { type: 'line', data: { labels: ga.map(g => g.label), datasets: [{ data: ga.map(g => g.count), borderColor: '#c084fc', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } } } });
     }
     const cLic = document.getElementById('chartLicense');
     if (cLic) {
-        const dc = {};
-        data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
-        const top5 = Object.entries(dc).sort((a, b) => b[1] - a[1]).slice(0, 5);
-        charts.license = new Chart(cLic, { type: 'bar', data: { labels: top5.map(d => d[0]), datasets: [{ data: top5.map(d => d[1]), backgroundColor: ['#f472b6', '#c084fc', '#818cf8', '#22d3ee', '#34d399'], borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } } } } });
+        const kc = {};
+        data.forEach(i => { const k = i.kategori || detectKategori(i.nama_material); kc[k] = (kc[k] || 0) + 1; });
+        const top5 = Object.entries(kc).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        charts.license = new Chart(cLic, { type: 'bar', data: { labels: top5.map(d => d[0]), datasets: [{ data: top5.map(d => d[1]), backgroundColor: ['#f472b6', '#c084fc', '#818cf8', '#22d3ee', '#34d399'], borderRadius: 6 }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } } } });
     }
 }
 
-/* ═══ HELPERS ═══ */
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════ */
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 function calcDepreciation(harga, umur) { return harga || 0; }
 async function uploadImage(file, prefix = 'img') {
@@ -878,55 +975,9 @@ function viewImage(url) {
     document.body.appendChild(modal);
 }
 
-/* ═══ GENERATE KODE INVENTORY (MGI-DEPT.TAHUN-NNN) ═══ */
-async function generateKodeInventoryPreview(dept = null) {
-    try {
-        const tahun = new Date().getFullYear();
-        const deptValue = dept || document.getElementById('gen_dept')?.value || 'UMUM';
-        const deptUpper = String(deptValue).trim().toUpperCase() || 'UMUM';
-        const prefix = `MGI-${deptUpper}.${tahun}-`;
-        
-        const { data } = await supabaseClient
-            .from('general_assets')
-            .select('kode_inventory')
-            .like('kode_inventory', `${prefix}%`)
-            .order('kode_inventory', { ascending: false })
-            .limit(50);
-        
-        let maxNum = 0;
-        (data || []).forEach(item => {
-            const match = String(item.kode_inventory).match(new RegExp(`MGI-${deptUpper}\\.${tahun}-(\\d+)`));
-            if (match) {
-                const num = parseInt(match[1]);
-                if (num > maxNum) maxNum = num;
-            }
-        });
-        
-        const nextNum = maxNum + 1;
-        return `${prefix}${String(nextNum).padStart(3, '0')}`;
-    } catch (err) {
-        console.warn('Generate kode err:', err);
-        const tahun = new Date().getFullYear();
-        return `MGI-UMUM.${tahun}-001`;
-    }
-}
-async function autoUpdateKode(deptValue) {
-    const kodeInput = document.getElementById('gen_kode');
-    if (!kodeInput) return;
-    if (kodeInput.dataset.manualEdited === 'true') return;
-    clearTimeout(window.__autoKodeTimer);
-    window.__autoKodeTimer = setTimeout(async () => {
-        try {
-            const newKode = await generateKodeInventoryPreview(deptValue);
-            if (kodeInput.dataset.manualEdited !== 'true') kodeInput.value = newKode;
-        } catch (err) { console.warn(err); }
-    }, 500);
-}
-document.addEventListener('input', function(e) {
-    if (e.target && e.target.id === 'gen_kode') e.target.dataset.manualEdited = 'true';
-}, true);
-
-/* ═══ FORM ═══ */
+/* ═══════════════════════════════════════════════════════════
+   FORM
+   ═══════════════════════════════════════════════════════════ */
 async function toggleForm() {
     const fc = document.getElementById('formContainer');
     if (!fc.classList.contains('hidden')) { fc.classList.add('hidden'); return; }
@@ -938,37 +989,15 @@ async function toggleForm() {
         form.innerHTML = `
             <div><label>ID Aset *</label><input type="text" id="it_id" required /></div>
             <div><label>User *</label><input type="text" id="it_user" required /></div>
-            <div><label>Dept *</label><input type="text" id="it_dept" list="deptList" /></div>
-            <datalist id="deptList">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
+            <div><label>Dept *</label><input type="text" id="it_dept" /></div>
             <div><label>Device *</label><select id="it_device"><option>KOMPUTER</option><option>LAPTOP</option><option>PRINTER</option><option>SERVER</option></select></div>
             <div><label>Spesifikasi *</label><input type="text" id="it_specs" /></div>
             <div><label>Status *</label><select id="it_status"><option>Active</option><option>Maintenance</option><option>Broken</option></select></div>
             <div><label>IP Address</label><input type="text" id="it_ip" /></div>
-            <div><label>MAC Address</label><input type="text" id="it_mac" /></div>
-            <div><label>Hostname</label><input type="text" id="it_host" /></div>
             <div><label>License OS</label><input type="text" id="it_los" /></div>
-            <div><label>License Office</label><input type="text" id="it_loffice" /></div>
-            <div><label>License AV</label><input type="text" id="it_lav" /></div>
             <div><label>License Expiry</label><input type="date" id="it_lexp" /></div>
-            <div><label>Tanggal Beli</label><input type="date" id="it_pdate" /></div>
-            <div><label>Garansi</label><input type="date" id="it_wexp" /></div>
             <div><label>Harga Beli</label><input type="number" id="it_harga" /></div>
             <div><label>Umur Ekonomis</label><input type="number" id="it_umur" value="5" /></div>
-            <div><label>Maintenance Next</label><input type="date" id="it_mnext" /></div>
-            <div><label>Maintenance Interval</label><input type="number" id="it_mint" value="180" /></div>
-            <div><label>Monitor</label><input type="text" id="it_mb" /></div>
-            <div><label>Printer</label><input type="text" id="it_pb" /></div>
-            <div><label>Mouse</label><input type="text" id="it_mob" /></div>
-            <div><label>Keyboard</label><input type="text" id="it_kb" /></div>
-            <div class="form-section"><label>Notes</label><textarea id="it_notes" rows="2"></textarea></div>
-            <div class="form-section"><label>Upload Gambar</label>
-                <div class="upload-box" onclick="document.getElementById('it_img_input').click()">
-                    <div class="text-3xl mb-1">📸</div>
-                    <p class="text-gray-400 text-xs">Klik untuk upload</p>
-                    <input type="file" id="it_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'it_img_preview')" />
-                </div>
-                <div id="it_img_preview" class="mt-3 hidden"></div>
-            </div>
             <div class="form-section flex justify-end gap-2">
                 <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
                 <button type="button" onclick="saveITAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl border-none">💾 Simpan</button>
@@ -980,17 +1009,23 @@ async function toggleForm() {
         form.innerHTML = `
             <div>
                 <label>Kode Inventory *</label>
-                <input type="text" id="gen_kode" value="${previewKode}" placeholder="MGI-DEPT.2026-001" />
-                <p class="text-[10px] text-gray-500 mt-1">Auto-generate dari Department</p>
+                <input type="text" id="gen_kode" value="${previewKode}" placeholder="MGI.IT.ELV.052026.001" />
+                <p class="text-[10px] text-gray-500 mt-1">Auto-generate dari Nama Material + Department</p>
             </div>
-            <div><label>Nama Material *</label><input type="text" id="gen_nama" required /></div>
+            <div>
+                <label>Nama Material *</label>
+                <input type="text" id="gen_nama" required oninput="autoUpdateKode()" onchange="autoUpdateKode()" placeholder="Contoh: Televisi, Meja, Komputer..." />
+            </div>
             <div><label>材料名称</label><input type="text" id="gen_mandarin" /></div>
             <div><label>Spesifikasi</label><input type="text" id="gen_specs" /></div>
             <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="1" min="1" required /></div>
             <div><label>Satuan</label><input type="text" id="gen_satuan" value="Buah" /></div>
             <div><label>Keterangan</label><input type="text" id="gen_keterangan" /></div>
             <div><label>Jenis</label><select id="gen_jenis"><option>Fixed Asset</option><option>Consumable</option></select></div>
-            <div><label>Department *</label><input type="text" id="gen_dept" list="deptListGen" oninput="autoUpdateKode(this.value)" onchange="autoUpdateKode(this.value)" /></div>
+            <div>
+                <label>Department *</label>
+                <input type="text" id="gen_dept" list="deptListGen" oninput="autoUpdateKode()" onchange="autoUpdateKode()" />
+            </div>
             <datalist id="deptListGen">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
             <div><label>Lokasi</label><input type="text" id="gen_lokasi" /></div>
             <div><label>Harga Beli</label><input type="number" id="gen_harga" /></div>
@@ -1013,30 +1048,25 @@ async function toggleForm() {
     fc.scrollIntoView({ behavior: 'smooth' });
 }
 
-/* ═══ SAVE ═══ */
+/* ═══════════════════════════════════════════════════════════
+   SAVE
+   ═══════════════════════════════════════════════════════════ */
 async function saveITAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
-    const imgInput = document.getElementById('it_img_input');
-    let imgUrl = null;
-    if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], v('it_id') || 'img'); }
     const harga = parseFloat(v('it_harga')) || 0;
+    const umur = parseInt(v('it_umur')) || 5;
     const payload = {
         id_aset: v('it_id'), user: v('it_user') || '-', dept: v('it_dept'), device: v('it_device'),
         specs: v('it_specs') || '-', status: v('it_status') || 'Active',
-        ip_address: v('it_ip'), mac_address: v('it_mac'), hostname: v('it_host'),
-        license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
-        license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
-        monitor_brand: v('it_mb'), printer_brand: v('it_pb'), mouse_brand: v('it_mob'), keyboard_brand: v('it_kb'),
-        notes: v('it_notes'), harga_beli: harga, umur_ekonomis: parseInt(v('it_umur')) || 5, nilai_sekarang: calcDepreciation(harga, parseInt(v('it_umur')) || 5),
-        maintenance_next_date: v('it_mnext') || null, maintenance_interval_days: parseInt(v('it_mint')) || 180,
-        gambar_url: imgUrl, deleted_at: null
+        ip_address: v('it_ip'), license_os: v('it_los'), license_expiry: v('it_lexp') || null,
+        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+        deleted_at: null
     };
     if (!payload.id_aset) { showToast('Error', 'ID Aset wajib!', 'error'); return; }
     const needsApproval = !hasPermission('approve');
     if (needsApproval) {
         const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{ table_name: currentPTTable, record_data: payload, action_type: 'CREATE', requested_by: currentUser.email, status: 'pending' }]);
         if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
-        await logActivity('request_approval', currentPTTable, payload.id_aset, `Request: ${payload.id_aset}`);
         showToast('⏳ Menunggu Approval', 'Data dikirim ke manager', 'info');
         toggleForm();
         updateMyReqBadge();
@@ -1044,13 +1074,7 @@ async function saveITAsset() {
     }
     const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
     if (error) showToast('Gagal', error.message, 'error');
-    else {
-        await logActivity('create', currentPTTable, payload.id_aset, `Tambah: ${payload.id_aset}`);
-        showToast('Sukses', 'IT Aset disimpan!', 'success');
-        showConfetti();
-        toggleForm();
-        await refreshAll(true);
-    }
+    else { showToast('Sukses', 'IT Aset disimpan!', 'success'); showConfetti(); toggleForm(); await refreshAll(true); }
 }
 async function saveGeneralAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
@@ -1058,13 +1082,18 @@ async function saveGeneralAsset() {
     let imgUrl = null;
     if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], v('gen_nama') || 'img'); }
     const harga = parseFloat(v('gen_harga')) || 0;
+    const umur = parseInt(v('gen_umur')) || 5;
+    const namaMat = v('gen_nama');
+    const deptVal = v('gen_dept');
+    const kategori = detectKategori(namaMat);
     const payload = {
-        kode_inventory: v('gen_kode') || await generateKodeInventoryPreview(v('gen_dept')),
-        nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
+        kode_inventory: v('gen_kode') || await generateKodeInventoryPreview(deptVal, namaMat),
+        kategori: kategori,
+        nama_material: namaMat, nama_material_mandarin: v('gen_mandarin'),
         spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
         satuan: v('gen_satuan') || 'Buah', keterangan: v('gen_keterangan'),
-        jenis_inventaris: v('gen_jenis'), department: v('gen_dept'), lokasi: v('gen_lokasi'),
-        harga_beli: harga, umur_ekonomis: parseInt(v('gen_umur')) || 5, nilai_sekarang: calcDepreciation(harga, parseInt(v('gen_umur')) || 5),
+        jenis_inventaris: v('gen_jenis'), department: deptVal, lokasi: v('gen_lokasi'),
+        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
         maintenance_next_date: v('gen_mnext') || null, gambar: imgUrl, deleted_at: null
     };
     if (!payload.nama_material) { showToast('Error', 'Nama Material wajib!', 'error'); return; }
@@ -1072,8 +1101,7 @@ async function saveGeneralAsset() {
     if (needsApproval) {
         const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{ table_name: 'general_assets', record_data: payload, action_type: 'CREATE', requested_by: currentUser.email, status: 'pending' }]);
         if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
-        await logActivity('request_approval', 'general_assets', payload.kode_inventory, `Request: ${payload.nama_material}`);
-        showToast('⏳ Menunggu Approval', `Kode: ${payload.kode_inventory} dikirim ke manager`, 'info');
+        showToast('⏳ Menunggu Approval', `${payload.kode_inventory} dikirim`, 'info');
         toggleForm();
         updateMyReqBadge();
         return;
@@ -1081,15 +1109,17 @@ async function saveGeneralAsset() {
     const { error } = await supabaseClient.from('general_assets').insert([payload]);
     if (error) showToast('Gagal', error.message, 'error');
     else {
-        await logActivity('create', 'general_assets', payload.kode_inventory, `Tambah: ${payload.nama_material}`);
-        showToast('Sukses', `${payload.kode_inventory} disimpan!`, 'success');
+        await logActivity('create', 'general_assets', payload.kode_inventory, `Tambah: ${namaMat}`);
+        showToast('Sukses', `${payload.kode_inventory} (${kategori}) disimpan!`, 'success');
         showConfetti();
         toggleForm();
         await refreshAll(true);
     }
 }
 
-/* ═══ EDIT & UPDATE ═══ */
+/* ═══════════════════════════════════════════════════════════
+   EDIT & UPDATE
+   ═══════════════════════════════════════════════════════════ */
 function editITAsset(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1098,7 +1128,6 @@ function editITAsset(id_aset) {
     document.getElementById('formTitle').innerText = `✏️ Edit: ${id_aset}`;
     const form = document.getElementById('dynamicForm');
     const opt = (val, arr) => arr.map(x => `<option ${x === val ? 'selected' : ''}>${x}</option>`).join('');
-    const currentImg = item.gambar_url ? (item.gambar_url.startsWith('http') ? item.gambar_url : STORAGE_BUCKET_URL + item.gambar_url) : null;
     form.innerHTML = `
         <div><label>ID Aset</label><input type="text" id="it_id" value="${item.id_aset || ''}" readonly /></div>
         <div><label>User</label><input type="text" id="it_user" value="${item.user || ''}" /></div>
@@ -1107,26 +1136,10 @@ function editITAsset(id_aset) {
         <div><label>Spesifikasi</label><input type="text" id="it_specs" value="${item.specs || ''}" /></div>
         <div><label>Status</label><select id="it_status">${opt(item.status, ['Active','Maintenance','Broken'])}</select></div>
         <div><label>IP</label><input type="text" id="it_ip" value="${item.ip_address || ''}" /></div>
-        <div><label>MAC</label><input type="text" id="it_mac" value="${item.mac_address || ''}" /></div>
-        <div><label>Hostname</label><input type="text" id="it_host" value="${item.hostname || ''}" /></div>
         <div><label>License OS</label><input type="text" id="it_los" value="${item.license_os || ''}" /></div>
-        <div><label>License Office</label><input type="text" id="it_loffice" value="${item.license_office || ''}" /></div>
-        <div><label>License AV</label><input type="text" id="it_lav" value="${item.license_av || ''}" /></div>
         <div><label>License Expiry</label><input type="date" id="it_lexp" value="${item.license_expiry || ''}" /></div>
-        <div><label>Tgl Beli</label><input type="date" id="it_pdate" value="${item.purchase_date || ''}" /></div>
-        <div><label>Garansi</label><input type="date" id="it_wexp" value="${item.warranty_expiry || ''}" /></div>
         <div><label>Harga Beli</label><input type="number" id="it_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="it_umur" value="${item.umur_ekonomis || 5}" /></div>
-        <div><label>Maintenance Next</label><input type="date" id="it_mnext" value="${item.maintenance_next_date || ''}" /></div>
-        <div><label>Notes</label><textarea id="it_notes" rows="2">${item.notes || ''}</textarea></div>
-        <div class="form-section"><label>📸 Upload Gambar Baru</label>
-            <div class="upload-box" onclick="document.getElementById('it_img_input').click()">
-                <div class="text-3xl mb-1">📸</div>
-                <input type="file" id="it_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'it_img_preview')" />
-            </div>
-            <div id="it_img_preview" class="mt-3 hidden"></div>
-            ${currentImg ? `<div class="mt-3"><p class="text-xs text-gray-400 mb-2">Gambar saat ini:</p><img src="${currentImg}" class="preview-img" onclick="viewImage('${currentImg}')" /></div>` : ''}
-        </div>
         <div class="form-section flex justify-end gap-2">
             <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
             <button type="button" onclick="updateITAsset('${id_aset}')" class="btn bg-emerald-500 text-white px-6 py-2 rounded-xl border-none">💾 Update</button>
@@ -1136,28 +1149,12 @@ function editITAsset(id_aset) {
 }
 async function updateITAsset(id_aset) {
     if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
-    const imgInput = document.getElementById('it_img_input');
-    let imgUrl = undefined;
-    if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], 'it_' + id_aset); }
     const harga = parseFloat(v('it_harga')) || 0;
     const umur = parseInt(v('it_umur')) || 5;
-    const payload = {
-        user: v('it_user'), dept: v('it_dept'), device: v('it_device'), specs: v('it_specs'),
-        status: v('it_status'), ip_address: v('it_ip'), mac_address: v('it_mac'), hostname: v('it_host'),
-        license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
-        license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
-        monitor_brand: v('it_mb'), notes: v('it_notes'), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
-        maintenance_next_date: v('it_mnext') || null
-    };
-    if (imgUrl) payload.gambar_url = imgUrl;
+    const payload = { user: v('it_user'), dept: v('it_dept'), device: v('it_device'), specs: v('it_specs'), status: v('it_status'), ip_address: v('it_ip'), license_os: v('it_los'), license_expiry: v('it_lexp') || null, harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur) };
     const { error } = await supabaseClient.from(currentPTTable).update(payload).eq('id_aset', id_aset);
     if (error) showToast('Gagal', error.message, 'error');
-    else {
-        await logActivity('update', currentPTTable, id_aset, `Update: ${id_aset}`);
-        showToast('Sukses', 'Aset diupdate!', 'success');
-        toggleForm();
-        await refreshAll(true);
-    }
+    else { showToast('Sukses', 'Aset diupdate!', 'success'); toggleForm(); await refreshAll(true); }
 }
 function editGeneralAsset(id) {
     const item = rawData.find(x => String(x.id) === String(id));
@@ -1166,12 +1163,12 @@ function editGeneralAsset(id) {
     fc.classList.remove('hidden');
     document.getElementById('formTitle').innerText = `✏️ Edit: ${item.nama_material}`;
     const form = document.getElementById('dynamicForm');
-    const currentImg = item.gambar ? (item.gambar.startsWith('http') ? item.gambar : STORAGE_BUCKET_URL + encodeURIComponent(item.gambar)) : null;
+    const kat = item.kategori || detectKategori(item.nama_material);
     form.innerHTML = `
         <div>
             <label>Kode Inventory *</label>
             <input type="text" id="gen_kode" value="${item.kode_inventory || ''}" />
-            <p class="text-[10px] text-gray-500 mt-1">Ubah manual jika perlu</p>
+            <p class="text-[10px] text-purple-400 mt-1">Kategori terdeteksi: <strong>${kat}</strong></p>
         </div>
         <div><label>Nama Material *</label><input type="text" id="gen_nama" value="${item.nama_material || ''}" /></div>
         <div><label>材料名称</label><input type="text" id="gen_mandarin" value="${item.nama_material_mandarin || ''}" /></div>
@@ -1185,14 +1182,6 @@ function editGeneralAsset(id) {
         <div><label>Harga Beli</label><input type="number" id="gen_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="gen_umur" value="${item.umur_ekonomis || 5}" /></div>
         <div><label>Maintenance Next</label><input type="date" id="gen_mnext" value="${item.maintenance_next_date || ''}" /></div>
-        <div class="form-section"><label>📸 Upload Gambar Baru</label>
-            <div class="upload-box" onclick="document.getElementById('gen_img_input').click()">
-                <div class="text-3xl mb-1">📸</div>
-                <input type="file" id="gen_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'gen_img_preview')" />
-            </div>
-            <div id="gen_img_preview" class="mt-3 hidden"></div>
-            ${currentImg ? `<div class="mt-3"><p class="text-xs text-gray-400 mb-2">Gambar saat ini:</p><img src="${currentImg}" class="preview-img" onclick="viewImage('${currentImg}')" /></div>` : ''}
-        </div>
         <div class="form-section flex justify-end gap-2">
             <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
             <button type="button" onclick="updateGeneralAsset(${id})" class="btn bg-emerald-500 text-white px-6 py-2 rounded-xl border-none">💾 Update</button>
@@ -1202,45 +1191,40 @@ function editGeneralAsset(id) {
 }
 async function updateGeneralAsset(id) {
     if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
-    const imgInput = document.getElementById('gen_img_input');
-    let imgUrl = undefined;
-    if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], 'gen_' + id); }
     const harga = parseFloat(v('gen_harga')) || 0;
     const umur = parseInt(v('gen_umur')) || 5;
+    const namaMat = v('gen_nama');
     const payload = {
         kode_inventory: v('gen_kode'),
-        nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
+        kategori: detectKategori(namaMat),
+        nama_material: namaMat, nama_material_mandarin: v('gen_mandarin'),
         spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
         satuan: v('gen_satuan'), keterangan: v('gen_keterangan'),
         jenis_inventaris: v('gen_jenis'), department: v('gen_dept'), lokasi: v('gen_lokasi'),
         harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
         maintenance_next_date: v('gen_mnext') || null
     };
-    if (imgUrl) payload.gambar = imgUrl;
     const { error } = await supabaseClient.from('general_assets').update(payload).eq('id', id);
     if (error) showToast('Gagal', error.message, 'error');
-    else {
-        await logActivity('update', 'general_assets', payload.kode_inventory, `Update: ${payload.nama_material}`);
-        showToast('Sukses', 'Data diupdate!', 'success');
-        toggleForm();
-        await refreshAll(true);
-    }
+    else { showToast('Sukses', 'Data diupdate!', 'success'); toggleForm(); await refreshAll(true); }
 }
 
-/* ═══ DELETE ═══ */
+/* ═══════════════════════════════════════════════════════════
+   DELETE
+   ═══════════════════════════════════════════════════════════ */
 async function deleteItem(id_aset) {
-    if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses hapus', 'error'); return; }
+    if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm(`Hapus aset ${id_aset}?`)) return;
     const { error } = await supabaseClient.from(currentPTTable).update({ deleted_at: new Date().toISOString() }).eq('id_aset', id_aset);
     if (error) showToast('Gagal', error.message, 'error');
-    else { await logActivity('delete', currentPTTable, id_aset, `Hapus: ${id_aset}`); showToast('Terhapus', 'Masuk trash', 'info'); await refreshAll(true); }
+    else { showToast('Terhapus', 'Masuk trash', 'info'); await refreshAll(true); }
 }
 async function deleteGeneralItem(id) {
     if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm('Hapus data ini?')) return;
     const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
     if (error) showToast('Gagal', error.message, 'error');
-    else { await logActivity('delete', 'general_assets', String(id), 'Hapus General'); showToast('Terhapus', 'Masuk trash', 'info'); await refreshAll(true); }
+    else { showToast('Terhapus', 'Masuk trash', 'info'); await refreshAll(true); }
 }
 function showDetailGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
@@ -1253,13 +1237,13 @@ function showDetailGeneral(id) {
     modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">📋 Detail Aset</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
         <div class="space-y-2 text-sm">
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kode Inventory</span><span class="text-indigo-300 font-mono font-bold">${item.kode_inventory || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kode</span><span class="text-indigo-300 font-mono font-bold">${item.kode_inventory || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kategori</span><span class="text-purple-300 font-mono">${item.kategori || detectKategori(item.nama_material)}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Nama</span><span class="text-white font-semibold">${item.nama_material || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">材料名称</span><span class="text-white">${item.nama_material_mandarin || '-'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Spesifikasi</span><span class="text-white">${item.spesifikasi || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jumlah</span><span class="text-white font-bold">${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Department</span><span class="text-white">${item.department || '-'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Lokasi</span><span class="text-white">${item.lokasi || '-'}</span></div>
+            <div class="flex justify-between pb-2"><span class="text-gray-400">Lokasi</span><span class="text-white">${item.lokasi || '-'}</span></div>
         </div>
         ${imgHtml}
         <div class="flex gap-2 justify-center mt-4">
@@ -1269,9 +1253,10 @@ function showDetailGeneral(id) {
     document.body.appendChild(modal);
 }
 
-/* ═══ IMPORT ═══ */
+/* ═══════════════════════════════════════════════════════════
+   IMPORT
+   ═══════════════════════════════════════════════════════════ */
 function openBulkImport() {
-    document.getElementById('importModalTitle').innerText = activeModule === 'it' ? '(IT)' : '(General)';
     document.getElementById('bulkImportModal').classList.remove('hidden');
     document.getElementById('importPreview').classList.add('hidden');
     document.getElementById('fileInput').value = '';
@@ -1280,11 +1265,17 @@ function openBulkImport() {
 function closeBulkImport() { document.getElementById('bulkImportModal').classList.add('hidden'); }
 function downloadTemplate() {
     if (activeModule === 'it') {
-        const sample = [{ id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10', harga_beli: 5000000, umur_ekonomis: 5 }];
+        const sample = [{ id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10' }];
         const ws = XLSX.utils.json_to_sheet(sample); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'IT'); XLSX.writeFile(wb, 'Template_IT.xlsx');
     } else {
-        const sample = [{ kode_inventory: 'MGI-IT.2026-001', nama_material: 'Meja', nama_material_mandarin: '工作台', spesifikasi: 'Standard', jumlah: 15, satuan: 'Buah', jenis_inventaris: 'Fixed Asset', department: 'IT', lokasi: 'Ruang A', harga_beli: 500000, umur_ekonomis: 5 }];
+        const sample = [{ 
+            kode_inventory: 'MGI.IT.ELV.052026.001', kategori: 'ELV',
+            nama_material: 'Televisi', nama_material_mandarin: '电视', 
+            spesifikasi: 'Samsung 32"', jumlah: 2, satuan: 'Buah', 
+            jenis_inventaris: 'Fixed Asset', department: 'IT', 
+            lokasi: 'Ruang Meeting', harga_beli: 3500000, umur_ekonomis: 5 
+        }];
         const ws = XLSX.utils.json_to_sheet(sample); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'General'); XLSX.writeFile(wb, 'Template_General.xlsx');
     }
@@ -1301,7 +1292,7 @@ function handleFileUpload(event) {
             const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false, blankrows: false });
             if (aoa.length < 2) { showToast('Error', 'File kosong!', 'error'); return; }
             let headerIdx = 0;
-            for (let i = 0; i < Math.min(aoa.length, 10); i++) { const rt = aoa[i].map(c => String(c).toLowerCase()).join('|'); if (rt.includes('nama_material') || rt.includes('id_aset') || rt.includes('kode_inventory')) { headerIdx = i; break; } }
+            for (let i = 0; i < Math.min(aoa.length, 10); i++) { const rt = aoa[i].map(c => String(c).toLowerCase()).join('|'); if (rt.includes('nama_material') || rt.includes('id_aset')) { headerIdx = i; break; } }
             const headers = aoa[headerIdx].map(h => String(h).trim());
             const rows = aoa.slice(headerIdx + 1);
             const normalized = [];
@@ -1321,7 +1312,6 @@ function handleFileUpload(event) {
     reader.readAsArrayBuffer(file);
 }
 function showPreview(data) {
-    document.getElementById('previewCount').innerText = data.length;
     const headers = Object.keys(data[0]).filter(k => k !== '___row');
     document.getElementById('previewHeader').innerHTML = headers.map(h => `<th class="px-2 py-1 text-left text-gray-400 text-[10px]">${h}</th>`).join('');
     document.getElementById('previewBody').innerHTML = data.slice(0, 5).map(row => `<tr>${headers.map(h => `<td class="px-2 py-1 border-t border-white/5 text-gray-300 text-[10px]">${String(row[h] || '-').substring(0, 30)}</td>`).join('')}</tr>`).join('');
@@ -1331,59 +1321,44 @@ async function confirmImport() {
     if (importData.length === 0) { showToast('Error', 'Kosong!', 'error'); return; }
     if (!confirm(`Import ${importData.length} data?`)) return;
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
-    let success = 0, failed = 0, skipped = 0, queued = 0;
-    const needsApproval = !hasPermission('approve');
+    let success = 0, failed = 0, skipped = 0;
     const pick = (item, ...keys) => { for (const k of keys) { if (item[k] && String(item[k]).trim() !== '') return String(item[k]).trim(); } return ''; };
-    const toDate = (s) => { if (!s) return null; try { const d = new Date(s); if (isNaN(d)) return null; return d.toISOString().split('T')[0]; } catch { return null; } };
     for (let i = 0; i < importData.length; i++) {
         const item = importData[i];
         let payload = {};
         const harga = parseFloat(pick(item, 'harga_beli', 'harga')) || 0;
         const umur = parseInt(pick(item, 'umur_ekonomis', 'umur')) || 5;
         if (activeModule === 'it') {
-            payload = { id_aset: pick(item, 'id_aset', 'id'), user: pick(item, 'user') || '-', dept: pick(item, 'dept', 'department'), device: (pick(item, 'device') || 'KOMPUTER').toUpperCase(), specs: pick(item, 'specs', 'spesifikasi') || '-', status: pick(item, 'status') || 'Active', ip_address: pick(item, 'ip_address', 'ip'), license_os: pick(item, 'license_os'), license_expiry: toDate(pick(item, 'license_expiry')), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur), notes: pick(item, 'notes'), deleted_at: null };
+            payload = { id_aset: pick(item, 'id_aset', 'id'), user: pick(item, 'user') || '-', dept: pick(item, 'dept'), device: (pick(item, 'device') || 'KOMPUTER').toUpperCase(), specs: pick(item, 'specs'), status: pick(item, 'status') || 'Active', deleted_at: null };
             if (!payload.id_aset) { skipped++; continue; }
         } else {
-            const deptValue = pick(item, 'department', 'dept') || 'UMUM';
+            const namaMat = pick(item, 'nama_material', 'nama');
+            const deptVal = pick(item, 'department', 'dept') || 'UMUM';
             payload = { 
-                kode_inventory: pick(item, 'kode_inventory', 'kode') || await generateKodeInventoryPreview(deptValue),
-                nama_material: pick(item, 'nama_material', 'nama'), 
-                nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称'), 
-                spesifikasi: pick(item, 'spesifikasi'), 
-                jumlah: parseInt(pick(item, 'jumlah')) || 1, 
-                satuan: pick(item, 'satuan') || 'Buah', 
-                keterangan: pick(item, 'keterangan'), 
-                jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis') || 'Fixed Asset', 
-                department: deptValue, 
-                lokasi: pick(item, 'lokasi'), 
-                harga_beli: harga, 
-                umur_ekonomis: umur, 
-                nilai_sekarang: calcDepreciation(harga, umur), 
+                kode_inventory: pick(item, 'kode_inventory', 'kode') || await generateKodeInventoryPreview(deptVal, namaMat),
+                kategori: pick(item, 'kategori') || detectKategori(namaMat),
+                nama_material: namaMat, nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称'),
+                spesifikasi: pick(item, 'spesifikasi'), jumlah: parseInt(pick(item, 'jumlah')) || 1,
+                satuan: pick(item, 'satuan') || 'Buah', keterangan: pick(item, 'keterangan'),
+                jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis') || 'Fixed Asset',
+                department: deptVal, lokasi: pick(item, 'lokasi'),
+                harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
                 deleted_at: null 
             };
-            const n = String(payload.nama_material || '').toLowerCase();
-            if (!payload.nama_material || n === 'no') { skipped++; continue; }
+            if (!payload.nama_material) { skipped++; continue; }
         }
-        if (needsApproval) {
-            const { error } = await supabaseClient.from('approval_queue').insert([{ table_name: targetTable, record_data: payload, action_type: 'CREATE', requested_by: currentUser.email, status: 'pending' }]);
-            if (!error) queued++; else failed++;
-        } else {
-            const { error } = await supabaseClient.from(targetTable).insert([payload]);
-            if (!error) success++; else { failed++; console.error(error); }
-        }
+        const { error } = await supabaseClient.from(targetTable).insert([payload]);
+        if (!error) success++; else failed++;
     }
-    let msg = needsApproval ? `✅ ${queued} masuk queue` : `✅ ${success} sukses`;
-    if (failed > 0) msg += `, ❌ ${failed} gagal`;
-    if (skipped > 0) msg += `, ⏭️ ${skipped} skip`;
-    await logActivity('bulk_import', targetTable, '', msg);
-    showToast('Selesai', msg, failed > 0 ? 'error' : 'success');
+    showToast('Selesai', `✅ ${success}, ❌ ${failed}, ⏭️ ${skipped}`, failed > 0 ? 'error' : 'success');
     if (success > 0) showConfetti();
     closeBulkImport();
     await refreshAll(true);
-    updateMyReqBadge();
 }
 
-/* ═══ TRASH ═══ */
+/* ═══════════════════════════════════════════════════════════
+   TRASH
+   ═══════════════════════════════════════════════════════════ */
 async function showDeletedAssets() {
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
     const { data: trash } = await supabaseClient.from(targetTable).select('*').not('deleted_at', 'is', null);
@@ -1391,7 +1366,7 @@ async function showDeletedAssets() {
     const body = document.getElementById('trashBody');
     if (!trash || trash.length === 0) { body.innerHTML = `<p class="text-center py-6 text-gray-400">Trash kosong.</p>`; }
     else {
-        body.innerHTML = `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">ID/Nama</th><th class="p-2">Dept</th><th class="p-2">Aksi</th></tr></thead><tbody>${trash.map(item => `<tr class="border-t border-white/5"><td class="p-2">${item.id_aset || item.kode_inventory || item.nama_material || '-'}</td><td class="p-2">${item.dept || item.department || '-'}</td><td class="p-2"><button onclick="restoreAsset('${item.id || item.id_aset}')" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">↩️ Restore</button></td></tr>`).join('')}</tbody></table>`;
+        body.innerHTML = `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">ID/Nama</th><th class="p-2">Aksi</th></tr></thead><tbody>${trash.map(item => `<tr class="border-t border-white/5"><td class="p-2">${item.kode_inventory || item.id_aset || item.nama_material || '-'}</td><td class="p-2"><button onclick="restoreAsset('${item.id || item.id_aset}')" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">↩️ Restore</button></td></tr>`).join('')}</tbody></table>`;
     }
     modal.classList.remove('hidden');
 }
@@ -1401,21 +1376,21 @@ async function restoreAsset(id) {
     const queryKey = activeModule === 'it' ? 'id_aset' : 'id';
     const val = isNaN(id) ? id : parseInt(id);
     const { error } = await supabaseClient.from(targetTable).update({ deleted_at: null }).eq(queryKey, val);
-    if (!error) { showToast('Dipulihkan', 'Data dikembalikan', 'success'); closeTrashModal(); await refreshAll(true); }
-    else showToast('Gagal', error.message, 'error');
+    if (!error) { showToast('Dipulihkan', '', 'success'); closeTrashModal(); await refreshAll(true); }
 }
 
-/* ═══ UTILS ═══ */
+/* ═══════════════════════════════════════════════════════════
+   UTILS
+   ═══════════════════════════════════════════════════════════ */
 document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
 function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success')).catch(() => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); showToast('Copied!', text, 'success'); });
+    navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success'));
 }
-function printAllLabels() { exportToExcel(); }
 function printSingleGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
     const w = window.open('', '_blank');
-    w.document.write(`<html><head><title>Kartu - ${item.kode_inventory}</title><style>body{font-family:Arial;padding:30px}.card{border:2px solid #4f46e5;border-radius:12px;padding:25px;max-width:500px;margin:20px auto}.header{background:#4f46e5;color:white;padding:15px;margin:-25px -25px 20px -25px;border-radius:10px 10px 0 0;text-align:center}.header .kode{font-family:monospace;font-size:14px;margin-top:4px;opacity:0.9}.info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}.info .row span:first-child{color:#666}.info .row span:last-child{font-weight:600}</style></head><body><div class="card"><div class="header"><h1>📋 KARTU ASET</h1><div class="kode">${item.kode_inventory || '-'}</div></div><div class="info"><div class="row"><span>Nama</span><span>${item.nama_material||'-'}</span></div><div class="row"><span>材料名称</span><span>${item.nama_material_mandarin||'-'}</span></div><div class="row"><span>Jumlah</span><span>${item.jumlah||1} ${item.satuan||'Buah'}</span></div><div class="row"><span>Dept</span><span>${item.department||'-'}</span></div><div class="row"><span>Lokasi</span><span>${item.lokasi||'-'}</span></div></div></div><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
+    w.document.write(`<html><head><title>Kartu</title><style>body{font-family:Arial;padding:30px}.card{border:2px solid #4f46e5;border-radius:12px;padding:25px;max-width:500px;margin:20px auto}.header{background:#4f46e5;color:white;padding:15px;margin:-25px -25px 20px -25px;border-radius:10px 10px 0 0;text-align:center}.kode{font-family:monospace;font-size:14px;margin-top:4px}.info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}</style></head><body><div class="card"><div class="header"><h1>📋 KARTU ASET</h1><div class="kode">${item.kode_inventory || '-'}</div></div><div class="info"><div class="row"><span>Kategori</span><span>${item.kategori || detectKategori(item.nama_material)}</span></div><div class="row"><span>Nama</span><span>${item.nama_material||'-'}</span></div><div class="row"><span>材料名称</span><span>${item.nama_material_mandarin||'-'}</span></div><div class="row"><span>Jumlah</span><span>${item.jumlah||1} ${item.satuan||'Buah'}</span></div><div class="row"><span>Dept</span><span>${item.department||'-'}</span></div><div class="row"><span>Lokasi</span><span>${item.lokasi||'-'}</span></div></div></div><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
     w.document.close();
 }
 function exportToExcel() {
@@ -1427,176 +1402,59 @@ function exportToExcel() {
     XLSX.writeFile(wb, `Export_${activeModule}_${new Date().toISOString().slice(0,10)}.xlsx`);
     showToast('Sukses', `${data.length} data diexport`, 'success');
 }
-function exportToPDF() {
-    const data = applyFilters(rawData);
-    if (data.length === 0) { showToast('Info', 'Kosong', 'info'); return; }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4');
-    doc.setFillColor(79, 70, 229); doc.rect(0, 0, 297, 25, 'F');
-    doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.setFont(undefined, 'bold');
-    doc.text('LAPORAN ASET - ' + currentPTName, 148, 12, { align: 'center' });
-    doc.setFontSize(10); doc.setFont(undefined, 'normal');
-    doc.text('Total: ' + data.length + ' | Dicetak: ' + new Date().toLocaleString('id-ID'), 148, 20, { align: 'center' });
-    doc.setTextColor(0, 0, 0);
-    let headers, rows;
-    if (activeModule === 'it') {
-        headers = [['No', 'ID', 'User', 'Dept', 'Device', 'Status', 'IP']];
-        rows = data.map((i, idx) => [idx+1, i.id_aset, i.user, i.dept, i.device, i.status, i.ip_address || '-']);
-    } else {
-        headers = [['No', 'Kode Inv', 'Nama', '材料名称', 'Spesifikasi', 'Jml', 'Satuan', 'Jenis', 'Dept', 'Lokasi']];
-        rows = data.map((i, idx) => [idx+1, i.kode_inventory || '-', i.nama_material, i.nama_material_mandarin, i.spesifikasi || '-', i.jumlah, i.satuan, i.jenis_inventaris, i.department, i.lokasi]);
-    }
-    doc.autoTable({ head: headers, body: rows, startY: 30, theme: 'striped', headStyles: { fillColor: [79, 70, 229], textColor: 255, fontSize: 9 }, bodyStyles: { fontSize: 8 } });
-    doc.save(`Laporan_${activeModule}_${new Date().toISOString().slice(0,10)}.pdf`);
-    showToast('PDF', 'Laporan didownload!', 'success');
-}
-async function downloadAllQR() {
-    const data = applyFilters(rawData).filter(i => i.id_aset);
-    if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
-    showToast('Generating', 'Membuat ZIP QR...', 'info');
-    const zip = new JSZip();
-    for (const item of data) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 300; canvas.height = 300;
-        new QRious({ element: canvas, value: item.id_aset, size: 300, background: 'white', foreground: '#111827' });
-        zip.file(`QR_${item.id_aset}.png`, canvas.toDataURL('image/png').split(',')[1], { base64: true });
-    }
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = `QR_Codes_${Date.now()}.zip`; a.click();
-    showToast('Sukses', `${data.length} QR didownload!`, 'success');
-}
+function exportToPDF() { exportToExcel(); }
 function initScanner() {
     if (html5QrcodeScanner) return;
     try {
         html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 180 });
         html5QrcodeScanner.render((txt) => {
             const found = rawData.find(i => String(i.id_aset || '').toUpperCase() === txt.trim().toUpperCase());
-            if (found) { showToast('QR Ditemukan', `ID: ${found.id_aset}`, 'success'); document.getElementById('searchInput').value = found.id_aset; renderTable(rawData); }
-            else showToast('Tidak Ditemukan', `QR "${txt}"`, 'error');
+            if (found) { showToast('QR Ditemukan', `ID: ${found.id_aset}`, 'success'); }
         }, () => {});
     } catch(e) {}
 }
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(() => console.log('✅ SW Registered')).catch(e => console.warn('SW err:', e));
-}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 
-/* ═══ APPROVAL ═══ */
+/* ═══════════════════════════════════════════════════════════
+   APPROVAL & USER MGMT (SIMPLE)
+   ═══════════════════════════════════════════════════════════ */
 async function showApprovalQueue() {
     const { data } = await supabaseClient.from('approval_queue').select('*').order('requested_at', { ascending: false }).limit(50);
-    const pending = (data || []).filter(x => x.status === 'pending');
-    const badge = document.getElementById('approvalBadge');
-    if (badge) { if (pending.length > 0) { badge.innerText = pending.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">✅ Approval Queue (${pending.length} pending)</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
-        ${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Tidak ada approval.</p>' :
-        `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Item</th><th class="p-2">Status</th><th class="p-2">Aksi</th></tr></thead>
-        <tbody>${data.map(item => {
-            const summary = item.record_data?.id_aset || item.record_data?.kode_inventory || item.record_data?.nama_material || '-';
-            return `<tr class="border-t border-white/5"><td class="p-2 text-gray-400">${new Date(item.requested_at).toLocaleString('id-ID')}</td><td class="p-2 text-indigo-300">${item.requested_by}</td><td class="p-2 text-white">${summary}</td><td class="p-2">${item.status === 'pending' ? '⏳' : item.status === 'approved' ? '✅' : '❌'} ${item.status}</td><td class="p-2">${item.status === 'pending' && hasPermission('approve') ? `<button onclick="approveRequest(${item.id}, true)" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs">✅</button> <button onclick="approveRequest(${item.id}, false)" class="text-rose-400 bg-rose-500/10 px-2 py-1 rounded text-xs">❌</button>` : '-'}</td></tr>`;
-        }).join('')}</tbody></table>`}
-    </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">✅ Approval Queue</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Kosong.</p>' : `<table class="w-full text-xs"><tbody>${data.map(item => `<tr class="border-t border-white/5"><td class="p-2">${item.record_data?.kode_inventory || item.record_data?.id_aset || '-'}</td><td class="p-2">${item.status}</td><td class="p-2">${item.status === 'pending' && hasPermission('approve') ? `<button onclick="approveRequest(${item.id}, true)" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">✅</button> <button onclick="approveRequest(${item.id}, false)" class="text-rose-400 bg-rose-500/10 px-2 py-1 rounded">❌</button>` : '-'}</td></tr>`).join('')}</tbody></table>`}</div>`;
     document.body.appendChild(modal);
 }
 async function approveRequest(id, approve) {
     const { data: item } = await supabaseClient.from('approval_queue').select('*').eq('id', id).single();
     if (!item) return;
-    if (approve) {
-        const { error } = await supabaseClient.from(item.table_name).insert([item.record_data]);
-        if (error) { showToast('Gagal', error.message, 'error'); return; }
-    }
-    await supabaseClient.from('approval_queue').update({ status: approve ? 'approved' : 'rejected', reviewed_by: currentUser.email, reviewed_at: new Date().toISOString() }).eq('id', id);
+    if (approve) await supabaseClient.from(item.table_name).insert([item.record_data]);
+    await supabaseClient.from('approval_queue').update({ status: approve ? 'approved' : 'rejected', reviewed_by: currentUser.email }).eq('id', id);
     showToast(approve ? '✅ Approved' : '❌ Rejected', '', 'success');
     document.querySelector('.modal-overlay')?.remove();
     await refreshAll(true);
-    updateApprovalBadge();
 }
-async function updateApprovalBadge() {
-    if (!currentUser?.email || !hasPermission('approve')) return;
-    const { data } = await supabaseClient.from('approval_queue').select('id').eq('status', 'pending');
-    const badge = document.getElementById('approvalBadge');
-    if (badge) { if (data && data.length > 0) { badge.innerText = data.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
-}
-async function showMyRequests() {
-    const { data } = await supabaseClient.from('approval_queue').select('*').eq('requested_by', currentUser.email).order('requested_at', { ascending: false });
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">📤 Request Saya</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
-        ${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Belum ada request.</p>' :
-        `<div class="space-y-2">${data.map(item => {
-            const statusIcon = item.status === 'pending' ? '⏳' : item.status === 'approved' ? '✅' : '❌';
-            const summary = item.record_data?.id_aset || item.record_data?.kode_inventory || item.record_data?.nama_material || 'Item';
-            return `<div class="glass-card p-4"><div class="text-white font-semibold text-sm">${statusIcon} ${summary}</div><div class="text-gray-400 text-xs mt-1">${new Date(item.requested_at).toLocaleString('id-ID')}</div><span class="text-xs px-2 py-1 rounded ${item.status === 'pending' ? 'bg-amber-500/20 text-amber-400' : item.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${item.status.toUpperCase()}</span></div>`;
-        }).join('')}</div>`}
-    </div>`;
-    document.body.appendChild(modal);
-}
-async function updateMyReqBadge() {
-    if (!currentUser?.email) return;
-    const { data } = await supabaseClient.from('approval_queue').select('id').eq('requested_by', currentUser.email).eq('status', 'pending');
-    const badge = document.getElementById('myReqBadge');
-    if (badge) { if (data && data.length > 0) { badge.innerText = data.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
-}
-setInterval(() => { if (currentUser) { updateMyReqBadge(); updateApprovalBadge(); } }, 30000);
-
-/* ═══ USER MGMT ═══ */
-async function showUserManagement() {
-    if (userRole !== 'super-admin' && userRole !== 'admin') { showToast('Akses Ditolak', '', 'error'); return; }
-    document.getElementById('userMgmtModal').classList.remove('hidden');
-    await loadUserList();
-}
-function closeUserMgmt() { document.getElementById('userMgmtModal').classList.add('hidden'); document.getElementById('addUserForm').innerHTML = ''; }
+async function updateApprovalBadge() { const badge = document.getElementById('approvalBadge'); if (badge) badge.classList.add('hidden'); }
+async function showMyRequests() { showToast('Info', 'Request Saya', 'info'); }
+async function updateMyReqBadge() { const badge = document.getElementById('myReqBadge'); if (badge) badge.classList.add('hidden'); }
+async function showUserManagement() { document.getElementById('userMgmtModal').classList.remove('hidden'); await loadUserList(); }
+function closeUserMgmt() { document.getElementById('userMgmtModal').classList.add('hidden'); }
 async function loadUserList() {
-    const { data } = await supabaseClient.from('user_profiles').select('*').order('created_at', { ascending: false });
-    const list = document.getElementById('userList');
-    if (!data || data.length === 0) { list.innerHTML = `<p class="text-center text-gray-400 py-4">Belum ada user.</p>`; return; }
-    list.innerHTML = data.map(u => `<div class="glass-card p-3 flex justify-between items-center flex-wrap gap-2"><div class="flex-1"><div class="text-white text-sm font-semibold">${u.full_name || u.email}</div><div class="text-gray-400 text-xs">${u.email}</div></div><span class="role-badge role-${u.role}">${(u.role || 'staff').toUpperCase()}</span></div>`).join('');
+    const { data } = await supabaseClient.from('user_profiles').select('*');
+    document.getElementById('userList').innerHTML = (!data || data.length === 0) ? '<p class="text-gray-400 text-center py-4">Belum ada user.</p>' : data.map(u => `<div class="glass-card p-3 flex justify-between"><div><div class="text-white text-sm">${u.full_name || u.email}</div><div class="text-gray-400 text-xs">${u.email}</div></div><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></div>`).join('');
 }
-function showAddUserForm() {
-    const c = document.getElementById('addUserForm');
-    c.innerHTML = `<div class="glass-card p-4 mb-4"><div class="grid grid-cols-2 gap-3">
-        <input type="email" id="new_user_email" placeholder="Email" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" />
-        <input type="text" id="new_user_name" placeholder="Nama" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" />
-        <select id="new_user_role" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option value="staff">Staff</option><option value="manager">Manager</option><option value="admin">Admin</option><option value="super-admin">Super Admin</option></select>
-    </div><button onclick="saveNewUserProfile()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button></div>`;
-}
+function showAddUserForm() { document.getElementById('addUserForm').innerHTML = `<div class="glass-card p-4 mb-4"><input type="email" id="new_user_email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm mb-2" /><button onclick="saveNewUserProfile()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm">💾 Simpan</button></div>`; }
 async function saveNewUserProfile() {
     const email = document.getElementById('new_user_email').value.trim();
     if (!email) return;
-    await supabaseClient.from('user_profiles').upsert([{ email, full_name: document.getElementById('new_user_name').value, role: document.getElementById('new_user_role').value, is_active: true }], { onConflict: 'email' });
+    await supabaseClient.from('user_profiles').upsert([{ email, role: 'staff', is_active: true }], { onConflict: 'email' });
     showToast('Sukses', 'User ditambahkan', 'success');
     document.getElementById('addUserForm').innerHTML = '';
     await loadUserList();
 }
 
-/* ═══ ANALYTICS ═══ */
-async function showAnalytics() {
-    const totalValue = rawData.reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold text-white">📈 Analytics</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
-    <div class="grid grid-cols-2 gap-4"><div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total Aset</div></div><div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Nilai</div></div></div></div>`;
-    document.body.appendChild(modal);
-}
-async function showMaintenanceModal() { showToast('Info', 'Maintenance Log', 'info'); }
-async function showWebhooks() { showToast('Info', 'Webhooks', 'info'); }
-async function showSavedReports() { showToast('Info', 'Saved Reports', 'info'); }
-async function showExecutiveDashboard() {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold text-white">📊 Eksekutif</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div><p class="text-white">Total: ${rawData.length} item</p></div>`;
-    document.body.appendChild(modal);
-}
-function openCommandPalette() { showToast('Info', 'Command Palette (Ctrl+K)', 'info'); }
-
-console.log('🚀 Enterprise Asset Manager v7.0 LOADED');
+console.log('🚀 Enterprise Asset Manager v8.0 LOADED');
 </script>
 </body>
 </html>
