@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v8.1</title>
+<title>Enterprise Asset Manager Pro v9</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -111,7 +111,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v8.1 • Auto-Code from Material Name</p>
+<p class="text-gray-500 text-xs mt-6">v9.0 • Full Enterprise Edition</p>
 </div>
 </div>
 
@@ -343,8 +343,8 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 
 <div class="flex flex-wrap gap-3 mb-4 items-center">
-<input type="text" id="searchInput" placeholder="🔍 Cari..." class="input bg-white/5 border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] outline-none p-2" />
-<select id="filterDept" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl p-2" onchange="renderTable(rawData)"><option value="">Semua Dept</option></select>
+<input type="text" id="searchInput" placeholder="🔍 Cari..." class="bg-white/5 border border-white/10 text-white text-sm rounded-xl flex-1 min-w-[280px] outline-none p-2" />
+<select id="filterDept" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl p-2" onchange="renderTable(rawData)"><option value="">Semua Dept</option></select>
 <button onclick="clearFilters()" class="filter-btn" style="background:rgba(255,255,255,0.05);color:#9ca3af;border-color:rgba(255,255,255,0.1)">✕ Clear</button>
 </div>
 
@@ -389,7 +389,7 @@ document.documentElement.setAttribute('data-theme', currentTheme);
 const themeBtnEl = document.getElementById('themeBtn');
 if (themeBtnEl) themeBtnEl.innerText = currentTheme === 'dark' ? '🌙' : '☀️';
 
-/* ═══ KATEGORI MAP ═══ */
+/* ═══ KATEGORI AUTO-DETECT ═══ */
 const KATEGORI_MAP = [
     { keywords: ['televisi', 'tv', 'led', 'display', 'screen', 'proyektor', 'projector'], kat: 'ELV' },
     { keywords: ['air conditioner', ' ac ', 'pendingin', 'kulkas', 'refrigerator', 'freezer', 'dispenser', 'ups', 'stabilizer', 'inverter', 'genset'], kat: 'ELV' },
@@ -401,7 +401,7 @@ const KATEGORI_MAP = [
     { keywords: ['motor', 'mobil', 'truk', 'truck', 'van', 'pickup', 'kendaraan', 'vehicle', 'car', 'sepeda', 'bicycle', 'forklift', 'troli', 'trolley'], kat: 'VEH' },
     { keywords: ['mesin', 'machine', 'pompa', 'pump', 'compressor', 'kompresor', 'conveyor', 'las', 'welding', 'bor', 'drill', 'gerinda', 'grinder'], kat: 'MAC' },
     { keywords: ['tang', 'kunci', 'obeng', 'palu', 'gunting', 'cutter', 'pisau', 'tool', 'perkakas', 'tangga', 'ladder'], kat: 'TOO' },
-    { keywords: ['kulkas', 'microwave', 'oven', 'kompor', 'stove', 'rice cooker', 'magic com', 'water heater', 'piring', 'gelas', 'sendok'], kat: 'KIT' },
+    { keywords: ['microwave', 'oven', 'kompor', 'stove', 'rice cooker', 'magic com', 'water heater', 'piring', 'gelas', 'sendok'], kat: 'KIT' },
     { keywords: ['apar', 'fire extinguisher', 'pemadam', 'alarm', 'smoke detector', 'helm', 'sarung tangan', 'masker', 'safety', 'p3k', 'first aid'], kat: 'SAF' },
     { keywords: ['lampu', 'light', 'lamp', 'neon', 'downlight'], kat: 'LGT' },
     { keywords: ['tandon', 'tank', 'keran', 'water'], kat: 'WTR' },
@@ -656,7 +656,6 @@ async function refreshAll(silent = false) {
 }
 async function loadData() { await refreshAll(true); }
 function manualRefresh() { refreshAll(); }
-
 function updateFilterOptions() {
     const depts = new Set(rawData.map(x => x.dept || x.department).filter(Boolean));
     const deptSelect = document.getElementById('filterDept');
@@ -1045,7 +1044,9 @@ async function renderTimeline() {
     `).join('');
 }
 
-/* ═══ FORM ═══ */
+/* ═══════════════════════════════════════════════════════════
+   FORM (Tambah Aset)
+   ═══════════════════════════════════════════════════════════ */
 async function toggleForm() {
     const fc = document.getElementById('formContainer');
     if (!fc.classList.contains('hidden')) { fc.classList.add('hidden'); return; }
@@ -1066,6 +1067,14 @@ async function toggleForm() {
             <div><label>License Expiry</label><input type="date" id="it_lexp" /></div>
             <div><label>Harga Beli</label><input type="number" id="it_harga" /></div>
             <div><label>Umur Ekonomis</label><input type="number" id="it_umur" value="5" /></div>
+            <div class="form-section"><label>Upload Gambar</label>
+                <div class="upload-box" onclick="document.getElementById('it_img_input').click()">
+                    <div class="text-3xl mb-1">📸</div>
+                    <p class="text-gray-400 text-xs">Klik untuk upload</p>
+                    <input type="file" id="it_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'it_img_preview')" />
+                </div>
+                <div id="it_img_preview" class="mt-3 hidden"></div>
+            </div>
             <div class="form-section flex justify-end gap-2">
                 <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
                 <button type="button" onclick="saveITAsset()" class="btn bg-indigo-500 text-white px-6 py-2 rounded-xl border-none">💾 Simpan</button>
@@ -1119,6 +1128,9 @@ async function toggleForm() {
 /* ═══ SAVE ═══ */
 async function saveITAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
+    const imgInput = document.getElementById('it_img_input');
+    let imgUrl = null;
+    if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], v('it_id') || 'img'); }
     const harga = parseFloat(v('it_harga')) || 0;
     const umur = parseInt(v('it_umur')) || 5;
     const payload = {
@@ -1126,7 +1138,7 @@ async function saveITAsset() {
         specs: v('it_specs') || '-', status: v('it_status') || 'Active',
         ip_address: v('it_ip'), license_os: v('it_los'), license_expiry: v('it_lexp') || null,
         harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
-        deleted_at: null
+        gambar_url: imgUrl, deleted_at: null
     };
     if (!payload.id_aset) { showToast('Error', 'ID Aset wajib!', 'error'); return; }
     const needsApproval = !hasPermission('approve');
@@ -1139,7 +1151,14 @@ async function saveITAsset() {
     }
     const { error } = await supabaseClient.from(currentPTTable).insert([payload]);
     if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', 'IT Aset disimpan!', 'success'); showConfetti(); toggleForm(); await refreshAll(true); }
+    else {
+        await logActivity('create', currentPTTable, payload.id_aset, `Tambah: ${payload.id_aset}`);
+        await triggerWebhooks('asset.created', payload);
+        showToast('Sukses', 'IT Aset disimpan!', 'success');
+        showConfetti();
+        toggleForm();
+        await refreshAll(true);
+    }
 }
 async function saveGeneralAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
@@ -1174,6 +1193,7 @@ async function saveGeneralAsset() {
     if (error) showToast('Gagal', error.message, 'error');
     else {
         await logActivity('create', 'general_assets', payload.kode_inventory, `Tambah: ${namaMat}`);
+        await triggerWebhooks('asset.created', payload);
         showToast('Sukses', `${payload.kode_inventory} (${kategori}) disimpan!`, 'success');
         showConfetti();
         toggleForm();
@@ -1181,7 +1201,7 @@ async function saveGeneralAsset() {
     }
 }
 
-/* ═══ EDIT ═══ */
+/* ═══ EDIT & UPDATE ═══ */
 function editITAsset(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1190,6 +1210,7 @@ function editITAsset(id_aset) {
     document.getElementById('formTitle').innerText = `✏️ Edit: ${id_aset}`;
     const form = document.getElementById('dynamicForm');
     const opt = (val, arr) => arr.map(x => `<option ${x === val ? 'selected' : ''}>${x}</option>`).join('');
+    const currentImg = item.gambar_url ? (item.gambar_url.startsWith('http') ? item.gambar_url : STORAGE_BUCKET_URL + item.gambar_url) : null;
     form.innerHTML = `
         <div><label>ID Aset</label><input type="text" id="it_id" value="${item.id_aset || ''}" readonly /></div>
         <div><label>User</label><input type="text" id="it_user" value="${item.user || ''}" /></div>
@@ -1202,6 +1223,14 @@ function editITAsset(id_aset) {
         <div><label>License Expiry</label><input type="date" id="it_lexp" value="${item.license_expiry || ''}" /></div>
         <div><label>Harga Beli</label><input type="number" id="it_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="it_umur" value="${item.umur_ekonomis || 5}" /></div>
+        <div class="form-section"><label>📸 Upload Gambar Baru</label>
+            <div class="upload-box" onclick="document.getElementById('it_img_input').click()">
+                <div class="text-3xl mb-1">📸</div>
+                <input type="file" id="it_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'it_img_preview')" />
+            </div>
+            <div id="it_img_preview" class="mt-3 hidden"></div>
+            ${currentImg ? `<div class="mt-3"><p class="text-xs text-gray-400 mb-2">Gambar saat ini:</p><img src="${currentImg}" class="preview-img" onclick="viewImage('${currentImg}')" /></div>` : ''}
+        </div>
         <div class="form-section flex justify-end gap-2">
             <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
             <button type="button" onclick="updateITAsset('${id_aset}')" class="btn bg-emerald-500 text-white px-6 py-2 rounded-xl border-none">💾 Update</button>
@@ -1211,12 +1240,22 @@ function editITAsset(id_aset) {
 }
 async function updateITAsset(id_aset) {
     if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
+    const imgInput = document.getElementById('it_img_input');
+    let imgUrl = undefined;
+    if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], 'it_' + id_aset); }
     const harga = parseFloat(v('it_harga')) || 0;
     const umur = parseInt(v('it_umur')) || 5;
     const payload = { user: v('it_user'), dept: v('it_dept'), device: v('it_device'), specs: v('it_specs'), status: v('it_status'), ip_address: v('it_ip'), license_os: v('it_los'), license_expiry: v('it_lexp') || null, harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur) };
+    if (imgUrl) payload.gambar_url = imgUrl;
     const { error } = await supabaseClient.from(currentPTTable).update(payload).eq('id_aset', id_aset);
     if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', 'Aset diupdate!', 'success'); toggleForm(); await refreshAll(true); }
+    else {
+        await logActivity('update', currentPTTable, id_aset, `Update: ${id_aset}`);
+        await triggerWebhooks('asset.updated', payload);
+        showToast('Sukses', 'Aset diupdate!', 'success');
+        toggleForm();
+        await refreshAll(true);
+    }
 }
 function editGeneralAsset(id) {
     const item = rawData.find(x => String(x.id) === String(id));
@@ -1225,12 +1264,11 @@ function editGeneralAsset(id) {
     fc.classList.remove('hidden');
     document.getElementById('formTitle').innerText = `✏️ Edit: ${item.nama_material}`;
     const form = document.getElementById('dynamicForm');
-    const kat = item.kategori || detectKategori(item.nama_material);
+    const currentImg = item.gambar ? (item.gambar.startsWith('http') ? item.gambar : STORAGE_BUCKET_URL + encodeURIComponent(item.gambar)) : null;
     form.innerHTML = `
         <div>
             <label>Kode Inventory *</label>
             <input type="text" id="gen_kode" value="${item.kode_inventory || ''}" />
-            <p class="text-[10px] text-purple-400 mt-1">Kategori: <strong>${kat}</strong></p>
         </div>
         <div><label>Nama Material *</label><input type="text" id="gen_nama" value="${item.nama_material || ''}" /></div>
         <div><label>材料名称</label><input type="text" id="gen_mandarin" value="${item.nama_material_mandarin || ''}" /></div>
@@ -1244,6 +1282,14 @@ function editGeneralAsset(id) {
         <div><label>Harga Beli</label><input type="number" id="gen_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="gen_umur" value="${item.umur_ekonomis || 5}" /></div>
         <div><label>Maintenance Next</label><input type="date" id="gen_mnext" value="${item.maintenance_next_date || ''}" /></div>
+        <div class="form-section"><label>📸 Upload Gambar Baru</label>
+            <div class="upload-box" onclick="document.getElementById('gen_img_input').click()">
+                <div class="text-3xl mb-1">📸</div>
+                <input type="file" id="gen_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'gen_img_preview')" />
+            </div>
+            <div id="gen_img_preview" class="mt-3 hidden"></div>
+            ${currentImg ? `<div class="mt-3"><p class="text-xs text-gray-400 mb-2">Gambar saat ini:</p><img src="${currentImg}" class="preview-img" onclick="viewImage('${currentImg}')" /></div>` : ''}
+        </div>
         <div class="form-section flex justify-end gap-2">
             <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
             <button type="button" onclick="updateGeneralAsset(${id})" class="btn bg-emerald-500 text-white px-6 py-2 rounded-xl border-none">💾 Update</button>
@@ -1253,6 +1299,9 @@ function editGeneralAsset(id) {
 }
 async function updateGeneralAsset(id) {
     if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
+    const imgInput = document.getElementById('gen_img_input');
+    let imgUrl = undefined;
+    if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], 'gen_' + id); }
     const harga = parseFloat(v('gen_harga')) || 0;
     const umur = parseInt(v('gen_umur')) || 5;
     const namaMat = v('gen_nama');
@@ -1266,9 +1315,16 @@ async function updateGeneralAsset(id) {
         harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
         maintenance_next_date: v('gen_mnext') || null
     };
+    if (imgUrl) payload.gambar = imgUrl;
     const { error } = await supabaseClient.from('general_assets').update(payload).eq('id', id);
     if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', 'Data diupdate!', 'success'); toggleForm(); await refreshAll(true); }
+    else {
+        await logActivity('update', 'general_assets', payload.kode_inventory, `Update: ${namaMat}`);
+        await triggerWebhooks('asset.updated', payload);
+        showToast('Sukses', 'Data diupdate!', 'success');
+        toggleForm();
+        await refreshAll(true);
+    }
 }
 
 /* ═══ DELETE ═══ */
@@ -1277,14 +1333,25 @@ async function deleteItem(id_aset) {
     if (!confirm(`Hapus aset ${id_aset}?`)) return;
     const { error } = await supabaseClient.from(currentPTTable).update({ deleted_at: new Date().toISOString() }).eq('id_aset', id_aset);
     if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Terhapus', 'Masuk trash', 'info'); await refreshAll(true); }
+    else {
+        await logActivity('delete', currentPTTable, id_aset, `Hapus: ${id_aset}`);
+        await triggerWebhooks('asset.deleted', { id_aset });
+        showToast('Terhapus', 'Masuk trash', 'info');
+        await refreshAll(true);
+    }
 }
 async function deleteGeneralItem(id) {
     if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm('Hapus data ini?')) return;
+    const item = rawData.find(x => String(x.id) === String(id));
     const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
     if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Terhapus', 'Masuk trash', 'info'); await refreshAll(true); }
+    else {
+        await logActivity('delete', 'general_assets', item?.kode_inventory || String(id), `Hapus: ${item?.nama_material || ''}`);
+        await triggerWebhooks('asset.deleted', { id, kode_inventory: item?.kode_inventory });
+        showToast('Terhapus', 'Masuk trash', 'info');
+        await refreshAll(true);
+    }
 }
 function showDetailGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
@@ -1313,7 +1380,7 @@ function showDetailGeneral(id) {
     document.body.appendChild(modal);
 }
 
-/* ═══ IMPORT ═══ */
+/* ═══ IMPORT EXCEL ═══ */
 function openBulkImport() {
     document.getElementById('bulkImportModal').classList.remove('hidden');
     document.getElementById('importPreview').classList.add('hidden');
@@ -1435,7 +1502,7 @@ async function restoreAsset(id) {
     if (!error) { showToast('Dipulihkan', '', 'success'); closeTrashModal(); await refreshAll(true); }
 }
 
-/* ═══ UTILS ═══ */
+/* ═══ UTILITIES ═══ */
 document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
 function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success')); }
 function printSingleGeneral(id) {
@@ -1467,23 +1534,340 @@ function initScanner() {
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 
-/* ═══ STUB MODALS ═══ */
-async function showMaintenanceModal() { showToast('Info', 'Maintenance Log - coming soon', 'info'); }
-async function showWebhooks() { showToast('Info', 'Webhooks - coming soon', 'info'); }
-async function showSavedReports() { showToast('Info', 'Saved Reports - coming soon', 'info'); }
-async function showAnalytics() {
-    const totalValue = rawData.reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
+/* ═══════════════════════════════════════════════════════════
+   MAINTENANCE LOG (FULL)
+   ═══════════════════════════════════════════════════════════ */
+async function showMaintenanceModal() {
+    const { data } = await supabaseClient.from('maintenance_log').select('*').order('maintenance_date', { ascending: false }).limit(100);
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full">
+    const totalCost = (data || []).reduce((s, m) => s + (parseFloat(m.cost) || 0), 0);
+    const thisMonth = (data || []).filter(m => {
+        const d = new Date(m.maintenance_date);
+        const now = new Date();
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    const monthCost = thisMonth.reduce((s, m) => s + (parseFloat(m.cost) || 0), 0);
+    modal.innerHTML = `
+        <div class="glass-card p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <div><h2 class="text-xl font-bold text-white">🔧 Maintenance Log</h2><p class="text-gray-400 text-xs">Catatan maintenance aset</p></div>
+                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="glass-card p-3 text-center"><div class="text-2xl font-bold text-indigo-400">${data?.length || 0}</div><div class="text-[10px] text-gray-400 uppercase">Total Log</div></div>
+                <div class="glass-card p-3 text-center"><div class="text-2xl font-bold text-emerald-400">Rp ${(totalCost/1000000).toFixed(1)}Jt</div><div class="text-[10px] text-gray-400 uppercase">Total Biaya</div></div>
+                <div class="glass-card p-3 text-center"><div class="text-2xl font-bold text-amber-400">Rp ${(monthCost/1000000).toFixed(1)}Jt</div><div class="text-[10px] text-gray-400 uppercase">Bulan Ini</div></div>
+            </div>
+            <button onclick="addMaintenanceForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah Maintenance</button>
+            <div id="maintenanceFormContainer"></div>
+            ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada log maintenance.</p>' : `
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+                <table class="w-full text-xs">
+                    <thead class="bg-white/5"><tr class="text-left text-gray-400">
+                        <th class="p-2">Tanggal</th><th class="p-2">Asset ID</th><th class="p-2">Tipe</th>
+                        <th class="p-2">Biaya</th><th class="p-2">Vendor</th><th class="p-2">Notes</th><th class="p-2">Aksi</th>
+                    </tr></thead>
+                    <tbody>${data.map(m => `
+                        <tr class="border-t border-white/5 hover:bg-white/5">
+                            <td class="p-2 text-gray-400">${m.maintenance_date}</td>
+                            <td class="p-2 text-indigo-300 font-mono">${m.asset_id}</td>
+                            <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] ${m.maintenance_type === 'Preventive' ? 'bg-emerald-500/20 text-emerald-400' : m.maintenance_type === 'Corrective' ? 'bg-amber-500/20 text-amber-400' : 'bg-purple-500/20 text-purple-400'}">${m.maintenance_type}</span></td>
+                            <td class="p-2 text-emerald-300">Rp ${(m.cost || 0).toLocaleString('id-ID')}</td>
+                            <td class="p-2 text-gray-300">${m.vendor || '-'}</td>
+                            <td class="p-2 text-gray-400 text-[10px]">${m.notes || '-'}</td>
+                            <td class="p-2"><button onclick="deleteMaintenance(${m.id})" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button></td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            </div>`}
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+function addMaintenanceForm() {
+    const c = document.getElementById('maintenanceFormContainer');
+    c.innerHTML = `
+        <div class="glass-card p-4 mb-4 border border-indigo-500/30">
+            <h3 class="text-white font-semibold text-sm mb-3">➕ Tambah Maintenance Baru</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div><label class="text-xs text-gray-400">Tanggal *</label><input type="date" id="mt_date" value="${new Date().toISOString().split('T')[0]}" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+                <div><label class="text-xs text-gray-400">Asset ID *</label><input type="text" id="mt_asset" placeholder="PC-001 / MGI.IT.ELV..." class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+                <div><label class="text-xs text-gray-400">Tipe</label>
+                    <select id="mt_type" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm">
+                        <option>Preventive</option><option>Corrective</option><option>Upgrade</option><option>Inspection</option>
+                    </select>
+                </div>
+                <div><label class="text-xs text-gray-400">Biaya (Rp)</label><input type="number" id="mt_cost" value="0" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+                <div><label class="text-xs text-gray-400">Vendor / Teknisi</label><input type="text" id="mt_vendor" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+                <div><label class="text-xs text-gray-400">Catatan</label><input type="text" id="mt_notes" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+            </div>
+            <div class="flex gap-2 mt-3">
+                <button onclick="saveMaintenance()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
+                <button onclick="document.getElementById('maintenanceFormContainer').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
+            </div>
+        </div>
+    `;
+}
+async function saveMaintenance() {
+    const payload = {
+        maintenance_date: document.getElementById('mt_date').value || new Date().toISOString().split('T')[0],
+        asset_id: document.getElementById('mt_asset').value.trim(),
+        asset_table: activeModule === 'it' ? currentPTTable : 'general_assets',
+        maintenance_type: document.getElementById('mt_type').value,
+        cost: parseFloat(document.getElementById('mt_cost').value) || 0,
+        vendor: document.getElementById('mt_vendor').value.trim(),
+        notes: document.getElementById('mt_notes').value.trim()
+    };
+    if (!payload.asset_id) { showToast('Error', 'Asset ID wajib diisi', 'error'); return; }
+    const { error } = await supabaseClient.from('maintenance_log').insert([payload]);
+    if (error) showToast('Gagal', error.message, 'error');
+    else {
+        await logActivity('maintenance', payload.asset_table, payload.asset_id, `Maintenance ${payload.maintenance_type}: Rp ${payload.cost.toLocaleString('id-ID')}`);
+        await triggerWebhooks('maintenance.created', payload);
+        showToast('Sukses', 'Maintenance tersimpan!', 'success');
+        document.querySelector('.modal-overlay')?.remove();
+        showMaintenanceModal();
+    }
+}
+async function deleteMaintenance(id) {
+    if (!confirm('Hapus log maintenance ini?')) return;
+    await supabaseClient.from('maintenance_log').delete().eq('id', id);
+    showToast('Terhapus', 'Log dihapus', 'success');
+    document.querySelector('.modal-overlay')?.remove();
+    showMaintenanceModal();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WEBHOOKS (FULL)
+   ═══════════════════════════════════════════════════════════ */
+async function showWebhooks() {
+    const { data } = await supabaseClient.from('webhooks').select('*').order('created_at', { ascending: false });
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `
+        <div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <div><h2 class="text-xl font-bold text-white">🔗 Webhooks</h2><p class="text-gray-400 text-xs">Kirim notifikasi ke Slack/Telegram/Discord saat ada event</p></div>
+                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                <p class="text-blue-300 text-xs">💡 <strong>Format:</strong> URL endpoint yang menerima POST JSON. Bisa Slack, Discord, Telegram, atau custom API.</p>
+            </div>
+            <button onclick="addWebhookForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah Webhook</button>
+            <div id="webhookFormContainer"></div>
+            ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada webhook.</p>' : `
+            <div class="space-y-2">
+                ${data.map(w => `
+                    <div class="glass-card p-4 flex justify-between items-center flex-wrap gap-2">
+                        <div class="flex-1 min-w-[200px]">
+                            <div class="flex items-center gap-2">
+                                <span class="text-white font-semibold text-sm">${w.name}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded ${w.is_active !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'}">${w.is_active !== false ? 'ACTIVE' : 'OFF'}</span>
+                            </div>
+                            <div class="text-gray-400 text-xs mt-1">Event: <span class="text-indigo-300 font-mono">${w.event_type}</span></div>
+                            <div class="text-gray-500 text-[10px] font-mono truncate">${w.url}</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="testWebhook(${w.id})" class="text-cyan-400 text-xs bg-cyan-500/10 hover:bg-cyan-500/20 px-2 py-1 rounded">🧪 Test</button>
+                            <button onclick="toggleWebhookActive(${w.id}, ${w.is_active !== false})" class="text-amber-400 text-xs bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded">${w.is_active !== false ? '⏸️' : '▶️'}</button>
+                            <button onclick="deleteWebhook(${w.id})" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`}
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+function addWebhookForm() {
+    const c = document.getElementById('webhookFormContainer');
+    c.innerHTML = `
+        <div class="glass-card p-4 mb-4 border border-indigo-500/30">
+            <h3 class="text-white font-semibold text-sm mb-3">➕ Tambah Webhook Baru</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div><label class="text-xs text-gray-400">Nama *</label><input type="text" id="wh_name" placeholder="Notif HRD Slack" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+                <div><label class="text-xs text-gray-400">Event *</label>
+                    <select id="wh_event" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm">
+                        <option value="asset.created">Asset Created</option>
+                        <option value="asset.updated">Asset Updated</option>
+                        <option value="asset.deleted">Asset Deleted</option>
+                        <option value="maintenance.created">Maintenance Created</option>
+                        <option value="approval.requested">Approval Requested</option>
+                        <option value="approval.approved">Approval Approved</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2"><label class="text-xs text-gray-400">URL *</label><input type="text" id="wh_url" placeholder="https://hooks.slack.com/services/..." class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+            </div>
+            <div class="flex gap-2 mt-3">
+                <button onclick="saveWebhook()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
+                <button onclick="document.getElementById('webhookFormContainer').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
+            </div>
+        </div>
+    `;
+}
+async function saveWebhook() {
+    const payload = {
+        name: document.getElementById('wh_name').value.trim(),
+        event_type: document.getElementById('wh_event').value,
+        url: document.getElementById('wh_url').value.trim(),
+        is_active: true
+    };
+    if (!payload.name || !payload.url) { showToast('Error', 'Nama dan URL wajib', 'error'); return; }
+    const { error } = await supabaseClient.from('webhooks').insert([payload]);
+    if (error) showToast('Gagal', error.message, 'error');
+    else { showToast('Sukses', 'Webhook ditambahkan', 'success'); document.querySelector('.modal-overlay')?.remove(); showWebhooks(); }
+}
+async function deleteWebhook(id) {
+    if (!confirm('Hapus webhook ini?')) return;
+    await supabaseClient.from('webhooks').delete().eq('id', id);
+    showToast('Terhapus', 'Webhook dihapus', 'success');
+    document.querySelector('.modal-overlay')?.remove();
+    showWebhooks();
+}
+async function toggleWebhookActive(id, currentState) {
+    await supabaseClient.from('webhooks').update({ is_active: !currentState }).eq('id', id);
+    showToast('Sukses', `Webhook ${!currentState ? 'diaktifkan' : 'dimatikan'}`, 'success');
+    document.querySelector('.modal-overlay')?.remove();
+    showWebhooks();
+}
+async function testWebhook(id) {
+    const { data } = await supabaseClient.from('webhooks').select('*').eq('id', id).single();
+    if (!data) return;
+    showToast('Testing', 'Mengirim test payload...', 'info');
+    try {
+        const res = await fetch(data.url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ event: 'test', message: 'Test dari Enterprise Asset Manager', timestamp: new Date().toISOString() })
+        });
+        if (res.ok) showToast('Sukses', 'Webhook terkirim!', 'success');
+        else showToast('Gagal', `HTTP ${res.status}`, 'error');
+    } catch (err) { showToast('Gagal', 'CORS atau URL invalid', 'error'); }
+}
+async function triggerWebhooks(event, data) {
+    try {
+        const { data: hooks } = await supabaseClient.from('webhooks').select('*').eq('event_type', event).eq('is_active', true);
+        (hooks || []).forEach(h => {
+            fetch(h.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event, data, timestamp: new Date().toISOString() }) }).catch(() => {});
+        });
+    } catch (err) { console.warn('Webhook fail:', err); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SAVED REPORTS (FULL)
+   ═══════════════════════════════════════════════════════════ */
+async function showSavedReports() {
+    const { data } = await supabaseClient.from('saved_reports').select('*').order('created_at', { ascending: false });
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `
+        <div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <div><h2 class="text-xl font-bold text-white">📁 Saved Reports</h2><p class="text-gray-400 text-xs">Simpan template report untuk dipakai ulang</p></div>
+                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+            </div>
+            <button onclick="showAddReportForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Buat Report Baru</button>
+            <div id="reportFormContainer"></div>
+            ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada report tersimpan.</p>' : `
+            <div class="space-y-2">
+                ${data.map(r => `
+                    <div class="glass-card p-4">
+                        <div class="flex justify-between items-start flex-wrap gap-2">
+                            <div class="flex-1 min-w-[200px]">
+                                <div class="text-white font-semibold text-sm">${r.report_name}</div>
+                                <div class="text-gray-400 text-xs mt-1">Module: <span class="text-indigo-300">${r.config?.module || '-'}</span> · PT: <span class="text-indigo-300">${r.config?.pt || '-'}</span></div>
+                                <div class="text-gray-500 text-[10px]">Dibuat: ${new Date(r.created_at).toLocaleString('id-ID')}</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="runSavedReport(${r.id})" class="text-emerald-400 text-xs bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-1 rounded">▶️ Run</button>
+                                <button onclick="deleteSavedReport(${r.id})" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`}
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+function showAddReportForm() {
+    const c = document.getElementById('reportFormContainer');
+    const itCols = ['id_aset', 'user', 'dept', 'device', 'status', 'ip_address', 'license_os', 'license_expiry', 'specs', 'harga_beli', 'nilai_sekarang'];
+    const genCols = ['kode_inventory', 'kategori', 'nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'jenis_inventaris', 'department', 'lokasi', 'harga_beli', 'nilai_sekarang'];
+    const cols = activeModule === 'it' ? itCols : genCols;
+    c.innerHTML = `
+        <div class="glass-card p-4 mb-4 border border-indigo-500/30">
+            <h3 class="text-white font-semibold text-sm mb-3">➕ Buat Report Baru</h3>
+            <div class="mb-3">
+                <label class="text-xs text-gray-400">Nama Report *</label>
+                <input type="text" id="rp_name" placeholder="Laporan Bulanan IT" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" />
+            </div>
+            <div class="mb-3">
+                <label class="text-xs text-gray-400 mb-2 block">Pilih Kolom:</label>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    ${cols.map((col, i) => `<label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-white"><input type="checkbox" class="rp-col" value="${col}" ${i < 6 ? 'checked' : ''} style="accent-color: #818cf8;" /><span>${col}</span></label>`).join('')}
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="saveNewReport()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
+                <button onclick="document.getElementById('reportFormContainer').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
+            </div>
+        </div>
+    `;
+}
+async function saveNewReport() {
+    const name = document.getElementById('rp_name').value.trim();
+    const cols = [...document.querySelectorAll('.rp-col:checked')].map(c => c.value);
+    if (!name) { showToast('Error', 'Nama report wajib', 'error'); return; }
+    if (cols.length === 0) { showToast('Error', 'Pilih minimal 1 kolom', 'error'); return; }
+    const config = { columns: cols, module: activeModule, pt: currentPTTable };
+    const { error } = await supabaseClient.from('saved_reports').insert([{ report_name: name, config, created_by: currentUser?.email }]);
+    if (error) showToast('Gagal', error.message, 'error');
+    else { showToast('Sukses', 'Report tersimpan', 'success'); document.querySelector('.modal-overlay')?.remove(); showSavedReports(); }
+}
+async function runSavedReport(id) {
+    const { data } = await supabaseClient.from('saved_reports').select('*').eq('id', id).single();
+    if (!data?.config?.columns) { showToast('Error', 'Config invalid', 'error'); return; }
+    const cols = data.config.columns;
+    const selected = rawData.map(row => { const o = {}; cols.forEach(c => o[c] = row[c] || ''); return o; });
+    if (selected.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
+    const ws = XLSX.utils.json_to_sheet(selected);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, data.report_name.substring(0, 20));
+    XLSX.writeFile(wb, `${data.report_name.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
+    showToast('Sukses', `Report "${data.report_name}" didownload`, 'success');
+}
+async function deleteSavedReport(id) {
+    if (!confirm('Hapus report ini?')) return;
+    await supabaseClient.from('saved_reports').delete().eq('id', id);
+    showToast('Terhapus', 'Report dihapus', 'success');
+    document.querySelector('.modal-overlay')?.remove();
+    showSavedReports();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ANALYTICS & EXECUTIVE DASHBOARD
+   ═══════════════════════════════════════════════════════════ */
+async function showAnalytics() {
+    const totalValue = rawData.reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
+    const totalCost = rawData.reduce((s, i) => s + (parseFloat(i.harga_beli) || 0), 0);
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-bold text-white">📈 Analytics</h2>
             <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total Aset</div></div>
-            <div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Total Nilai</div></div>
+            <div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Nilai Sekarang</div></div>
+            <div class="kpi-card"><div class="kpi-value">Rp ${(totalCost/1000000).toFixed(0)}Jt</div><div class="kpi-label">Harga Beli</div></div>
+            <div class="kpi-card"><div class="kpi-value">${new Set(rawData.map(i => i.dept || i.department)).size}</div><div class="kpi-label">Department</div></div>
         </div>
     </div>`;
     document.body.appendChild(modal);
@@ -1509,7 +1893,9 @@ async function showExecutiveDashboard() {
     document.body.appendChild(modal);
 }
 
-/* ═══ APPROVAL & USER MGMT ═══ */
+/* ═══════════════════════════════════════════════════════════
+   APPROVAL & USER MANAGEMENT
+   ═══════════════════════════════════════════════════════════ */
 async function showApprovalQueue() {
     const { data } = await supabaseClient.from('approval_queue').select('*').order('requested_at', { ascending: false }).limit(50);
     const modal = document.createElement('div');
@@ -1544,7 +1930,7 @@ async function saveNewUserProfile() {
     await loadUserList();
 }
 
-console.log('🚀 Enterprise Asset Manager v8.1 LOADED');
+console.log('🚀 Enterprise Asset Manager v9.0 LOADED');
 </script>
 </body>
 </html>
