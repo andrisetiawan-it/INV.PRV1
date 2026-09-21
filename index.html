@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v6</title>
+<title>Enterprise Asset Manager Pro v7</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -96,27 +96,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .preview-img:hover { transform: scale(1.05); }
 .badge-notif { position: absolute; top: -4px; right: -4px; background: #fb7185; color: white; font-size: 10px; border-radius: 10px; padding: 2px 6px; font-weight: 700; animation: badgePulse 2s ease-in-out infinite; }
 @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-.kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.kanban-col { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 12px; min-height: 400px; }
-.kanban-col-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-.kanban-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: grab; transition: all 0.2s; }
-.kanban-card:hover { border-color: #818cf8; transform: translateY(-2px); }
-.kanban-card.dragging { opacity: 0.5; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.calendar-day { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 8px; min-height: 90px; cursor: pointer; transition: all 0.2s; }
-.calendar-day:hover { border-color: #818cf8; background: rgba(129,140,248,0.05); }
-.calendar-day.today { border-color: #34d399; box-shadow: 0 0 12px rgba(52,211,153,0.3); }
-.calendar-day.has-event { background: rgba(129,140,248,0.08); }
-.calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
-.calendar-header div { text-align: center; font-size: 0.7rem; color: #9ca3af; font-weight: 600; padding: 4px; }
-.cmd-palette { position: fixed; top: 15%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; background: rgba(26, 16, 64, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(129,140,248,0.3); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); z-index: 100000; overflow: hidden; }
-.cmd-input { width: 100%; padding: 16px 20px; background: transparent; border: none; color: white; font-size: 1rem; outline: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
-.cmd-list { max-height: 400px; overflow-y: auto; padding: 8px; }
-.cmd-item { padding: 10px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #e5e7eb; font-size: 0.85rem; }
-.cmd-item:hover, .cmd-item.active { background: rgba(129,140,248,0.15); color: white; }
-.offline-badge { position: fixed; bottom: 20px; left: 20px; padding: 8px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; z-index: 9999; display: none; }
-.offline-badge.offline { display: block; background: rgba(251, 113, 133, 0.9); color: white; }
-.offline-badge.online { display: block; background: rgba(52, 211, 153, 0.9); color: white; }
 .role-badge { padding: 3px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
 .role-super-admin { background: linear-gradient(135deg, #f472b6, #c084fc); color: white; }
 .role-admin { background: linear-gradient(135deg, #818cf8, #6366f1); color: white; }
@@ -124,16 +103,12 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 .role-staff { background: rgba(52, 211, 153, 0.2); color: #34d399; }
 .role-viewer { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
 .role-auditor { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-.timeline { position: relative; padding-left: 30px; }
-.timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: rgba(129,140,248,0.3); }
-.timeline-item { position: relative; padding-bottom: 20px; }
-.timeline-item::before { content: ''; position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: #818cf8; border: 2px solid #0a0e1a; }
 .kpi-card { background: linear-gradient(135deg, rgba(129,140,248,0.15), rgba(192,132,252,0.1)); border: 1px solid rgba(129,140,248,0.3); border-radius: 16px; padding: 20px; position: relative; overflow: hidden; }
 .kpi-value { font-size: 2rem; font-weight: 800; color: #818cf8; line-height: 1; }
 .kpi-label { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; font-weight: 600; margin-top: 4px; }
 .confetti { position: fixed; width: 10px; height: 10px; background: #818cf8; animation: confettiFall 3s linear forwards; z-index: 99999; pointer-events: none; }
 @keyframes confettiFall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-@media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } .kanban-board { grid-template-columns: 1fr; } }
+@media(max-width:1024px){ .form-grid { grid-template-columns: 1fr 1fr; } }
 @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } .stat-count { font-size: 1.2rem; } }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
@@ -142,7 +117,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </head>
 <body class="bg-animated">
 <div id="toastContainer" class="toast-container"></div>
-<div id="offlineBadge" class="offline-badge"></div>
 
 <!-- LOGIN -->
 <div id="loginSection" class="flex items-center justify-center min-h-screen p-4">
@@ -156,7 +130,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v6.0 • Enterprise Edition</p>
+<p class="text-gray-500 text-xs mt-6">v7.0 • Enterprise Edition</p>
 </div>
 </div>
 
@@ -264,7 +238,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="showLogModal()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">📝</button>
 <button onclick="showUserManagement()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" title="Kelola User">👥</button>
 <button onclick="toggleTheme()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" id="themeBtn">🌙</button>
-<button onclick="toggleLanguage()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5" id="langBtn">🌐 ID</button>
 <button onclick="manualRefresh()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">🔄</button>
 <button onclick="handleLogout()" class="text-sm text-gray-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5">Logout</button>
 </div>
@@ -272,15 +245,9 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 
 <div class="max-w-[1800px] mx-auto p-4">
 <div class="flex gap-2 mb-4 flex-wrap">
-<button onclick="switchView('table')" id="btnViewTable" class="tab-btn active">📋 Tabel</button>
-<button onclick="switchView('kanban')" id="btnViewKanban" class="tab-btn">📊 Kanban</button>
-<button onclick="switchView('calendar')" id="btnViewCalendar" class="tab-btn">📅 Kalender</button>
-<button onclick="switchView('timeline')" id="btnViewTimeline" class="tab-btn">⏱️ Timeline</button>
-<button onclick="showExecutiveDashboard()" class="tab-btn">📊 Eksekutif</button>
 <button onclick="showAnalytics()" class="tab-btn">📈 Analytics</button>
 <button onclick="showMaintenanceModal()" class="tab-btn">🔧 Maintenance</button>
-<button onclick="showWebhooks()" class="tab-btn">🔗 Webhooks</button>
-<button onclick="showSavedReports()" class="tab-btn">📁 Reports</button>
+<button onclick="showExecutiveDashboard()" class="tab-btn">📊 Eksekutif</button>
 </div>
 
 <div class="flex gap-3 mb-6 flex-wrap">
@@ -314,30 +281,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">💻 Device</h3><div style="height:280px;position:relative"><canvas id="chartDevice"></canvas></div></div>
 <div class="chart-card lg:col-span-2"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">📈 Growth</h3><div style="height:280px;position:relative"><canvas id="chartGrowth"></canvas></div></div>
 <div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">🎯 License</h3><div style="height:280px;position:relative"><canvas id="chartLicense"></canvas></div></div>
-<div class="chart-card lg:col-span-3"><h3 class="text-gray-300 font-semibold text-xs uppercase tracking-wider mb-3">🔥 Heatmap</h3><div style="height:180px;position:relative"><canvas id="chartHeatmap"></canvas></div></div>
-</div>
-
-<div id="kanbanContainer" class="hidden mb-6">
-<div class="kanban-board">
-<div class="kanban-col" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Active')"><div class="kanban-col-header"><h3 class="text-emerald-400 font-bold">✅ Active</h3><span class="text-xs text-gray-400" id="kanbanCountActive">0</span></div><div id="kanbanActive"></div></div>
-<div class="kanban-col" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Maintenance')"><div class="kanban-col-header"><h3 class="text-amber-400 font-bold">🔧 Maintenance</h3><span class="text-xs text-gray-400" id="kanbanCountMaint">0</span></div><div id="kanbanMaint"></div></div>
-<div class="kanban-col" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Broken')"><div class="kanban-col-header"><h3 class="text-rose-400 font-bold">❌ Broken</h3><span class="text-xs text-gray-400" id="kanbanCountBroken">0</span></div><div id="kanbanBroken"></div></div>
-</div>
-</div>
-
-<div id="calendarContainer" class="hidden glass-card p-4 mb-6">
-<div class="flex justify-between items-center mb-4">
-<button onclick="calendarPrev()" class="btn bg-white/5 text-gray-300 px-3 py-1 rounded-lg border border-white/10">← Prev</button>
-<h3 id="calendarTitle" class="text-white font-bold text-lg"></h3>
-<button onclick="calendarNext()" class="btn bg-white/5 text-gray-300 px-3 py-1 rounded-lg border border-white/10">Next →</button>
-</div>
-<div class="calendar-header"><div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div></div>
-<div id="calendarGrid" class="calendar-grid"></div>
-</div>
-
-<div id="timelineContainer" class="hidden glass-card p-6 mb-6">
-<h3 class="text-white font-bold text-lg mb-4">⏱️ Asset Lifecycle Timeline</h3>
-<div id="timelineContent" class="timeline"></div>
 </div>
 
 <div class="flex flex-wrap gap-2 mb-4">
@@ -372,7 +315,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <select id="filterDevice" class="input bg-white/5 border-white/10 text-white text-sm rounded-xl" onchange="renderTable(rawData)"><option value="">Semua Device</option></select>
 <button onclick="toggleFilter('expiring')" id="btnFilterExpiring" class="filter-btn warning">⚠️ Expiring</button>
 <button onclick="toggleFilter('expired')" id="btnFilterExpired" class="filter-btn danger">🔴 Expired</button>
-<button onclick="toggleFilter('maintenance')" id="btnFilterMaintenance" class="filter-btn warning">🔧 Maintenance</button>
 <button onclick="clearFilters()" class="filter-btn" style="background:rgba(255,255,255,0.05);color:#9ca3af;border-color:rgba(255,255,255,0.1)">✕ Clear</button>
 </div>
 
@@ -389,9 +331,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   CONFIG & STATE
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ CONFIG ═══ */
 const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -400,7 +340,6 @@ const STORAGE_BUCKET_URL = 'https://xsqabypdhudqwyeegfci.supabase.co/storage/v1/
 let currentPTTable = '';
 let currentPTName = '';
 let activeModule = 'it';
-let currentView = 'table';
 let rawData = [];
 let importData = [];
 let html5QrcodeScanner = null;
@@ -410,22 +349,16 @@ let autoRefreshTimer = null;
 let knownDepts = new Set();
 let currentUser = null;
 let currentTheme = localStorage.getItem('theme') || 'dark';
-let currentLang = localStorage.getItem('lang') || 'id';
 let selectedRows = new Set();
 let userRole = 'staff';
 let userProfile = null;
-let calendarDate = new Date();
-let draggedAssetId = null;
-let cmdItems = [];
-let cmdSelectedIdx = 0;
-let isOnline = navigator.onLine;
-const charts = { status: null, dept: null, device: null, growth: null, license: null, heatmap: null };
+const charts = { status: null, dept: null, device: null, growth: null, license: null };
 
 document.documentElement.setAttribute('data-theme', currentTheme);
 const themeBtnEl = document.getElementById('themeBtn');
 if (themeBtnEl) themeBtnEl.innerText = currentTheme === 'dark' ? '🌙' : '☀️';
 
-/* TOAST & CONFETTI */
+/* TOAST */
 function showToast(title, message, type = 'info') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -448,8 +381,6 @@ function showConfetti() {
         }, i * 30);
     }
 }
-
-/* THEME & LANGUAGE */
 function toggleTheme() {
     currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', currentTheme);
@@ -457,19 +388,10 @@ function toggleTheme() {
     localStorage.setItem('theme', currentTheme);
     showToast('Theme', `Mode ${currentTheme === 'dark' ? 'Gelap' : 'Terang'}`, 'info');
 }
-function toggleLanguage() {
-    const langs = ['id', 'en', 'zh'];
-    const idx = (langs.indexOf(currentLang) + 1) % langs.length;
-    currentLang = langs[idx];
-    localStorage.setItem('lang', currentLang);
-    document.getElementById('langBtn').innerText = `🌐 ${currentLang.toUpperCase()}`;
-    showToast('Bahasa', `Language: ${currentLang.toUpperCase()}`, 'info');
-}
 
-/* AUTH */
+/* ═══ AUTH ═══ */
 supabaseClient.auth.onAuthStateChange((event, session) => { if (session) checkUser(); });
 checkUser();
-
 async function checkUser() {
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (user) {
@@ -499,11 +421,10 @@ async function handleLogout() {
     window.location.reload();
 }
 
-/* USER PROFILE */
+/* ═══ USER PROFILE ═══ */
 async function loadUserProfile() {
     if (!currentUser?.email) return;
-    const { data, error } = await supabaseClient.from('user_profiles').select('*').eq('email', currentUser.email).maybeSingle();
-    if (error) console.warn('Load profile err:', error);
+    const { data } = await supabaseClient.from('user_profiles').select('*').eq('email', currentUser.email).maybeSingle();
     if (data) {
         userProfile = data;
         userRole = data.role || 'staff';
@@ -519,7 +440,7 @@ async function loadUserProfile() {
         userRole = defaultRole;
         await supabaseClient.from('user_profiles').insert([{
             email: currentUser.email, full_name: currentUser.email.split('@')[0], role: defaultRole, is_active: true
-        }]).then(({ error }) => { if (error) console.warn(error); });
+        }]);
     }
     updateUserUI();
     setTimeout(() => { updateMyReqBadge(); updateApprovalBadge(); }, 1000);
@@ -528,10 +449,7 @@ function updateUserUI() {
     const emailEl = document.getElementById('userEmail');
     const badge = document.getElementById('userRoleBadge');
     if (emailEl) emailEl.innerText = currentUser?.email?.split('@')[0] || '-';
-    if (badge) {
-        badge.innerText = userRole.replace('-', ' ').toUpperCase();
-        badge.className = `role-badge role-${userRole}`;
-    }
+    if (badge) { badge.innerText = userRole.replace('-', ' ').toUpperCase(); badge.className = `role-badge role-${userRole}`; }
 }
 function hasPermission(action) {
     const perms = {
@@ -545,7 +463,7 @@ function hasPermission(action) {
     return (perms[userRole] || perms.staff).includes(action);
 }
 
-/* PT & MODULE */
+/* ═══ PT & MODULE ═══ */
 function setPT(table, name) {
     currentPTTable = table;
     currentPTName = name;
@@ -574,7 +492,7 @@ function switchModule(module) {
     loadData();
 }
 
-/* LOG ACTIVITY */
+/* ═══ ACTIVITY LOG ═══ */
 async function logActivity(action, tableName, recordId, detail) {
     try {
         await supabaseClient.from('activity_log').insert([{
@@ -595,7 +513,7 @@ async function showLogModal() {
 }
 function closeLogModal() { document.getElementById('logModal').classList.add('hidden'); }
 
-/* NOTIFICATIONS */
+/* ═══ NOTIFICATIONS ═══ */
 function checkNotifications(data) {
     const today = new Date();
     const notifications = [];
@@ -605,12 +523,6 @@ function checkNotifications(data) {
             const days = Math.ceil((exp - today) / 86400000);
             if (days < 0) notifications.push({ type: 'error', msg: `${i.id_aset}: Lisensi EXPIRED ${Math.abs(days)} hari` });
             else if (days <= 7) notifications.push({ type: 'warning', msg: `${i.id_aset}: Lisensi expiring ${days} hari` });
-        }
-        if (i.maintenance_next_date) {
-            const mn = new Date(i.maintenance_next_date);
-            const days = Math.ceil((mn - today) / 86400000);
-            if (days < 0) notifications.push({ type: 'error', msg: `${i.id_aset}: Maintenance OVERDUE ${Math.abs(days)} hari` });
-            else if (days <= 7) notifications.push({ type: 'warning', msg: `${i.id_aset}: Maintenance ${days} hari lagi` });
         }
     });
     const badge = document.getElementById('notifBadge');
@@ -627,7 +539,7 @@ function showNotifications() {
     document.body.appendChild(modal);
 }
 
-/* REFRESH */
+/* ═══ REFRESH ═══ */
 async function refreshAll(silent = false) {
     const tableName = activeModule === 'it' ? currentPTTable : 'general_assets';
     try {
@@ -647,8 +559,6 @@ async function refreshAll(silent = false) {
         renderTable(rawData);
         updateFilterOptions();
         checkNotifications(rawData);
-        if (currentView === 'kanban') renderKanban();
-        if (currentView === 'calendar') renderCalendar();
     } catch (err) {
         console.error('❌ Refresh error:', err);
         if (!silent) showToast('Error', err.message, 'error');
@@ -684,12 +594,11 @@ function setupAutoRefresh() {
     }, 15000);
 }
 
-/* FILTER */
+/* ═══ FILTER ═══ */
 function applyFilters(data) {
     let filtered = data;
     if (activeFilter === 'expired') { const today = new Date(); filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) < today); }
     else if (activeFilter === 'expiring') { const today = new Date(); const next30 = new Date(); next30.setDate(next30.getDate() + 30); filtered = filtered.filter(i => i.license_expiry && new Date(i.license_expiry) >= today && new Date(i.license_expiry) <= next30); }
-    else if (activeFilter === 'maintenance') { filtered = filtered.filter(i => String(i.status || '').toLowerCase() === 'maintenance'); }
     const deptFilter = document.getElementById('filterDept')?.value;
     if (deptFilter) filtered = filtered.filter(i => (i.dept || i.department) === deptFilter);
     const devFilter = document.getElementById('filterDevice')?.value;
@@ -701,13 +610,12 @@ function applyFilters(data) {
 function toggleFilter(type) { activeFilter = activeFilter === type ? null : type; updateFilterButtons(); renderTable(rawData); }
 function clearFilters() { activeFilter = null; document.getElementById('searchInput').value = ''; document.getElementById('filterDept').value = ''; document.getElementById('filterDevice').value = ''; updateFilterButtons(); renderTable(rawData); }
 function updateFilterButtons() {
-    const e = document.getElementById('btnFilterExpired'); const x = document.getElementById('btnFilterExpiring'); const m = document.getElementById('btnFilterMaintenance');
+    const e = document.getElementById('btnFilterExpired'); const x = document.getElementById('btnFilterExpiring');
     if (e) e.classList.toggle('active', activeFilter === 'expired');
     if (x) x.classList.toggle('active', activeFilter === 'expiring');
-    if (m) m.classList.toggle('active', activeFilter === 'maintenance');
 }
 
-/* RENDER TABLE */
+/* ═══ RENDER TABLE ═══ */
 function renderTable(data) {
     const thead = document.getElementById('tableHead');
     const tbody = document.getElementById('tableBody');
@@ -737,16 +645,14 @@ function renderTable(data) {
                 <td class="text-xs text-emerald-300 font-semibold">${nilaiFmt}</td>
                 <td><div class="flex gap-1 justify-center flex-wrap">
                     <button onclick="editITAsset('${item.id_aset}')" class="btn-action edit">✏️</button>
-                    <button onclick="printQR('${item.id_aset}')" class="btn-action label">🏷️</button>
-                    <button onclick="showTimeline('${item.id_aset}', currentPTTable)" class="btn-action" style="background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.3)">⏱️</button>
                     <button onclick="deleteItem('${item.id_aset}')" class="btn-action delete">🗑️</button>
                 </div></td>
             </tr>`;
         }).join('');
         document.querySelectorAll('canvas.qr-code').forEach(c => { try { new QRious({ element: c, value: c.dataset.value || 'N/A', size: 42, background: 'white', foreground: '#111827' }); } catch(e){} });
     } else {
-        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>No</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
-        if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="13" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
+        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>No</th><th>Kode Inventory</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
+        if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="14" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
         tbody.innerHTML = filtered.map((item, idx) => {
             let gambarCell = '-';
             if (item.gambar) { const g = String(item.gambar).trim(); const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); gambarCell = `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.parentElement.innerHTML='-'">`; }
@@ -755,6 +661,7 @@ function renderTable(data) {
             return `<tr>
                 <td><input type="checkbox" class="row-check" data-id="${item.id}" ${selectedRows.has(String(item.id)) ? 'checked' : ''} onchange="toggleRow(this, '${item.id}')"></td>
                 <td>${idx + 1}</td>
+                <td class="font-mono text-indigo-300 text-xs" style="cursor:pointer" onclick="copyToClipboard('${item.kode_inventory || ''}')" title="Klik copy">${item.kode_inventory || '-'} 📋</td>
                 <td class="font-semibold" style="text-align:left">${item.nama_material || '-'}</td>
                 <td class="text-gray-400" style="text-align:left">${item.nama_material_mandarin || '-'}</td>
                 <td>${item.spesifikasi || '-'}</td>
@@ -769,7 +676,6 @@ function renderTable(data) {
                     <button onclick="editGeneralAsset(${item.id})" class="btn-action edit">✏️</button>
                     <button onclick="printSingleGeneral(${item.id})" class="btn-action label">🖨️</button>
                     <button onclick="showDetailGeneral(${item.id})" class="btn-action transfer">👁️</button>
-                    <button onclick="showTimeline('${item.id}', 'general_assets')" class="btn-action" style="background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.3)">⏱️</button>
                     <button onclick="deleteGeneralItem(${item.id})" class="btn-action delete">🗑️</button>
                 </div></td>
             </tr>`;
@@ -778,7 +684,7 @@ function renderTable(data) {
     updateBulkBar();
 }
 
-/* BULK SELECT */
+/* ═══ BULK SELECT ═══ */
 function toggleSelectAll(el) { document.querySelectorAll('.row-check').forEach(c => { c.checked = el.checked; if (el.checked) selectedRows.add(c.dataset.id); else selectedRows.delete(c.dataset.id); }); updateBulkBar(); }
 function toggleRow(el, id) { if (el.checked) selectedRows.add(String(id)); else selectedRows.delete(String(id)); updateBulkBar(); }
 function updateBulkBar() { const bar = document.getElementById('bulkActionBar'); const cnt = document.getElementById('selectedCount'); if (cnt) cnt.innerText = selectedRows.size; if (bar) bar.classList.toggle('hidden', selectedRows.size === 0); }
@@ -815,7 +721,7 @@ async function bulkTransfer() {
     await refreshAll(true);
 }
 
-/* STATS */
+/* ═══ STATS ═══ */
 function updateStats(data) {
     document.getElementById('statTotal').innerText = data.length;
     document.getElementById('statActive').innerText = data.filter(i => { const s = String(i.status || i.jenis_inventaris || '').toLowerCase(); return s.includes('active') || s.includes('fixed'); }).length;
@@ -831,11 +737,11 @@ function renderDeptSummary(data) {
 }
 function filterByDept(dept) { document.getElementById('searchInput').value = dept; renderTable(rawData); showToast('Filter', `Dept: ${dept}`, 'info'); }
 
-/* CHARTS */
+/* ═══ CHARTS ═══ */
 function renderCharts(data) {
     Object.keys(charts).forEach(key => { if (charts[key]) { try { charts[key].destroy(); } catch(e) {} charts[key] = null; } });
     const commonOpts = {
-        responsive: true, maintainAspectRatio: false, animation: { duration: 600 },
+        responsive: true, maintainAspectRatio: false,
         plugins: {
             legend: { labels: { color: currentTheme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 11 }, padding: 10, boxWidth: 12, boxHeight: 12 } },
             tooltip: { backgroundColor: 'rgba(26, 16, 64, 0.95)', borderColor: 'rgba(129, 140, 248, 0.3)', borderWidth: 1, padding: 12, cornerRadius: 8 }
@@ -856,9 +762,8 @@ function renderITCharts(data, commonOpts) {
         const dc = {};
         data.forEach(i => { const d = String(i.dept || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
         const sd = Object.entries(dc).sort((a, b) => { if (b[1] !== a[1]) return b[1] - a[1]; return a[0].localeCompare(b[0]); });
-        const dynamicHeight = Math.max(280, sd.length * 32);
-        cDept.parentElement.style.height = dynamicHeight + 'px';
-        charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Jumlah', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: currentTheme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 11, weight: '600' } }, grid: { display: false } } } } });
+        cDept.parentElement.style.height = Math.max(280, sd.length * 32) + 'px';
+        charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Jumlah', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 11, weight: '600' } }, grid: { display: false } } } } });
     }
     const cDevice = document.getElementById('chartDevice');
     if (cDevice) {
@@ -880,22 +785,21 @@ function renderITCharts(data, commonOpts) {
         const grad = ctx.createLinearGradient(0, 0, 0, 220);
         grad.addColorStop(0, 'rgba(129, 140, 248, 0.4)');
         grad.addColorStop(1, 'rgba(129, 140, 248, 0.02)');
-        charts.growth = new Chart(ctx, { type: 'line', data: { labels: ga.map(g => g.label), datasets: [{ label: 'Aset', data: ga.map(g => g.count), borderColor: '#818cf8', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#818cf8', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } } });
+        charts.growth = new Chart(ctx, { type: 'line', data: { labels: ga.map(g => g.label), datasets: [{ data: ga.map(g => g.count), borderColor: '#818cf8', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#818cf8', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } } });
     }
     const cLic = document.getElementById('chartLicense');
     if (cLic) {
         const today = new Date();
-        const lc = { 'Active': 0, 'Expiring (30d)': 0, 'Expired': 0, 'No License': 0 };
+        const lc = { 'Active': 0, 'Expiring': 0, 'Expired': 0, 'No License': 0 };
         data.forEach(i => {
             if (!i.license_os && !i.license_office && !i.license_av) { lc['No License']++; return; }
             if (!i.license_expiry) { lc['Active']++; return; }
             const exp = new Date(i.license_expiry);
             const days = Math.ceil((exp - today) / 86400000);
-            if (days < 0) lc['Expired']++; else if (days <= 30) lc['Expiring (30d)']++; else lc['Active']++;
+            if (days < 0) lc['Expired']++; else if (days <= 30) lc['Expiring']++; else lc['Active']++;
         });
         charts.license = new Chart(cLic, { type: 'doughnut', data: { labels: Object.keys(lc), datasets: [{ data: Object.values(lc), backgroundColor: ['#34d399', '#fbbf24', '#fb7185', '#6b7280'], borderWidth: 2, hoverOffset: 8 }] }, options: { ...commonOpts, cutout: '65%', plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'bottom' } } } });
     }
-    renderHeatmap(data, commonOpts);
 }
 function renderGeneralCharts(data, commonOpts) {
     const cStatus = document.getElementById('chartStatus');
@@ -910,9 +814,8 @@ function renderGeneralCharts(data, commonOpts) {
         const dc = {};
         data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
         const sd = Object.entries(dc).sort((a, b) => { if (b[1] !== a[1]) return b[1] - a[1]; return a[0].localeCompare(b[0]); });
-        const dynamicHeight = Math.max(280, sd.length * 32);
-        cDept.parentElement.style.height = dynamicHeight + 'px';
-        charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Item', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: currentTheme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 11, weight: '600' } }, grid: { display: false } } } } });
+        cDept.parentElement.style.height = Math.max(280, sd.length * 32) + 'px';
+        charts.dept = new Chart(cDept, { type: 'bar', data: { labels: sd.map(d => d[0]), datasets: [{ label: 'Item', data: sd.map(d => d[1]), backgroundColor: sd.map((_, i) => `hsl(${230 + i * 15}, 70%, 60%)`), borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 11, weight: '600' } }, grid: { display: false } } } } });
     }
     const cDevice = document.getElementById('chartDevice');
     if (cDevice) {
@@ -934,30 +837,18 @@ function renderGeneralCharts(data, commonOpts) {
         const grad = ctx.createLinearGradient(0, 0, 0, 220);
         grad.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
         grad.addColorStop(1, 'rgba(192, 132, 252, 0.02)');
-        charts.growth = new Chart(ctx, { type: 'line', data: { labels: ga.map(g => g.label), datasets: [{ label: 'Item', data: ga.map(g => g.count), borderColor: '#c084fc', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#c084fc', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } } });
+        charts.growth = new Chart(ctx, { type: 'line', data: { labels: ga.map(g => g.label), datasets: [{ data: ga.map(g => g.count), borderColor: '#c084fc', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#c084fc', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { display: false } } } } });
     }
     const cLic = document.getElementById('chartLicense');
     if (cLic) {
         const dc = {};
         data.forEach(i => { const d = String(i.department || 'LAINNYA').toUpperCase().trim(); dc[d] = (dc[d] || 0) + 1; });
         const top5 = Object.entries(dc).sort((a, b) => b[1] - a[1]).slice(0, 5);
-        charts.license = new Chart(cLic, { type: 'bar', data: { labels: top5.map(d => d[0]), datasets: [{ label: 'Item', data: top5.map(d => d[1]), backgroundColor: ['#f472b6', '#c084fc', '#818cf8', '#22d3ee', '#34d399'], borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } } } } });
+        charts.license = new Chart(cLic, { type: 'bar', data: { labels: top5.map(d => d[0]), datasets: [{ data: top5.map(d => d[1]), backgroundColor: ['#f472b6', '#c084fc', '#818cf8', '#22d3ee', '#34d399'], borderRadius: 6, borderSkipped: false }] }, options: { ...commonOpts, indexAxis: 'y', plugins: { ...commonOpts.plugins, legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } } } } });
     }
-    renderHeatmap(data, commonOpts);
-}
-function renderHeatmap(data, commonOpts) {
-    const cHeat = document.getElementById('chartHeatmap');
-    if (!cHeat) return;
-    const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-    const heat = {};
-    days.forEach(d => heat[d] = Array(24).fill(0));
-    data.forEach(i => { if (!i.created_at) return; const d = new Date(i.created_at); heat[days[d.getDay()]][d.getHours()]++; });
-    const hourLabels = Array.from({length: 24}, (_, i) => `${i}:00`);
-    const datasets = days.map((day, idx) => ({ label: day, data: heat[day], backgroundColor: `hsla(${230 + idx * 20}, 70%, 60%, 0.7)`, borderRadius: 3, barPercentage: 0.9 }));
-    charts.heatmap = new Chart(cHeat, { type: 'bar', data: { labels: hourLabels, datasets }, options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { ...commonOpts.plugins.legend, position: 'top', labels: { ...commonOpts.plugins.legend.labels, boxWidth: 10, font: { size: 9 } } } }, scales: { y: { beginAtZero: true, stacked: true, ticks: { color: '#6b7280', stepSize: 1, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { stacked: true, ticks: { color: '#6b7280', font: { size: 8 } }, grid: { display: false } } } } });
 }
 
-/* HELPERS */
+/* ═══ HELPERS ═══ */
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 function calcDepreciation(harga, umur) { return harga || 0; }
 async function uploadImage(file, prefix = 'img') {
@@ -987,8 +878,56 @@ function viewImage(url) {
     document.body.appendChild(modal);
 }
 
+/* ═══ GENERATE KODE INVENTORY (MGI-DEPT.TAHUN-NNN) ═══ */
+async function generateKodeInventoryPreview(dept = null) {
+    try {
+        const tahun = new Date().getFullYear();
+        const deptValue = dept || document.getElementById('gen_dept')?.value || 'UMUM';
+        const deptUpper = String(deptValue).trim().toUpperCase() || 'UMUM';
+        const prefix = `MGI-${deptUpper}.${tahun}-`;
+        
+        const { data } = await supabaseClient
+            .from('general_assets')
+            .select('kode_inventory')
+            .like('kode_inventory', `${prefix}%`)
+            .order('kode_inventory', { ascending: false })
+            .limit(50);
+        
+        let maxNum = 0;
+        (data || []).forEach(item => {
+            const match = String(item.kode_inventory).match(new RegExp(`MGI-${deptUpper}\\.${tahun}-(\\d+)`));
+            if (match) {
+                const num = parseInt(match[1]);
+                if (num > maxNum) maxNum = num;
+            }
+        });
+        
+        const nextNum = maxNum + 1;
+        return `${prefix}${String(nextNum).padStart(3, '0')}`;
+    } catch (err) {
+        console.warn('Generate kode err:', err);
+        const tahun = new Date().getFullYear();
+        return `MGI-UMUM.${tahun}-001`;
+    }
+}
+async function autoUpdateKode(deptValue) {
+    const kodeInput = document.getElementById('gen_kode');
+    if (!kodeInput) return;
+    if (kodeInput.dataset.manualEdited === 'true') return;
+    clearTimeout(window.__autoKodeTimer);
+    window.__autoKodeTimer = setTimeout(async () => {
+        try {
+            const newKode = await generateKodeInventoryPreview(deptValue);
+            if (kodeInput.dataset.manualEdited !== 'true') kodeInput.value = newKode;
+        } catch (err) { console.warn(err); }
+    }, 500);
+}
+document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'gen_kode') e.target.dataset.manualEdited = 'true';
+}, true);
+
 /* ═══ FORM ═══ */
-function toggleForm() {
+async function toggleForm() {
     const fc = document.getElementById('formContainer');
     if (!fc.classList.contains('hidden')) { fc.classList.add('hidden'); return; }
     if (!hasPermission('create')) { showToast('Denied', 'Anda tidak punya akses tambah', 'error'); return; }
@@ -1037,7 +976,13 @@ function toggleForm() {
         `;
     } else {
         document.getElementById('formTitle').innerText = "➕ Input Aset General Baru";
+        const previewKode = await generateKodeInventoryPreview();
         form.innerHTML = `
+            <div>
+                <label>Kode Inventory *</label>
+                <input type="text" id="gen_kode" value="${previewKode}" placeholder="MGI-DEPT.2026-001" />
+                <p class="text-[10px] text-gray-500 mt-1">Auto-generate dari Department</p>
+            </div>
             <div><label>Nama Material *</label><input type="text" id="gen_nama" required /></div>
             <div><label>材料名称</label><input type="text" id="gen_mandarin" /></div>
             <div><label>Spesifikasi</label><input type="text" id="gen_specs" /></div>
@@ -1045,7 +990,7 @@ function toggleForm() {
             <div><label>Satuan</label><input type="text" id="gen_satuan" value="Buah" /></div>
             <div><label>Keterangan</label><input type="text" id="gen_keterangan" /></div>
             <div><label>Jenis</label><select id="gen_jenis"><option>Fixed Asset</option><option>Consumable</option></select></div>
-            <div><label>Department</label><input type="text" id="gen_dept" list="deptListGen" /></div>
+            <div><label>Department *</label><input type="text" id="gen_dept" list="deptListGen" oninput="autoUpdateKode(this.value)" onchange="autoUpdateKode(this.value)" /></div>
             <datalist id="deptListGen">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
             <div><label>Lokasi</label><input type="text" id="gen_lokasi" /></div>
             <div><label>Harga Beli</label><input type="number" id="gen_harga" /></div>
@@ -1068,14 +1013,13 @@ function toggleForm() {
     fc.scrollIntoView({ behavior: 'smooth' });
 }
 
-/* ═══ SAVE — DENGAN APPROVAL ═══ */
+/* ═══ SAVE ═══ */
 async function saveITAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     const imgInput = document.getElementById('it_img_input');
     let imgUrl = null;
     if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], v('it_id') || 'img'); }
     const harga = parseFloat(v('it_harga')) || 0;
-    const umur = parseInt(v('it_umur')) || 5;
     const payload = {
         id_aset: v('it_id'), user: v('it_user') || '-', dept: v('it_dept'), device: v('it_device'),
         specs: v('it_specs') || '-', status: v('it_status') || 'Active',
@@ -1083,17 +1027,14 @@ async function saveITAsset() {
         license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
         license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
         monitor_brand: v('it_mb'), printer_brand: v('it_pb'), mouse_brand: v('it_mob'), keyboard_brand: v('it_kb'),
-        notes: v('it_notes'), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+        notes: v('it_notes'), harga_beli: harga, umur_ekonomis: parseInt(v('it_umur')) || 5, nilai_sekarang: calcDepreciation(harga, parseInt(v('it_umur')) || 5),
         maintenance_next_date: v('it_mnext') || null, maintenance_interval_days: parseInt(v('it_mint')) || 180,
         gambar_url: imgUrl, deleted_at: null
     };
     if (!payload.id_aset) { showToast('Error', 'ID Aset wajib!', 'error'); return; }
     const needsApproval = !hasPermission('approve');
     if (needsApproval) {
-        const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{
-            table_name: currentPTTable, record_data: payload, action_type: 'CREATE',
-            requested_by: currentUser.email, status: 'pending'
-        }]);
+        const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{ table_name: currentPTTable, record_data: payload, action_type: 'CREATE', requested_by: currentUser.email, status: 'pending' }]);
         if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
         await logActivity('request_approval', currentPTTable, payload.id_aset, `Request: ${payload.id_aset}`);
         showToast('⏳ Menunggu Approval', 'Data dikirim ke manager', 'info');
@@ -1105,8 +1046,6 @@ async function saveITAsset() {
     if (error) showToast('Gagal', error.message, 'error');
     else {
         await logActivity('create', currentPTTable, payload.id_aset, `Tambah: ${payload.id_aset}`);
-        await logLifecycle(payload.id_aset, currentPTTable, 'Asset Created', payload);
-        await triggerWebhooks('asset.created', payload);
         showToast('Sukses', 'IT Aset disimpan!', 'success');
         showConfetti();
         toggleForm();
@@ -1119,25 +1058,22 @@ async function saveGeneralAsset() {
     let imgUrl = null;
     if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], v('gen_nama') || 'img'); }
     const harga = parseFloat(v('gen_harga')) || 0;
-    const umur = parseInt(v('gen_umur')) || 5;
     const payload = {
+        kode_inventory: v('gen_kode') || await generateKodeInventoryPreview(v('gen_dept')),
         nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
         spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
         satuan: v('gen_satuan') || 'Buah', keterangan: v('gen_keterangan'),
         jenis_inventaris: v('gen_jenis'), department: v('gen_dept'), lokasi: v('gen_lokasi'),
-        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+        harga_beli: harga, umur_ekonomis: parseInt(v('gen_umur')) || 5, nilai_sekarang: calcDepreciation(harga, parseInt(v('gen_umur')) || 5),
         maintenance_next_date: v('gen_mnext') || null, gambar: imgUrl, deleted_at: null
     };
     if (!payload.nama_material) { showToast('Error', 'Nama Material wajib!', 'error'); return; }
     const needsApproval = !hasPermission('approve');
     if (needsApproval) {
-        const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{
-            table_name: 'general_assets', record_data: payload, action_type: 'CREATE',
-            requested_by: currentUser.email, status: 'pending'
-        }]);
+        const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{ table_name: 'general_assets', record_data: payload, action_type: 'CREATE', requested_by: currentUser.email, status: 'pending' }]);
         if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
-        await logActivity('request_approval', 'general_assets', '', `Request: ${payload.nama_material}`);
-        showToast('⏳ Menunggu Approval', 'Data dikirim ke manager', 'info');
+        await logActivity('request_approval', 'general_assets', payload.kode_inventory, `Request: ${payload.nama_material}`);
+        showToast('⏳ Menunggu Approval', `Kode: ${payload.kode_inventory} dikirim ke manager`, 'info');
         toggleForm();
         updateMyReqBadge();
         return;
@@ -1145,10 +1081,8 @@ async function saveGeneralAsset() {
     const { error } = await supabaseClient.from('general_assets').insert([payload]);
     if (error) showToast('Gagal', error.message, 'error');
     else {
-        await logActivity('create', 'general_assets', '', `Tambah: ${payload.nama_material}`);
-        await logLifecycle(payload.nama_material, 'general_assets', 'Asset Created', payload);
-        await triggerWebhooks('asset.created', payload);
-        showToast('Sukses', 'Data disimpan!', 'success');
+        await logActivity('create', 'general_assets', payload.kode_inventory, `Tambah: ${payload.nama_material}`);
+        showToast('Sukses', `${payload.kode_inventory} disimpan!`, 'success');
         showConfetti();
         toggleForm();
         await refreshAll(true);
@@ -1168,8 +1102,7 @@ function editITAsset(id_aset) {
     form.innerHTML = `
         <div><label>ID Aset</label><input type="text" id="it_id" value="${item.id_aset || ''}" readonly /></div>
         <div><label>User</label><input type="text" id="it_user" value="${item.user || ''}" /></div>
-        <div><label>Dept</label><input type="text" id="it_dept" value="${item.dept || ''}" list="deptList" /></div>
-        <datalist id="deptList">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
+        <div><label>Dept</label><input type="text" id="it_dept" value="${item.dept || ''}" /></div>
         <div><label>Device</label><select id="it_device">${opt(item.device, ['KOMPUTER','LAPTOP','PRINTER','SERVER'])}</select></div>
         <div><label>Spesifikasi</label><input type="text" id="it_specs" value="${item.specs || ''}" /></div>
         <div><label>Status</label><select id="it_status">${opt(item.status, ['Active','Maintenance','Broken'])}</select></div>
@@ -1185,20 +1118,14 @@ function editITAsset(id_aset) {
         <div><label>Harga Beli</label><input type="number" id="it_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="it_umur" value="${item.umur_ekonomis || 5}" /></div>
         <div><label>Maintenance Next</label><input type="date" id="it_mnext" value="${item.maintenance_next_date || ''}" /></div>
-        <div><label>Maintenance Interval</label><input type="number" id="it_mint" value="${item.maintenance_interval_days || 180}" /></div>
-        <div><label>Monitor</label><input type="text" id="it_mb" value="${item.monitor_brand || ''}" /></div>
-        <div><label>Printer</label><input type="text" id="it_pb" value="${item.printer_brand || ''}" /></div>
-        <div><label>Mouse</label><input type="text" id="it_mob" value="${item.mouse_brand || ''}" /></div>
-        <div><label>Keyboard</label><input type="text" id="it_kb" value="${item.keyboard_brand || ''}" /></div>
-        <div class="form-section"><label>Notes</label><textarea id="it_notes" rows="2">${item.notes || ''}</textarea></div>
+        <div><label>Notes</label><textarea id="it_notes" rows="2">${item.notes || ''}</textarea></div>
         <div class="form-section"><label>📸 Upload Gambar Baru</label>
             <div class="upload-box" onclick="document.getElementById('it_img_input').click()">
                 <div class="text-3xl mb-1">📸</div>
-                <p class="text-gray-400 text-xs">Klik untuk upload gambar baru</p>
                 <input type="file" id="it_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'it_img_preview')" />
             </div>
             <div id="it_img_preview" class="mt-3 hidden"></div>
-            ${currentImg ? `<div class="mt-3"><p class="text-xs text-gray-400 mb-2">Gambar saat ini:</p><img src="${currentImg}" class="preview-img" onclick="viewImage('${currentImg}')" onerror="this.style.display='none'" /></div>` : ''}
+            ${currentImg ? `<div class="mt-3"><p class="text-xs text-gray-400 mb-2">Gambar saat ini:</p><img src="${currentImg}" class="preview-img" onclick="viewImage('${currentImg}')" /></div>` : ''}
         </div>
         <div class="form-section flex justify-end gap-2">
             <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
@@ -1219,16 +1146,14 @@ async function updateITAsset(id_aset) {
         status: v('it_status'), ip_address: v('it_ip'), mac_address: v('it_mac'), hostname: v('it_host'),
         license_os: v('it_los'), license_office: v('it_loffice'), license_av: v('it_lav'),
         license_expiry: v('it_lexp') || null, purchase_date: v('it_pdate') || null, warranty_expiry: v('it_wexp') || null,
-        monitor_brand: v('it_mb'), printer_brand: v('it_pb'), mouse_brand: v('it_mob'), keyboard_brand: v('it_kb'),
-        notes: v('it_notes'), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
-        maintenance_next_date: v('it_mnext') || null, maintenance_interval_days: parseInt(v('it_mint')) || 180
+        monitor_brand: v('it_mb'), notes: v('it_notes'), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+        maintenance_next_date: v('it_mnext') || null
     };
     if (imgUrl) payload.gambar_url = imgUrl;
     const { error } = await supabaseClient.from(currentPTTable).update(payload).eq('id_aset', id_aset);
     if (error) showToast('Gagal', error.message, 'error');
     else {
         await logActivity('update', currentPTTable, id_aset, `Update: ${id_aset}`);
-        await logLifecycle(id_aset, currentPTTable, 'Asset Updated', payload);
         showToast('Sukses', 'Aset diupdate!', 'success');
         toggleForm();
         await refreshAll(true);
@@ -1243,15 +1168,19 @@ function editGeneralAsset(id) {
     const form = document.getElementById('dynamicForm');
     const currentImg = item.gambar ? (item.gambar.startsWith('http') ? item.gambar : STORAGE_BUCKET_URL + encodeURIComponent(item.gambar)) : null;
     form.innerHTML = `
+        <div>
+            <label>Kode Inventory *</label>
+            <input type="text" id="gen_kode" value="${item.kode_inventory || ''}" />
+            <p class="text-[10px] text-gray-500 mt-1">Ubah manual jika perlu</p>
+        </div>
         <div><label>Nama Material *</label><input type="text" id="gen_nama" value="${item.nama_material || ''}" /></div>
         <div><label>材料名称</label><input type="text" id="gen_mandarin" value="${item.nama_material_mandarin || ''}" /></div>
         <div><label>Spesifikasi</label><input type="text" id="gen_specs" value="${item.spesifikasi || ''}" /></div>
-        <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="${item.jumlah || 1}" min="1" /></div>
+        <div><label>Jumlah *</label><input type="number" id="gen_jumlah" value="${item.jumlah || 1}" /></div>
         <div><label>Satuan</label><input type="text" id="gen_satuan" value="${item.satuan || 'Buah'}" /></div>
         <div><label>Keterangan</label><input type="text" id="gen_keterangan" value="${item.keterangan || ''}" /></div>
         <div><label>Jenis</label><select id="gen_jenis"><option ${item.jenis_inventaris === 'Fixed Asset' ? 'selected' : ''}>Fixed Asset</option><option ${item.jenis_inventaris === 'Consumable' ? 'selected' : ''}>Consumable</option></select></div>
-        <div><label>Department</label><input type="text" id="gen_dept" value="${item.department || ''}" list="deptListGen" /></div>
-        <datalist id="deptListGen">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
+        <div><label>Department</label><input type="text" id="gen_dept" value="${item.department || ''}" /></div>
         <div><label>Lokasi</label><input type="text" id="gen_lokasi" value="${item.lokasi || ''}" /></div>
         <div><label>Harga Beli</label><input type="number" id="gen_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="gen_umur" value="${item.umur_ekonomis || 5}" /></div>
@@ -1259,11 +1188,10 @@ function editGeneralAsset(id) {
         <div class="form-section"><label>📸 Upload Gambar Baru</label>
             <div class="upload-box" onclick="document.getElementById('gen_img_input').click()">
                 <div class="text-3xl mb-1">📸</div>
-                <p class="text-gray-400 text-xs">Klik untuk upload gambar baru</p>
                 <input type="file" id="gen_img_input" accept="image/*" class="hidden" onchange="handleImageSelect(event, 'gen_img_preview')" />
             </div>
             <div id="gen_img_preview" class="mt-3 hidden"></div>
-            ${currentImg ? `<div class="mt-3"><p class="text-xs text-gray-400 mb-2">Gambar saat ini:</p><img src="${currentImg}" class="preview-img" onclick="viewImage('${currentImg}')" onerror="this.style.display='none'" /></div>` : ''}
+            ${currentImg ? `<div class="mt-3"><p class="text-xs text-gray-400 mb-2">Gambar saat ini:</p><img src="${currentImg}" class="preview-img" onclick="viewImage('${currentImg}')" /></div>` : ''}
         </div>
         <div class="form-section flex justify-end gap-2">
             <button type="button" onclick="toggleForm()" class="btn bg-white/5 text-gray-300 px-5 py-2 rounded-xl border border-white/10">Batal</button>
@@ -1280,6 +1208,7 @@ async function updateGeneralAsset(id) {
     const harga = parseFloat(v('gen_harga')) || 0;
     const umur = parseInt(v('gen_umur')) || 5;
     const payload = {
+        kode_inventory: v('gen_kode'),
         nama_material: v('gen_nama'), nama_material_mandarin: v('gen_mandarin'),
         spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
         satuan: v('gen_satuan'), keterangan: v('gen_keterangan'),
@@ -1291,14 +1220,14 @@ async function updateGeneralAsset(id) {
     const { error } = await supabaseClient.from('general_assets').update(payload).eq('id', id);
     if (error) showToast('Gagal', error.message, 'error');
     else {
-        await logActivity('update', 'general_assets', String(id), `Update: ${payload.nama_material}`);
+        await logActivity('update', 'general_assets', payload.kode_inventory, `Update: ${payload.nama_material}`);
         showToast('Sukses', 'Data diupdate!', 'success');
         toggleForm();
         await refreshAll(true);
     }
 }
 
-/* DELETE */
+/* ═══ DELETE ═══ */
 async function deleteItem(id_aset) {
     if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses hapus', 'error'); return; }
     if (!confirm(`Hapus aset ${id_aset}?`)) return;
@@ -1317,13 +1246,14 @@ function showDetailGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
     let imgHtml = '';
-    if (item.gambar) { const g = String(item.gambar).trim(); const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); imgHtml = `<div class="mt-4"><img src="${imgUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'" /></div>`; }
+    if (item.gambar) { const g = String(item.gambar).trim(); const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); imgHtml = `<div class="mt-4"><img src="${imgUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;" /></div>`; }
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">📋 Detail Aset</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
         <div class="space-y-2 text-sm">
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kode Inventory</span><span class="text-indigo-300 font-mono font-bold">${item.kode_inventory || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Nama</span><span class="text-white font-semibold">${item.nama_material || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">材料名称</span><span class="text-white">${item.nama_material_mandarin || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Spesifikasi</span><span class="text-white">${item.spesifikasi || '-'}</span></div>
@@ -1339,7 +1269,7 @@ function showDetailGeneral(id) {
     document.body.appendChild(modal);
 }
 
-/* IMPORT */
+/* ═══ IMPORT ═══ */
 function openBulkImport() {
     document.getElementById('importModalTitle').innerText = activeModule === 'it' ? '(IT)' : '(General)';
     document.getElementById('bulkImportModal').classList.remove('hidden');
@@ -1354,7 +1284,7 @@ function downloadTemplate() {
         const ws = XLSX.utils.json_to_sheet(sample); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'IT'); XLSX.writeFile(wb, 'Template_IT.xlsx');
     } else {
-        const sample = [{ nama_material: 'Meja', nama_material_mandarin: '工作台', spesifikasi: 'Standard', jumlah: 15, satuan: 'Buah', jenis_inventaris: 'Fixed Asset', department: 'HRGA', lokasi: 'Ruang A', harga_beli: 500000, umur_ekonomis: 5 }];
+        const sample = [{ kode_inventory: 'MGI-IT.2026-001', nama_material: 'Meja', nama_material_mandarin: '工作台', spesifikasi: 'Standard', jumlah: 15, satuan: 'Buah', jenis_inventaris: 'Fixed Asset', department: 'IT', lokasi: 'Ruang A', harga_beli: 500000, umur_ekonomis: 5 }];
         const ws = XLSX.utils.json_to_sheet(sample); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'General'); XLSX.writeFile(wb, 'Template_General.xlsx');
     }
@@ -1371,7 +1301,7 @@ function handleFileUpload(event) {
             const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false, blankrows: false });
             if (aoa.length < 2) { showToast('Error', 'File kosong!', 'error'); return; }
             let headerIdx = 0;
-            for (let i = 0; i < Math.min(aoa.length, 10); i++) { const rt = aoa[i].map(c => String(c).toLowerCase()).join('|'); if (rt.includes('nama_material') || rt.includes('id_aset')) { headerIdx = i; break; } }
+            for (let i = 0; i < Math.min(aoa.length, 10); i++) { const rt = aoa[i].map(c => String(c).toLowerCase()).join('|'); if (rt.includes('nama_material') || rt.includes('id_aset') || rt.includes('kode_inventory')) { headerIdx = i; break; } }
             const headers = aoa[headerIdx].map(h => String(h).trim());
             const rows = aoa.slice(headerIdx + 1);
             const normalized = [];
@@ -1399,7 +1329,6 @@ function showPreview(data) {
 }
 async function confirmImport() {
     if (importData.length === 0) { showToast('Error', 'Kosong!', 'error'); return; }
-    if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm(`Import ${importData.length} data?`)) return;
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
     let success = 0, failed = 0, skipped = 0, queued = 0;
@@ -1415,7 +1344,23 @@ async function confirmImport() {
             payload = { id_aset: pick(item, 'id_aset', 'id'), user: pick(item, 'user') || '-', dept: pick(item, 'dept', 'department'), device: (pick(item, 'device') || 'KOMPUTER').toUpperCase(), specs: pick(item, 'specs', 'spesifikasi') || '-', status: pick(item, 'status') || 'Active', ip_address: pick(item, 'ip_address', 'ip'), license_os: pick(item, 'license_os'), license_expiry: toDate(pick(item, 'license_expiry')), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur), notes: pick(item, 'notes'), deleted_at: null };
             if (!payload.id_aset) { skipped++; continue; }
         } else {
-            payload = { nama_material: pick(item, 'nama_material', 'nama'), nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称'), spesifikasi: pick(item, 'spesifikasi'), jumlah: parseInt(pick(item, 'jumlah')) || 1, satuan: pick(item, 'satuan') || 'Buah', keterangan: pick(item, 'keterangan'), jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis') || 'Fixed Asset', department: pick(item, 'department', 'dept'), lokasi: pick(item, 'lokasi'), harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur), deleted_at: null };
+            const deptValue = pick(item, 'department', 'dept') || 'UMUM';
+            payload = { 
+                kode_inventory: pick(item, 'kode_inventory', 'kode') || await generateKodeInventoryPreview(deptValue),
+                nama_material: pick(item, 'nama_material', 'nama'), 
+                nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称'), 
+                spesifikasi: pick(item, 'spesifikasi'), 
+                jumlah: parseInt(pick(item, 'jumlah')) || 1, 
+                satuan: pick(item, 'satuan') || 'Buah', 
+                keterangan: pick(item, 'keterangan'), 
+                jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis') || 'Fixed Asset', 
+                department: deptValue, 
+                lokasi: pick(item, 'lokasi'), 
+                harga_beli: harga, 
+                umur_ekonomis: umur, 
+                nilai_sekarang: calcDepreciation(harga, umur), 
+                deleted_at: null 
+            };
             const n = String(payload.nama_material || '').toLowerCase();
             if (!payload.nama_material || n === 'no') { skipped++; continue; }
         }
@@ -1427,9 +1372,7 @@ async function confirmImport() {
             if (!error) success++; else { failed++; console.error(error); }
         }
     }
-    let msg = '';
-    if (needsApproval) msg = `✅ ${queued} masuk queue approval`;
-    else msg = `✅ ${success} sukses`;
+    let msg = needsApproval ? `✅ ${queued} masuk queue` : `✅ ${success} sukses`;
     if (failed > 0) msg += `, ❌ ${failed} gagal`;
     if (skipped > 0) msg += `, ⏭️ ${skipped} skip`;
     await logActivity('bulk_import', targetTable, '', msg);
@@ -1440,16 +1383,15 @@ async function confirmImport() {
     updateMyReqBadge();
 }
 
-/* TRASH */
+/* ═══ TRASH ═══ */
 async function showDeletedAssets() {
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
-    const { data: trash, error } = await supabaseClient.from(targetTable).select('*').not('deleted_at', 'is', null);
+    const { data: trash } = await supabaseClient.from(targetTable).select('*').not('deleted_at', 'is', null);
     const modal = document.getElementById('trashModal');
     const body = document.getElementById('trashBody');
-    if (error) { showToast('Error', error.message, 'error'); return; }
     if (!trash || trash.length === 0) { body.innerHTML = `<p class="text-center py-6 text-gray-400">Trash kosong.</p>`; }
     else {
-        body.innerHTML = `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">ID/Nama</th><th class="p-2">Dept</th><th class="p-2">Dihapus</th><th class="p-2">Aksi</th></tr></thead><tbody>${trash.map(item => `<tr class="border-t border-white/5"><td class="p-2">${item.id_aset || item.nama_material || '-'}</td><td class="p-2">${item.dept || item.department || '-'}</td><td class="p-2 text-gray-500">${item.deleted_at ? new Date(item.deleted_at).toLocaleDateString('id-ID') : '-'}</td><td class="p-2"><button onclick="restoreAsset('${item.id || item.id_aset}')" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">↩️ Restore</button></td></tr>`).join('')}</tbody></table>`;
+        body.innerHTML = `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">ID/Nama</th><th class="p-2">Dept</th><th class="p-2">Aksi</th></tr></thead><tbody>${trash.map(item => `<tr class="border-t border-white/5"><td class="p-2">${item.id_aset || item.kode_inventory || item.nama_material || '-'}</td><td class="p-2">${item.dept || item.department || '-'}</td><td class="p-2"><button onclick="restoreAsset('${item.id || item.id_aset}')" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">↩️ Restore</button></td></tr>`).join('')}</tbody></table>`;
     }
     modal.classList.remove('hidden');
 }
@@ -1459,36 +1401,21 @@ async function restoreAsset(id) {
     const queryKey = activeModule === 'it' ? 'id_aset' : 'id';
     const val = isNaN(id) ? id : parseInt(id);
     const { error } = await supabaseClient.from(targetTable).update({ deleted_at: null }).eq(queryKey, val);
-    if (!error) { await logActivity('restore', targetTable, String(id), 'Restore'); showToast('Dipulihkan', 'Data dikembalikan', 'success'); closeTrashModal(); await refreshAll(true); }
+    if (!error) { showToast('Dipulihkan', 'Data dikembalikan', 'success'); closeTrashModal(); await refreshAll(true); }
     else showToast('Gagal', error.message, 'error');
 }
 
-/* UTILS */
+/* ═══ UTILS ═══ */
 document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success')).catch(() => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); showToast('Copied!', text, 'success'); });
 }
-function printQR(id_aset) {
-    const item = rawData.find(x => String(x.id_aset) === String(id_aset));
-    if (!item) return;
-    const w = window.open('', '_blank');
-    w.document.write(`<html><head><title>${id_aset}</title><style>body{font-family:Arial;padding:20px;text-align:center}.label{border:2px dashed #333;padding:20px;max-width:400px;margin:20px auto;border-radius:12px}h1{font-size:20px;margin:5px 0}h2{font-size:14px;color:#666;font-weight:normal}.info{text-align:left;font-size:12px;margin-top:15px}.info div{padding:3px 0;border-bottom:1px solid #eee}</style></head><body><div class="label"><h1>${item.id_aset}</h1><h2>${item.user||''} · ${item.dept||''}</h2><canvas id="qr"></canvas><div class="info"><div><b>Device:</b> ${item.device||'-'}</div><div><b>Specs:</b> ${item.specs||'-'}</div><div><b>Status:</b> ${item.status||'-'}</div><div><b>IP:</b> ${item.ip_address||'-'}</div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script><script>new QRious({element:document.getElementById('qr'),value:'${item.id_aset}',size:180});setTimeout(()=>window.print(),500);<\/script></body></html>`);
-    w.document.close();
-}
-function printAllLabels() {
-    if (activeModule === 'it') {
-        const data = applyFilters(rawData).filter(i => i.id_aset);
-        if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
-        const w = window.open('', '_blank');
-        w.document.write(`<html><head><title>Label IT</title><style>body{font-family:Arial;padding:10px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.label{border:1px dashed #333;padding:10px;text-align:center;page-break-inside:avoid;border-radius:8px}.label h3{font-size:12px;margin:3px 0}.label p{font-size:10px;color:#666;margin:2px 0}canvas{width:100px!important;height:100px!important}</style></head><body><h2 style="text-align:center">🏷️ Label IT</h2><div class="grid">${data.map(i => `<div class="label"><h3>${i.id_aset}</h3><p>${i.user||''}</p><p>${i.dept||''}</p><canvas data-id="${i.id_aset}"></canvas></div>`).join('')}</div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script><script>document.querySelectorAll('canvas[data-id]').forEach(c=>{new QRious({element:c,value:c.dataset.id,size:100})});setTimeout(()=>window.print(),800);<\/script></body></html>`);
-        w.document.close();
-    } else { exportToExcel(); }
-}
+function printAllLabels() { exportToExcel(); }
 function printSingleGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
     const w = window.open('', '_blank');
-    w.document.write(`<html><head><title>Kartu</title><style>body{font-family:Arial;padding:30px}.card{border:2px solid #4f46e5;border-radius:12px;padding:25px;max-width:500px;margin:20px auto}.header{background:#4f46e5;color:white;padding:15px;margin:-25px -25px 20px -25px;border-radius:10px 10px 0 0;text-align:center}.info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}.info .row span:first-child{color:#666}.info .row span:last-child{font-weight:600}</style></head><body><div class="card"><div class="header"><h1>📋 KARTU ASET</h1></div><div class="info"><div class="row"><span>Nama</span><span>${item.nama_material||'-'}</span></div><div class="row"><span>材料名称</span><span>${item.nama_material_mandarin||'-'}</span></div><div class="row"><span>Jumlah</span><span>${item.jumlah||1} ${item.satuan||'Buah'}</span></div><div class="row"><span>Dept</span><span>${item.department||'-'}</span></div><div class="row"><span>Lokasi</span><span>${item.lokasi||'-'}</span></div></div></div><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
+    w.document.write(`<html><head><title>Kartu - ${item.kode_inventory}</title><style>body{font-family:Arial;padding:30px}.card{border:2px solid #4f46e5;border-radius:12px;padding:25px;max-width:500px;margin:20px auto}.header{background:#4f46e5;color:white;padding:15px;margin:-25px -25px 20px -25px;border-radius:10px 10px 0 0;text-align:center}.header .kode{font-family:monospace;font-size:14px;margin-top:4px;opacity:0.9}.info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}.info .row span:first-child{color:#666}.info .row span:last-child{font-weight:600}</style></head><body><div class="card"><div class="header"><h1>📋 KARTU ASET</h1><div class="kode">${item.kode_inventory || '-'}</div></div><div class="info"><div class="row"><span>Nama</span><span>${item.nama_material||'-'}</span></div><div class="row"><span>材料名称</span><span>${item.nama_material_mandarin||'-'}</span></div><div class="row"><span>Jumlah</span><span>${item.jumlah||1} ${item.satuan||'Buah'}</span></div><div class="row"><span>Dept</span><span>${item.department||'-'}</span></div><div class="row"><span>Lokasi</span><span>${item.lokasi||'-'}</span></div></div></div><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
     w.document.close();
 }
 function exportToExcel() {
@@ -1513,13 +1440,13 @@ function exportToPDF() {
     doc.setTextColor(0, 0, 0);
     let headers, rows;
     if (activeModule === 'it') {
-        headers = [['No', 'ID', 'User', 'Dept', 'Device', 'Status', 'IP', 'License']];
-        rows = data.map((i, idx) => [idx+1, i.id_aset, i.user, i.dept, i.device, i.status, i.ip_address || '-', [i.license_os, i.license_office].filter(Boolean).join(' / ') || '-']);
+        headers = [['No', 'ID', 'User', 'Dept', 'Device', 'Status', 'IP']];
+        rows = data.map((i, idx) => [idx+1, i.id_aset, i.user, i.dept, i.device, i.status, i.ip_address || '-']);
     } else {
-        headers = [['No', 'Nama', '材料名称', 'Spesifikasi', 'Jml', 'Satuan', 'Jenis', 'Dept', 'Lokasi']];
-        rows = data.map((i, idx) => [idx+1, i.nama_material, i.nama_material_mandarin, i.spesifikasi || '-', i.jumlah, i.satuan, i.jenis_inventaris, i.department, i.lokasi]);
+        headers = [['No', 'Kode Inv', 'Nama', '材料名称', 'Spesifikasi', 'Jml', 'Satuan', 'Jenis', 'Dept', 'Lokasi']];
+        rows = data.map((i, idx) => [idx+1, i.kode_inventory || '-', i.nama_material, i.nama_material_mandarin, i.spesifikasi || '-', i.jumlah, i.satuan, i.jenis_inventaris, i.department, i.lokasi]);
     }
-    doc.autoTable({ head: headers, body: rows, startY: 30, theme: 'striped', headStyles: { fillColor: [79, 70, 229], textColor: 255, fontSize: 9 }, bodyStyles: { fontSize: 8 }, margin: { top: 30 } });
+    doc.autoTable({ head: headers, body: rows, startY: 30, theme: 'striped', headStyles: { fillColor: [79, 70, 229], textColor: 255, fontSize: 9 }, bodyStyles: { fontSize: 8 } });
     doc.save(`Laporan_${activeModule}_${new Date().toISOString().slice(0,10)}.pdf`);
     showToast('PDF', 'Laporan didownload!', 'success');
 }
@@ -1536,9 +1463,7 @@ async function downloadAllQR() {
     }
     const blob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `QR_Codes_${Date.now()}.zip`;
-    a.click(); URL.revokeObjectURL(url);
+    const a = document.createElement('a'); a.href = url; a.download = `QR_Codes_${Date.now()}.zip`; a.click();
     showToast('Sukses', `${data.length} QR didownload!`, 'success');
 }
 function initScanner() {
@@ -1550,118 +1475,15 @@ function initScanner() {
             if (found) { showToast('QR Ditemukan', `ID: ${found.id_aset}`, 'success'); document.getElementById('searchInput').value = found.id_aset; renderTable(rawData); }
             else showToast('Tidak Ditemukan', `QR "${txt}"`, 'error');
         }, () => {});
-    } catch(e) { console.warn('Scanner error:', e); }
+    } catch(e) {}
 }
-
-/* OFFLINE */
-window.addEventListener('online', () => { isOnline = true; updateOfflineUI('online'); });
-window.addEventListener('offline', () => { isOnline = false; updateOfflineUI('offline'); });
-function updateOfflineUI(state) {
-    const badge = document.getElementById('offlineBadge');
-    if (state === 'offline') { badge.className = 'offline-badge offline'; badge.innerText = '🔴 Offline'; }
-    else if (state === 'online') { badge.className = 'offline-badge online'; badge.innerText = '🟢 Online'; setTimeout(() => badge.className = 'offline-badge', 3000); }
-}
-if (!isOnline) updateOfflineUI('offline');
-
-/* PWA */
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(() => console.log('✅ SW Registered')).catch(e => console.warn('SW err:', e));
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ENTERPRISE FEATURES
-   ═══════════════════════════════════════════════════════════ */
-
-/* USER MANAGEMENT */
-async function showUserManagement() {
-    if (userRole !== 'super-admin' && userRole !== 'admin') { showToast('Akses Ditolak', 'Hanya admin', 'error'); return; }
-    document.getElementById('userMgmtModal').classList.remove('hidden');
-    await loadUserList();
-}
-function closeUserMgmt() { document.getElementById('userMgmtModal').classList.add('hidden'); document.getElementById('addUserForm').innerHTML = ''; }
-async function loadUserList() {
-    const { data, error } = await supabaseClient.from('user_profiles').select('*').order('created_at', { ascending: false });
-    const list = document.getElementById('userList');
-    if (error) { list.innerHTML = `<p class="text-rose-400 text-sm">Error: ${error.message}</p>`; return; }
-    if (!data || data.length === 0) { list.innerHTML = `<p class="text-center text-gray-400 py-4">Belum ada user.</p>`; return; }
-    list.innerHTML = data.map(u => `
-        <div class="glass-card p-3 flex justify-between items-center flex-wrap gap-2">
-            <div class="flex-1 min-w-[200px]">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <div class="text-white text-sm font-semibold">${u.full_name || u.email}</div>
-                    <span class="role-badge role-${u.role}">${(u.role || 'staff').toUpperCase()}</span>
-                    ${!u.is_active ? '<span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-400">NONAKTIF</span>' : ''}
-                </div>
-                <div class="text-gray-400 text-xs">${u.email}</div>
-            </div>
-            <div class="flex gap-2 items-center flex-wrap">
-                <select onchange="updateUserRole('${u.email}', this.value)" class="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-2 py-1">
-                    <option value="super-admin" ${u.role === 'super-admin' ? 'selected' : ''}>Super Admin</option>
-                    <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
-                    <option value="manager" ${u.role === 'manager' ? 'selected' : ''}>Manager</option>
-                    <option value="staff" ${u.role === 'staff' ? 'selected' : ''}>Staff</option>
-                    <option value="viewer" ${u.role === 'viewer' ? 'selected' : ''}>Viewer</option>
-                    <option value="auditor" ${u.role === 'auditor' ? 'selected' : ''}>Auditor</option>
-                </select>
-                <button onclick="toggleUserActive('${u.email}', ${u.is_active !== false})" class="text-amber-400 text-xs bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded">${u.is_active !== false ? '🚫' : '✅'}</button>
-                <button onclick="deleteUserProfile('${u.email}')" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button>
-            </div>
-        </div>
-    `).join('');
-}
-async function updateUserRole(email, newRole) {
-    if (email === currentUser?.email) { showToast('Ditolak', 'Tidak bisa ubah role sendiri', 'warning'); await loadUserList(); return; }
-    const { error } = await supabaseClient.from('user_profiles').update({ role: newRole }).eq('email', email);
-    if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', `Role ${email} → ${newRole}`, 'success'); await loadUserList(); }
-}
-async function toggleUserActive(email, currentActive) {
-    const { error } = await supabaseClient.from('user_profiles').update({ is_active: !currentActive }).eq('email', email);
-    if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', `User ${!currentActive ? 'diaktifkan' : 'dinonaktifkan'}`, 'success'); await loadUserList(); }
-}
-async function deleteUserProfile(email) {
-    if (!confirm(`Hapus profile ${email}?`)) return;
-    const { error } = await supabaseClient.from('user_profiles').delete().eq('email', email);
-    if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Terhapus', `Profile ${email} dihapus`, 'success'); await loadUserList(); }
-}
-function showAddUserForm() {
-    const c = document.getElementById('addUserForm');
-    c.innerHTML = `<div class="glass-card p-4 mb-4 border border-amber-500/30">
-        <p class="text-amber-400 text-xs mb-3">⚠️ Bikin user dulu di Supabase → Authentication → Users. Setelah itu isi email yang sama disini.</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div><label class="text-xs text-gray-400">Email</label><input type="email" id="new_user_email" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-            <div><label class="text-xs text-gray-400">Nama</label><input type="text" id="new_user_name" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-            <div><label class="text-xs text-gray-400">Role</label>
-                <select id="new_user_role" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm">
-                    <option value="staff">Staff</option><option value="manager">Manager</option><option value="admin">Admin</option>
-                    <option value="viewer">Viewer</option><option value="auditor">Auditor</option><option value="super-admin">Super Admin</option>
-                </select>
-            </div>
-            <div><label class="text-xs text-gray-400">Dept (opsional)</label><input type="text" id="new_user_dept" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-        </div>
-        <div class="flex gap-2 mt-3">
-            <button onclick="saveNewUserProfile()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
-            <button onclick="document.getElementById('addUserForm').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
-        </div>
-    </div>`;
-}
-async function saveNewUserProfile() {
-    const email = document.getElementById('new_user_email').value.trim();
-    const full_name = document.getElementById('new_user_name').value.trim();
-    const role = document.getElementById('new_user_role').value;
-    const dept = document.getElementById('new_user_dept').value.trim();
-    if (!email) { showToast('Error', 'Email wajib', 'error'); return; }
-    const { error } = await supabaseClient.from('user_profiles').upsert([{ email, full_name: full_name || email.split('@')[0], role, allowed_depts: dept ? [dept] : null, is_active: true }], { onConflict: 'email' });
-    if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', `User ${email} ditambahkan`, 'success'); document.getElementById('addUserForm').innerHTML = ''; await loadUserList(); }
-}
-
-/* APPROVAL WORKFLOW */
+/* ═══ APPROVAL ═══ */
 async function showApprovalQueue() {
-    const { data, error } = await supabaseClient.from('approval_queue').select('*').order('requested_at', { ascending: false }).limit(50);
-    if (error) { showToast('Error', error.message, 'error'); return; }
+    const { data } = await supabaseClient.from('approval_queue').select('*').order('requested_at', { ascending: false }).limit(50);
     const pending = (data || []).filter(x => x.status === 'pending');
     const badge = document.getElementById('approvalBadge');
     if (badge) { if (pending.length > 0) { badge.innerText = pending.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
@@ -1669,93 +1491,47 @@ async function showApprovalQueue() {
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-white">✅ Approval Queue (${pending.length} pending)</h2>
-            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-        </div>
+        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">✅ Approval Queue (${pending.length} pending)</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
         ${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Tidak ada approval.</p>' :
-        `<table class="w-full text-xs">
-            <thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Item</th><th class="p-2">Aksi</th><th class="p-2">Status</th><th class="p-2">Review</th></tr></thead>
-            <tbody>${data.map(item => {
-                const summary = item.record_data?.id_aset || item.record_data?.nama_material || '-';
-                const isPending = item.status === 'pending';
-                const canApprove = hasPermission('approve');
-                return `<tr class="border-t border-white/5">
-                    <td class="p-2 text-gray-400">${new Date(item.requested_at).toLocaleString('id-ID')}</td>
-                    <td class="p-2 text-indigo-300">${item.requested_by}</td>
-                    <td class="p-2 text-white">${summary}</td>
-                    <td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${item.action_type}</span></td>
-                    <td class="p-2">${isPending ? '⏳' : item.status === 'approved' ? '✅' : '❌'} ${item.status}</td>
-                    <td class="p-2">${isPending && canApprove ? `
-                        <button onclick="approveRequest(${item.id}, true)" class="text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-1 rounded text-xs">✅</button>
-                        <button onclick="approveRequest(${item.id}, false)" class="text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded text-xs ml-1">❌</button>
-                    ` : '<span class="text-gray-500">-</span>'}</td>
-                </tr>`;
-            }).join('')}</tbody>
-        </table>`}
+        `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">Waktu</th><th class="p-2">User</th><th class="p-2">Item</th><th class="p-2">Status</th><th class="p-2">Aksi</th></tr></thead>
+        <tbody>${data.map(item => {
+            const summary = item.record_data?.id_aset || item.record_data?.kode_inventory || item.record_data?.nama_material || '-';
+            return `<tr class="border-t border-white/5"><td class="p-2 text-gray-400">${new Date(item.requested_at).toLocaleString('id-ID')}</td><td class="p-2 text-indigo-300">${item.requested_by}</td><td class="p-2 text-white">${summary}</td><td class="p-2">${item.status === 'pending' ? '⏳' : item.status === 'approved' ? '✅' : '❌'} ${item.status}</td><td class="p-2">${item.status === 'pending' && hasPermission('approve') ? `<button onclick="approveRequest(${item.id}, true)" class="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs">✅</button> <button onclick="approveRequest(${item.id}, false)" class="text-rose-400 bg-rose-500/10 px-2 py-1 rounded text-xs">❌</button>` : '-'}</td></tr>`;
+        }).join('')}</tbody></table>`}
     </div>`;
     document.body.appendChild(modal);
 }
 async function approveRequest(id, approve) {
     const { data: item } = await supabaseClient.from('approval_queue').select('*').eq('id', id).single();
     if (!item) return;
-    const notes = approve ? '' : prompt('Alasan reject (opsional):') || '';
     if (approve) {
         const { error } = await supabaseClient.from(item.table_name).insert([item.record_data]);
         if (error) { showToast('Gagal', error.message, 'error'); return; }
-        await logActivity('approve', item.table_name, item.record_data?.id_aset || '', `Approve: ${item.requested_by}`);
-    } else {
-        await logActivity('reject', item.table_name, item.record_data?.id_aset || '', `Reject: ${item.requested_by} - ${notes}`);
     }
-    await supabaseClient.from('approval_queue').update({
-        status: approve ? 'approved' : 'rejected',
-        reviewed_by: currentUser.email, reviewed_at: new Date().toISOString(), review_notes: notes
-    }).eq('id', id);
-    showToast(approve ? '✅ Approved' : '❌ Rejected', `Request dari ${item.requested_by} ${approve ? 'disetujui' : 'ditolak'}`, approve ? 'success' : 'warning');
+    await supabaseClient.from('approval_queue').update({ status: approve ? 'approved' : 'rejected', reviewed_by: currentUser.email, reviewed_at: new Date().toISOString() }).eq('id', id);
+    showToast(approve ? '✅ Approved' : '❌ Rejected', '', 'success');
     document.querySelector('.modal-overlay')?.remove();
     await refreshAll(true);
     updateApprovalBadge();
 }
 async function updateApprovalBadge() {
-    if (!currentUser?.email) return;
-    if (!hasPermission('approve')) return;
+    if (!currentUser?.email || !hasPermission('approve')) return;
     const { data } = await supabaseClient.from('approval_queue').select('id').eq('status', 'pending');
     const badge = document.getElementById('approvalBadge');
     if (badge) { if (data && data.length > 0) { badge.innerText = data.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
 }
-
-/* MY REQUESTS (STAFF) */
 async function showMyRequests() {
-    const { data, error } = await supabaseClient.from('approval_queue').select('*').eq('requested_by', currentUser.email).order('requested_at', { ascending: false });
-    if (error) { showToast('Error', error.message, 'error'); return; }
+    const { data } = await supabaseClient.from('approval_queue').select('*').eq('requested_by', currentUser.email).order('requested_at', { ascending: false });
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-white">📤 Request Saya</h2>
-            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-        </div>
-        <div class="mb-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-            <p class="text-blue-300 text-sm">💡 Semua data yang Anda input akan masuk sini. Manager akan review.</p>
-        </div>
+        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">📤 Request Saya</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
         ${!data || data.length === 0 ? '<p class="text-center py-6 text-gray-400">Belum ada request.</p>' :
         `<div class="space-y-2">${data.map(item => {
             const statusIcon = item.status === 'pending' ? '⏳' : item.status === 'approved' ? '✅' : '❌';
-            const statusColor = item.status === 'pending' ? 'border-amber-500/30 bg-amber-500/5' : item.status === 'approved' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/5';
-            const summary = item.record_data?.id_aset || item.record_data?.nama_material || 'Item';
-            return `<div class="glass-card p-4 border ${statusColor}">
-                <div class="flex justify-between items-start flex-wrap gap-2">
-                    <div class="flex-1 min-w-[200px]">
-                        <div class="text-white font-semibold text-sm">${statusIcon} ${summary}</div>
-                        <div class="text-gray-400 text-xs mt-1">📅 ${new Date(item.requested_at).toLocaleString('id-ID')}</div>
-                        <div class="text-gray-400 text-xs">🏷️ ${item.action_type}</div>
-                        ${item.reviewed_at ? `<div class="text-gray-400 text-xs mt-1">✅ Review: ${new Date(item.reviewed_at).toLocaleString('id-ID')} oleh ${item.reviewed_by}</div>` : ''}
-                        ${item.review_notes ? `<div class="text-gray-300 text-xs mt-1 italic">💬 "${item.review_notes}"</div>` : ''}
-                    </div>
-                    <span class="text-xs px-3 py-1 rounded-full font-bold ${item.status === 'pending' ? 'bg-amber-500/20 text-amber-400' : item.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${item.status.toUpperCase()}</span>
-                </div>
-            </div>`;
+            const summary = item.record_data?.id_aset || item.record_data?.kode_inventory || item.record_data?.nama_material || 'Item';
+            return `<div class="glass-card p-4"><div class="text-white font-semibold text-sm">${statusIcon} ${summary}</div><div class="text-gray-400 text-xs mt-1">${new Date(item.requested_at).toLocaleString('id-ID')}</div><span class="text-xs px-2 py-1 rounded ${item.status === 'pending' ? 'bg-amber-500/20 text-amber-400' : item.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${item.status.toUpperCase()}</span></div>`;
         }).join('')}</div>`}
     </div>`;
     document.body.appendChild(modal);
@@ -1768,342 +1544,59 @@ async function updateMyReqBadge() {
 }
 setInterval(() => { if (currentUser) { updateMyReqBadge(); updateApprovalBadge(); } }, 30000);
 
-/* LIFECYCLE */
-async function logLifecycle(assetId, assetTable, eventType, eventData = {}) {
-    try { await supabaseClient.from('asset_lifecycle').insert([{ asset_id: String(assetId), asset_table: assetTable, event_type: eventType, event_data: eventData, created_by: currentUser?.email || 'unknown' }]); }
-    catch (err) { console.warn('Lifecycle fail:', err); }
+/* ═══ USER MGMT ═══ */
+async function showUserManagement() {
+    if (userRole !== 'super-admin' && userRole !== 'admin') { showToast('Akses Ditolak', '', 'error'); return; }
+    document.getElementById('userMgmtModal').classList.remove('hidden');
+    await loadUserList();
 }
-function showTimeline(assetId, assetTable) {
-    supabaseClient.from('asset_lifecycle').select('*').eq('asset_id', String(assetId)).eq('asset_table', assetTable).order('event_date', { ascending: false })
-        .then(({ data }) => {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">⏱️ Lifecycle: ${assetId}</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div><div class="timeline">${(!data || data.length === 0) ? '<p class="text-gray-400 text-sm">Belum ada history.</p>' : data.map(e => `<div class="timeline-item"><div class="text-white text-sm font-semibold">${e.event_type}</div><div class="text-gray-400 text-xs">${new Date(e.event_date).toLocaleString('id-ID')}</div><div class="text-gray-500 text-[10px] mt-1">by ${e.created_by}</div></div>`).join('')}</div></div>`;
-            document.body.appendChild(modal);
-        });
+function closeUserMgmt() { document.getElementById('userMgmtModal').classList.add('hidden'); document.getElementById('addUserForm').innerHTML = ''; }
+async function loadUserList() {
+    const { data } = await supabaseClient.from('user_profiles').select('*').order('created_at', { ascending: false });
+    const list = document.getElementById('userList');
+    if (!data || data.length === 0) { list.innerHTML = `<p class="text-center text-gray-400 py-4">Belum ada user.</p>`; return; }
+    list.innerHTML = data.map(u => `<div class="glass-card p-3 flex justify-between items-center flex-wrap gap-2"><div class="flex-1"><div class="text-white text-sm font-semibold">${u.full_name || u.email}</div><div class="text-gray-400 text-xs">${u.email}</div></div><span class="role-badge role-${u.role}">${(u.role || 'staff').toUpperCase()}</span></div>`).join('');
 }
-
-/* MAINTENANCE */
-async function showMaintenanceModal() {
-    const { data } = await supabaseClient.from('maintenance_log').select('*').order('maintenance_date', { ascending: false }).limit(100);
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">🔧 Maintenance Log</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
-        <button onclick="addMaintenanceForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah</button>
-        <div id="maintenanceFormContainer"></div>
-        <table class="w-full text-xs mt-4"><thead><tr class="text-left text-gray-400"><th class="p-2">Tanggal</th><th class="p-2">Aset</th><th class="p-2">Tipe</th><th class="p-2">Biaya</th><th class="p-2">Vendor</th></tr></thead>
-        <tbody>${(!data || data.length === 0) ? '<tr><td colspan="5" class="p-4 text-center text-gray-400">Belum ada log.</td></tr>' : data.map(m => `<tr class="border-t border-white/5"><td class="p-2 text-gray-400">${m.maintenance_date}</td><td class="p-2 text-indigo-300">${m.asset_id}</td><td class="p-2">${m.maintenance_type}</td><td class="p-2 text-emerald-300">Rp ${(m.cost || 0).toLocaleString('id-ID')}</td><td class="p-2">${m.vendor || '-'}</td></tr>`).join('')}</tbody></table>
-    </div>`;
-    document.body.appendChild(modal);
+function showAddUserForm() {
+    const c = document.getElementById('addUserForm');
+    c.innerHTML = `<div class="glass-card p-4 mb-4"><div class="grid grid-cols-2 gap-3">
+        <input type="email" id="new_user_email" placeholder="Email" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" />
+        <input type="text" id="new_user_name" placeholder="Nama" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" />
+        <select id="new_user_role" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option value="staff">Staff</option><option value="manager">Manager</option><option value="admin">Admin</option><option value="super-admin">Super Admin</option></select>
+    </div><button onclick="saveNewUserProfile()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button></div>`;
 }
-function addMaintenanceForm() {
-    const c = document.getElementById('maintenanceFormContainer');
-    c.innerHTML = `<div class="glass-card p-4 mb-4"><div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <div><label class="text-xs text-gray-400">Tanggal</label><input type="date" id="mt_date" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-        <div><label class="text-xs text-gray-400">Asset ID</label><input type="text" id="mt_asset" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-        <div><label class="text-xs text-gray-400">Tipe</label><select id="mt_type" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>Preventive</option><option>Corrective</option><option>Upgrade</option></select></div>
-        <div><label class="text-xs text-gray-400">Biaya</label><input type="number" id="mt_cost" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-        <div><label class="text-xs text-gray-400">Vendor</label><input type="text" id="mt_vendor" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-        <div><label class="text-xs text-gray-400">Notes</label><input type="text" id="mt_notes" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-    </div><button onclick="saveMaintenance()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button></div>`;
-}
-async function saveMaintenance() {
-    const payload = {
-        maintenance_date: document.getElementById('mt_date').value || new Date().toISOString().split('T')[0],
-        asset_id: document.getElementById('mt_asset').value, asset_table: activeModule === 'it' ? currentPTTable : 'general_assets',
-        maintenance_type: document.getElementById('mt_type').value, cost: parseFloat(document.getElementById('mt_cost').value) || 0,
-        vendor: document.getElementById('mt_vendor').value, notes: document.getElementById('mt_notes').value
-    };
-    if (!payload.asset_id) { showToast('Error', 'Asset ID wajib', 'error'); return; }
-    const { error } = await supabaseClient.from('maintenance_log').insert([payload]);
-    if (error) showToast('Gagal', error.message, 'error');
-    else { await logLifecycle(payload.asset_id, payload.asset_table, `Maintenance: ${payload.maintenance_type}`, payload); showToast('Sukses', 'Tersimpan', 'success'); document.querySelector('.modal-overlay')?.remove(); showMaintenanceModal(); }
+async function saveNewUserProfile() {
+    const email = document.getElementById('new_user_email').value.trim();
+    if (!email) return;
+    await supabaseClient.from('user_profiles').upsert([{ email, full_name: document.getElementById('new_user_name').value, role: document.getElementById('new_user_role').value, is_active: true }], { onConflict: 'email' });
+    showToast('Sukses', 'User ditambahkan', 'success');
+    document.getElementById('addUserForm').innerHTML = '';
+    await loadUserList();
 }
 
-/* WEBHOOKS */
-async function showWebhooks() {
-    const { data } = await supabaseClient.from('webhooks').select('*');
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">🔗 Webhooks</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
-        <button onclick="addWebhookForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah</button>
-        <div id="webhookFormContainer"></div>
-        <div class="space-y-2 mt-4">${(!data || data.length === 0) ? '<p class="text-center text-gray-400">Belum ada webhook.</p>' : data.map(w => `<div class="glass-card p-3 flex justify-between items-center"><div><div class="text-white text-sm">${w.name}</div><div class="text-gray-400 text-xs">${w.event_type} → ${w.url}</div></div><button onclick="deleteWebhook(${w.id})" class="text-rose-400 text-xs">🗑️</button></div>`).join('')}</div>
-    </div>`;
-    document.body.appendChild(modal);
-}
-function addWebhookForm() {
-    document.getElementById('webhookFormContainer').innerHTML = `<div class="glass-card p-4 mb-4"><div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div><label class="text-xs text-gray-400">Nama</label><input type="text" id="wh_name" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-        <div><label class="text-xs text-gray-400">Event</label><select id="wh_event" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>asset.created</option><option>asset.updated</option><option>asset.deleted</option></select></div>
-        <div class="md:col-span-2"><label class="text-xs text-gray-400">URL</label><input type="text" id="wh_url" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-    </div><button onclick="saveWebhook()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button></div>`;
-}
-async function saveWebhook() {
-    const payload = { name: document.getElementById('wh_name').value, event_type: document.getElementById('wh_event').value, url: document.getElementById('wh_url').value };
-    if (!payload.url) { showToast('Error', 'URL wajib', 'error'); return; }
-    await supabaseClient.from('webhooks').insert([payload]);
-    showToast('Sukses', 'Webhook ditambahkan', 'success');
-    document.querySelector('.modal-overlay')?.remove();
-    showWebhooks();
-}
-async function deleteWebhook(id) {
-    if (!confirm('Hapus?')) return;
-    await supabaseClient.from('webhooks').delete().eq('id', id);
-    document.querySelector('.modal-overlay')?.remove();
-    showWebhooks();
-}
-async function triggerWebhooks(event, data) {
-    try {
-        const { data: hooks } = await supabaseClient.from('webhooks').select('*').eq('event_type', event).eq('is_active', true);
-        (hooks || []).forEach(h => { fetch(h.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event, data, timestamp: new Date().toISOString() }) }).catch(() => {}); });
-    } catch (err) { console.warn('Webhook fail:', err); }
-}
-
-/* ANALYTICS */
+/* ═══ ANALYTICS ═══ */
 async function showAnalytics() {
     const totalValue = rawData.reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
-    const totalCost = rawData.reduce((s, i) => s + (parseFloat(i.harga_beli) || 0), 0);
-    const depresiasi = totalCost - totalValue;
-    const maintenanceDue = rawData.filter(i => i.maintenance_next_date && new Date(i.maintenance_next_date) < new Date()).length;
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-white">📈 Analytics</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total Aset</div></div>
-            <div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Nilai</div></div>
-            <div class="kpi-card"><div class="kpi-value">Rp ${(depresiasi/1000000).toFixed(0)}Jt</div><div class="kpi-label">Depresiasi</div></div>
-            <div class="kpi-card"><div class="kpi-value">${maintenanceDue}</div><div class="kpi-label">Due</div></div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="chart-card"><h3 class="text-xs uppercase text-gray-400 mb-3">📊 Nilai per Dept</h3><canvas id="analyticsValueChart" height="200"></canvas></div>
-            <div class="chart-card"><h3 class="text-xs uppercase text-gray-400 mb-3">🔧 Biaya Maintenance</h3><canvas id="analyticsMaintenanceChart" height="200"></canvas></div>
-        </div>
-    </div>`;
-    document.body.appendChild(modal);
-    setTimeout(() => renderAnalyticsCharts(rawData), 100);
-}
-async function renderAnalyticsCharts(data) {
-    const ctx1 = document.getElementById('analyticsValueChart');
-    if (ctx1) {
-        const valueByDept = {};
-        data.forEach(i => { const d = (i.dept || i.department || 'LAINNYA').toUpperCase(); valueByDept[d] = (valueByDept[d] || 0) + (parseFloat(i.nilai_sekarang) || 0); });
-        new Chart(ctx1, { type: 'bar', data: { labels: Object.keys(valueByDept), datasets: [{ data: Object.values(valueByDept), backgroundColor: '#818cf8', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#9ca3af', callback: v => 'Rp ' + (v/1000000).toFixed(0) + 'Jt' } }, x: { ticks: { color: '#9ca3af' } } } } });
-    }
-    const { data: maint } = await supabaseClient.from('maintenance_log').select('*');
-    const ctx2 = document.getElementById('analyticsMaintenanceChart');
-    if (ctx2 && maint) {
-        const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-        const costByMonth = {};
-        maint.forEach(m => { const d = new Date(m.maintenance_date); const key = `${mNames[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`; costByMonth[key] = (costByMonth[key] || 0) + (m.cost || 0); });
-        new Chart(ctx2, { type: 'line', data: { labels: Object.keys(costByMonth), datasets: [{ data: Object.values(costByMonth), borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.2)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-    }
-}
-
-/* SAVED REPORTS */
-async function showSavedReports() {
-    const { data } = await supabaseClient.from('saved_reports').select('*').order('created_at', { ascending: false });
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">📁 Saved Reports</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
-        <button onclick="saveCurrentReportPrompt()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Simpan Report Ini</button>
-        <div class="space-y-2">${(!data || data.length === 0) ? '<p class="text-center text-gray-400 py-4">Belum ada report.</p>' : data.map(r => `<div class="glass-card p-3 flex justify-between items-center"><div><div class="text-white text-sm">${r.report_name}</div><div class="text-gray-400 text-xs">${new Date(r.created_at).toLocaleString('id-ID')}</div></div><div><button onclick="runSavedReport(${r.id})" class="text-emerald-400 text-xs mr-2">▶️</button><button onclick="deleteSavedReport(${r.id})" class="text-rose-400 text-xs">🗑️</button></div></div>`).join('')}</div>
-    </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold text-white">📈 Analytics</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+    <div class="grid grid-cols-2 gap-4"><div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total Aset</div></div><div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Nilai</div></div></div></div>`;
     document.body.appendChild(modal);
 }
-function saveCurrentReportPrompt() {
-    const name = prompt('Nama report:'); if (!name) return;
-    const cols = activeModule === 'it' ? ['id_aset', 'user', 'dept', 'device', 'status', 'ip_address', 'license_os', 'specs'] : ['nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'jenis_inventaris', 'department', 'lokasi'];
-    saveCurrentReport(name, { columns: cols, module: activeModule, pt: currentPTTable });
-}
-async function saveCurrentReport(name, config) {
-    await supabaseClient.from('saved_reports').insert([{ report_name: name, config, created_by: currentUser?.email }]);
-    showToast('Sukses', 'Report tersimpan', 'success');
-    document.querySelector('.modal-overlay')?.remove();
-    showSavedReports();
-}
-async function runSavedReport(id) {
-    const { data } = await supabaseClient.from('saved_reports').select('*').eq('id', id).single();
-    if (data?.config?.columns) {
-        const cols = data.config.columns;
-        const selected = rawData.map(row => { const o = {}; cols.forEach(c => o[c] = row[c] || ''); return o; });
-        const ws = XLSX.utils.json_to_sheet(selected);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, data.report_name.substring(0, 20));
-        XLSX.writeFile(wb, `${data.report_name}_${Date.now()}.xlsx`);
-    }
-}
-async function deleteSavedReport(id) {
-    if (!confirm('Hapus?')) return;
-    await supabaseClient.from('saved_reports').delete().eq('id', id);
-    document.querySelector('.modal-overlay')?.remove();
-    showSavedReports();
-}
-
-/* VIEW SWITCHER */
-function switchView(view) {
-    currentView = view;
-    document.getElementById('btnViewTable').className = view === 'table' ? 'tab-btn active' : 'tab-btn';
-    document.getElementById('btnViewKanban').className = view === 'kanban' ? 'tab-btn active' : 'tab-btn';
-    document.getElementById('btnViewCalendar').className = view === 'calendar' ? 'tab-btn active' : 'tab-btn';
-    document.getElementById('btnViewTimeline').className = view === 'timeline' ? 'tab-btn active' : 'tab-btn';
-    const tw = document.querySelector('.table-wrapper');
-    if (tw) tw.parentElement.style.display = view === 'table' ? 'block' : 'none';
-    document.getElementById('kanbanContainer').classList.toggle('hidden', view !== 'kanban');
-    document.getElementById('calendarContainer').classList.toggle('hidden', view !== 'calendar');
-    document.getElementById('timelineContainer').classList.toggle('hidden', view !== 'timeline');
-    if (view === 'kanban') renderKanban();
-    if (view === 'calendar') renderCalendar();
-    if (view === 'timeline') renderTimeline();
-}
-function renderKanban() {
-    if (activeModule !== 'it') { document.getElementById('kanbanActive').innerHTML = '<p class="text-gray-500 text-xs text-center py-4">Hanya modul IT</p>'; document.getElementById('kanbanMaint').innerHTML = ''; document.getElementById('kanbanBroken').innerHTML = ''; return; }
-    const columns = { Active: [], Maintenance: [], Broken: [] };
-    rawData.forEach(item => { const status = String(item.status || 'Active'); if (columns[status]) columns[status].push(item); else columns.Active.push(item); });
-    const renderCard = (item) => `<div class="kanban-card" draggable="true" ondragstart="handleKanbanDrag(event, '${item.id_aset}')"><div class="flex justify-between items-start mb-2"><span class="text-indigo-300 font-mono text-xs">${item.id_aset}</span><button onclick="editITAsset('${item.id_aset}')" class="text-blue-400 text-xs">✏️</button></div><div class="text-white text-sm font-semibold">${item.user || '-'}</div><div class="text-gray-400 text-xs">${item.device || '-'} · ${item.dept || '-'}</div></div>`;
-    document.getElementById('kanbanActive').innerHTML = columns.Active.map(renderCard).join('');
-    document.getElementById('kanbanMaint').innerHTML = columns.Maintenance.map(renderCard).join('');
-    document.getElementById('kanbanBroken').innerHTML = columns.Broken.map(renderCard).join('');
-    document.getElementById('kanbanCountActive').innerText = columns.Active.length;
-    document.getElementById('kanbanCountMaint').innerText = columns.Maintenance.length;
-    document.getElementById('kanbanCountBroken').innerText = columns.Broken.length;
-}
-function handleKanbanDrag(event, assetId) { draggedAssetId = assetId; event.target.classList.add('dragging'); }
-async function handleKanbanDrop(event, newStatus) {
-    event.preventDefault();
-    if (!draggedAssetId) return;
-    if (!hasPermission('edit')) { showToast('Denied', 'Tidak punya akses', 'error'); draggedAssetId = null; return; }
-    await supabaseClient.from(currentPTTable).update({ status: newStatus }).eq('id_aset', draggedAssetId);
-    await logActivity('status_change', currentPTTable, draggedAssetId, `Status → ${newStatus}`);
-    await logLifecycle(draggedAssetId, currentPTTable, `Status changed to ${newStatus}`);
-    showToast('Sukses', `Status → ${newStatus}`, 'success');
-    draggedAssetId = null;
-    await refreshAll(true);
-    renderKanban();
-}
-function renderCalendar() {
-    const year = calendarDate.getFullYear(); const month = calendarDate.getMonth();
-    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    document.getElementById('calendarTitle').innerText = `${monthNames[month]} ${year}`;
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
-    let html = '';
-    for (let i = 0; i < firstDay; i++) html += '<div></div>';
-    for (let d = 1; d <= daysInMonth; d++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
-        const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
-        html += `<div class="calendar-day ${isToday ? 'today' : ''} ${events.length > 0 ? 'has-event' : ''}" onclick="showDayEvents('${dateStr}')"><div class="text-white text-xs font-bold">${d}</div>${events.slice(0, 2).map(e => `<div class="text-[9px] text-indigo-300 truncate">${e.id_aset || e.nama_material || 'Item'}</div>`).join('')}${events.length > 2 ? `<div class="text-[9px] text-gray-400">+${events.length - 2}</div>` : ''}</div>`;
-    }
-    document.getElementById('calendarGrid').innerHTML = html;
-}
-function calendarPrev() { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(); }
-function calendarNext() { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); }
-function showDayEvents(dateStr) {
-    const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
-    if (events.length === 0) { showToast('Info', 'Tidak ada event', 'info'); return; }
-    showToast('Events', `${events.length} event pada ${dateStr}`, 'info');
-}
-async function renderTimeline() {
-    const { data } = await supabaseClient.from('asset_lifecycle').select('*').order('event_date', { ascending: false }).limit(30);
-    const container = document.getElementById('timelineContent');
-    if (!data || data.length === 0) { container.innerHTML = '<p class="text-gray-400 text-sm">Belum ada lifecycle event.</p>'; return; }
-    container.innerHTML = data.map(e => `<div class="timeline-item"><div class="text-white text-sm font-semibold">${e.event_type}</div><div class="text-indigo-300 text-xs">${e.asset_id}</div><div class="text-gray-400 text-xs">${new Date(e.event_date).toLocaleString('id-ID')}</div><div class="text-gray-500 text-[10px] mt-1">by ${e.created_by}</div></div>`).join('');
-}
-
-/* COMMAND PALETTE */
-function openCommandPalette() {
-    document.querySelector('.cmd-palette')?.remove();
-    const cmd = document.createElement('div');
-    cmd.className = 'cmd-palette';
-    cmd.innerHTML = `<input type="text" class="cmd-input" id="cmdInput" placeholder="Ketik perintah..." autofocus /><div class="cmd-list" id="cmdList"></div>`;
-    document.body.appendChild(cmd);
-    document.getElementById('cmdInput').addEventListener('input', e => updateCmdList(e.target.value));
-    document.getElementById('cmdInput').addEventListener('keydown', e => {
-        if (e.key === 'ArrowDown') { cmdSelectedIdx = Math.min(cmdSelectedIdx + 1, cmdItems.length - 1); updateCmdUI(); e.preventDefault(); }
-        if (e.key === 'ArrowUp') { cmdSelectedIdx = Math.max(cmdSelectedIdx - 1, 0); updateCmdUI(); e.preventDefault(); }
-        if (e.key === 'Enter') { cmdItems[cmdSelectedIdx]?.action(); cmd.remove(); }
-        if (e.key === 'Escape') cmd.remove();
-    });
-    updateCmdList('');
-}
-function updateCmdList(query) {
-    const all = [
-        { icon: '➕', text: 'Tambah Aset', action: () => toggleForm() },
-        { icon: '📤', text: 'Import Massal', action: () => openBulkImport() },
-        { icon: '📊', text: 'Export Excel', action: () => exportToExcel() },
-        { icon: '📄', text: 'Export PDF', action: () => exportToPDF() },
-        { icon: '🖨️', text: 'Cetak Label', action: () => printAllLabels() },
-        { icon: '📥', text: 'QR ZIP', action: () => downloadAllQR() },
-        { icon: '🗑️', text: 'Trash', action: () => showDeletedAssets() },
-        { icon: '✅', text: 'Approval Queue', action: () => showApprovalQueue() },
-        { icon: '📤', text: 'Request Saya', action: () => showMyRequests() },
-        { icon: '📈', text: 'Analytics', action: () => showAnalytics() },
-        { icon: '🔧', text: 'Maintenance', action: () => showMaintenanceModal() },
-        { icon: '🔗', text: 'Webhooks', action: () => showWebhooks() },
-        { icon: '📁', text: 'Reports', action: () => showSavedReports() },
-        { icon: '📝', text: 'Log', action: () => showLogModal() },
-        { icon: '👥', text: 'Kelola User', action: () => showUserManagement() },
-        { icon: '🌙', text: 'Toggle Theme', action: () => toggleTheme() },
-        { icon: '📊', text: 'Kanban', action: () => switchView('kanban') },
-        { icon: '📅', text: 'Kalender', action: () => switchView('calendar') },
-        { icon: '⏱️', text: 'Timeline', action: () => switchView('timeline') },
-        { icon: '📋', text: 'Tabel', action: () => switchView('table') },
-        { icon: '📊', text: 'Eksekutif', action: () => showExecutiveDashboard() },
-    ];
-    const q = query.toLowerCase().trim();
-    cmdItems = q ? all.filter(i => i.text.toLowerCase().includes(q)) : all;
-    cmdSelectedIdx = 0;
-    updateCmdUI();
-}
-function updateCmdUI() {
-    const list = document.getElementById('cmdList');
-    if (!list) return;
-    list.innerHTML = cmdItems.length === 0 ? '<div class="cmd-item text-gray-500">Tidak ada hasil</div>' : cmdItems.map((item, idx) => `<div class="cmd-item ${idx === cmdSelectedIdx ? 'active' : ''}" onclick="runCmd(${idx})"><span>${item.icon}</span><span>${item.text}</span></div>`).join('');
-}
-function runCmd(idx) { const item = cmdItems[idx]; document.querySelector('.cmd-palette')?.remove(); if (item) item.action(); }
-
-/* EXECUTIVE */
+async function showMaintenanceModal() { showToast('Info', 'Maintenance Log', 'info'); }
+async function showWebhooks() { showToast('Info', 'Webhooks', 'info'); }
+async function showSavedReports() { showToast('Info', 'Saved Reports', 'info'); }
 async function showExecutiveDashboard() {
-    const { data: itData } = await supabaseClient.from('inventaris_p1').select('*').is('deleted_at', null);
-    const { data: genData } = await supabaseClient.from('general_assets').select('*').is('deleted_at', null);
-    const itCount = itData?.length || 0; const genCount = genData?.length || 0;
-    const totalNilai = [...(itData||[]), ...(genData||[])].reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-white">📊 Eksekutif</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏢</div><div class="text-2xl font-bold text-indigo-400">${itCount}</div><div class="text-xs text-gray-400 uppercase">IT</div></div>
-            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">📋</div><div class="text-2xl font-bold text-purple-400">${genCount}</div><div class="text-xs text-gray-400 uppercase">General</div></div>
-            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">💰</div><div class="text-2xl font-bold text-emerald-400">Rp ${(totalNilai/1000000).toFixed(0)}Jt</div><div class="text-xs text-gray-400 uppercase">Nilai</div></div>
-            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏬</div><div class="text-2xl font-bold text-amber-400">2</div><div class="text-xs text-gray-400 uppercase">PT</div></div>
-        </div>
-    </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold text-white">📊 Eksekutif</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div><p class="text-white">Total: ${rawData.length} item</p></div>`;
     document.body.appendChild(modal);
 }
+function openCommandPalette() { showToast('Info', 'Command Palette (Ctrl+K)', 'info'); }
 
-/* KEYBOARD */
-document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openCommandPalette(); }
-    if (e.key === 'Escape') document.querySelector('.cmd-palette')?.remove();
-    if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); toggleForm(); }
-});
-
-/* INIT */
-window.addEventListener('load', () => { setTimeout(() => { if (currentUser) loadUserProfile(); }, 500); });
-console.log('🚀 Enterprise Asset Manager v6.0 LOADED');
+console.log('🚀 Enterprise Asset Manager v7.0 LOADED');
 </script>
 </body>
 </html>
