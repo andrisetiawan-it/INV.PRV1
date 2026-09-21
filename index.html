@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v9</title>
+<title>Enterprise Asset Manager Pro v10</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -111,7 +111,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v9.0 • Full Enterprise Edition</p>
+<p class="text-gray-500 text-xs mt-6">v10.0 • QR + Logo Edition</p>
 </div>
 </div>
 
@@ -180,7 +180,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </div>
 </div>
 
-<!-- USER MANAGEMENT -->
+<!-- USER MGMT -->
 <div id="userMgmtModal" class="hidden modal-overlay">
 <div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
 <div class="flex justify-between items-center mb-4">
@@ -221,7 +221,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 </nav>
 
 <div class="max-w-[1800px] mx-auto p-4">
-<!-- VIEW TABS -->
 <div class="flex gap-2 mb-4 flex-wrap">
 <button onclick="switchView('table')" id="btnViewTable" class="tab-btn active">📋 Tabel</button>
 <button onclick="switchView('kanban')" id="btnViewKanban" class="tab-btn">📊 Kanban</button>
@@ -234,7 +233,6 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="showSavedReports()" class="tab-btn">📁 Reports</button>
 </div>
 
-<!-- MODULE TABS -->
 <div class="flex gap-3 mb-6 flex-wrap">
 <button onclick="switchModule('it')" id="btnTabIT" class="tab-btn active">💻 IT Computers</button>
 <button onclick="switchModule('general')" id="btnTabGeneral" class="tab-btn">📋 Aset General</button>
@@ -268,34 +266,14 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div class="chart-card"><h3 class="text-gray-300 font-semibold text-xs uppercase mb-3">🎯 License / Kategori</h3><div style="height:280px;position:relative"><canvas id="chartLicense"></canvas></div></div>
 </div>
 
-<!-- KANBAN VIEW -->
 <div id="kanbanContainer" class="hidden mb-6">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Active')">
-<div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
-<h3 class="text-emerald-400 font-bold">✅ Active</h3>
-<span class="text-xs text-gray-400" id="kanbanCountActive">0</span>
-</div>
-<div id="kanbanActive"></div>
-</div>
-<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Maintenance')">
-<div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
-<h3 class="text-amber-400 font-bold">🔧 Maintenance</h3>
-<span class="text-xs text-gray-400" id="kanbanCountMaint">0</span>
-</div>
-<div id="kanbanMaint"></div>
-</div>
-<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Broken')">
-<div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
-<h3 class="text-rose-400 font-bold">❌ Broken</h3>
-<span class="text-xs text-gray-400" id="kanbanCountBroken">0</span>
-</div>
-<div id="kanbanBroken"></div>
-</div>
+<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Active')"><div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10"><h3 class="text-emerald-400 font-bold">✅ Active</h3><span class="text-xs text-gray-400" id="kanbanCountActive">0</span></div><div id="kanbanActive"></div></div>
+<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Maintenance')"><div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10"><h3 class="text-amber-400 font-bold">🔧 Maintenance</h3><span class="text-xs text-gray-400" id="kanbanCountMaint">0</span></div><div id="kanbanMaint"></div></div>
+<div class="glass-card p-4" ondragover="event.preventDefault()" ondrop="handleKanbanDrop(event, 'Broken')"><div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10"><h3 class="text-rose-400 font-bold">❌ Broken</h3><span class="text-xs text-gray-400" id="kanbanCountBroken">0</span></div><div id="kanbanBroken"></div></div>
 </div>
 </div>
 
-<!-- CALENDAR VIEW -->
 <div id="calendarContainer" class="hidden glass-card p-4 mb-6">
 <div class="flex justify-between items-center mb-4">
 <button onclick="calendarPrev()" class="btn bg-white/5 text-gray-300 px-3 py-1 rounded-lg border border-white/10">← Prev</button>
@@ -303,18 +281,11 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="calendarNext()" class="btn bg-white/5 text-gray-300 px-3 py-1 rounded-lg border border-white/10">Next →</button>
 </div>
 <div class="grid grid-cols-7 gap-1 mb-2">
-<div class="text-center text-xs text-gray-400 font-semibold py-1">Min</div>
-<div class="text-center text-xs text-gray-400 font-semibold py-1">Sen</div>
-<div class="text-center text-xs text-gray-400 font-semibold py-1">Sel</div>
-<div class="text-center text-xs text-gray-400 font-semibold py-1">Rab</div>
-<div class="text-center text-xs text-gray-400 font-semibold py-1">Kam</div>
-<div class="text-center text-xs text-gray-400 font-semibold py-1">Jum</div>
-<div class="text-center text-xs text-gray-400 font-semibold py-1">Sab</div>
+<div class="text-center text-xs text-gray-400 font-semibold py-1">Min</div><div class="text-center text-xs text-gray-400 font-semibold py-1">Sen</div><div class="text-center text-xs text-gray-400 font-semibold py-1">Sel</div><div class="text-center text-xs text-gray-400 font-semibold py-1">Rab</div><div class="text-center text-xs text-gray-400 font-semibold py-1">Kam</div><div class="text-center text-xs text-gray-400 font-semibold py-1">Jum</div><div class="text-center text-xs text-gray-400 font-semibold py-1">Sab</div>
 </div>
 <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
 </div>
 
-<!-- TIMELINE VIEW -->
 <div id="timelineContainer" class="hidden glass-card p-6 mb-6">
 <h3 class="text-white font-bold text-lg mb-4">⏱️ Asset Lifecycle Timeline</h3>
 <div id="timelineContent"></div>
@@ -323,6 +294,8 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div class="flex flex-wrap gap-2 mb-4">
 <button onclick="toggleForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded-xl text-sm border-none">+ Tambah Aset</button>
 <button onclick="openBulkImport()" class="btn bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm border-none">📤 Import</button>
+<button onclick="printAllLabels()" class="btn bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/30 px-4 py-2 rounded-xl text-sm">🖨️ Cetak QR</button>
+<button onclick="downloadAllQR()" class="btn bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/30 px-4 py-2 rounded-xl text-sm">📥 QR ZIP</button>
 <button onclick="exportToExcel()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📊 Excel</button>
 <button onclick="exportToPDF()" class="btn bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-4 py-2 rounded-xl text-sm">📄 PDF</button>
 <button onclick="showDeletedAssets()" class="btn bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl text-sm">🗑️ Trash</button>
@@ -365,6 +338,9 @@ const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const STORAGE_BUCKET_URL = 'https://xsqabypdhudqwyeegfci.supabase.co/storage/v1/object/public/aset-images/';
+
+/* ═══ LOGO MAGICASE ═══ */
+const COMPANY_LOGO_URL = 'https://cdn.jsdelivr.net/gh/andrisetiawan-it/INV.PRV1@main/logo-magicase.png';
 
 let currentPTTable = '';
 let currentPTName = '';
@@ -461,6 +437,52 @@ async function autoUpdateKode() {
 document.addEventListener('input', function(e) {
     if (e.target && e.target.id === 'gen_kode') e.target.dataset.manualEdited = 'true';
 }, true);
+
+/* ═══ QR CODE WITH LOGO ═══ */
+function renderQrWithLogo(canvas, value, size = 200, callback = null) {
+    try {
+        new QRious({ 
+            element: canvas, 
+            value: value, 
+            size: size,
+            background: 'white', 
+            foreground: '#111827',
+            level: 'H'
+        });
+        
+        const ctx = canvas.getContext('2d');
+        const logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        logo.src = COMPANY_LOGO_URL;
+        logo.onload = () => {
+            const logoSize = size * 0.22;
+            const x = (size - logoSize) / 2;
+            const y = (size - logoSize) / 2;
+            
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x - 2, y - 2, logoSize + 4, logoSize + 4);
+            ctx.strokeStyle = '#e5e7eb';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x - 2, y - 2, logoSize + 4, logoSize + 4);
+            ctx.drawImage(logo, x, y, logoSize, logoSize);
+            
+            if (callback) callback();
+        };
+        logo.onerror = () => {
+            console.log('Logo gagal load');
+            if (callback) callback();
+        };
+    } catch (err) {
+        console.error('QR render error:', err);
+        try {
+            new QRious({ element: canvas, value: value, size: size, background: 'white', foreground: '#111827' });
+        } catch(e) {}
+    }
+}
+
+function getQrValue(item) {
+    return item.id_aset || item.kode_inventory || item.nama_material || 'N/A';
+}
 
 /* ═══ TOAST ═══ */
 function showToast(title, message, type = 'info') {
@@ -706,7 +728,7 @@ function renderTable(data) {
             const nilaiFmt = nilai > 0 ? `Rp ${(nilai/1000000).toFixed(1)}Jt` : '-';
             return `<tr>
                 <td><input type="checkbox" class="row-check" data-id="${item.id_aset}" onchange="toggleRow(this, '${item.id_aset}')"></td>
-                <td><canvas class="qr-code" data-value="${item.id_aset}" width="42" height="42"></canvas></td>
+                <td><canvas class="qr-code" data-value="${item.id_aset}" width="42" height="42" onclick="printQR('${item.id_aset}')"></canvas></td>
                 <td class="font-mono text-indigo-300" style="cursor:pointer" onclick="copyToClipboard('${item.id_aset}')">${item.id_aset} 📋</td>
                 <td>${item.user || '-'}</td>
                 <td><span class="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${item.dept || '-'}</span></td>
@@ -718,14 +740,19 @@ function renderTable(data) {
                 <td class="text-xs text-emerald-300 font-semibold">${nilaiFmt}</td>
                 <td><div class="flex gap-1 justify-center flex-wrap">
                     <button onclick="editITAsset('${item.id_aset}')" class="btn-action edit">✏️</button>
+                    <button onclick="printQR('${item.id_aset}')" class="btn-action label">🏷️</button>
                     <button onclick="deleteItem('${item.id_aset}')" class="btn-action delete">🗑️</button>
                 </div></td>
             </tr>`;
         }).join('');
-        document.querySelectorAll('canvas.qr-code').forEach(c => { try { new QRious({ element: c, value: c.dataset.value || 'N/A', size: 42, background: 'white', foreground: '#111827' }); } catch(e){} });
+        document.querySelectorAll('canvas.qr-code').forEach(c => {
+            try { renderQrWithLogo(c, c.dataset.value || 'N/A', 42); } catch(e) {
+                try { new QRious({ element: c, value: c.dataset.value || 'N/A', size: 42, background: 'white', foreground: '#111827' }); } catch(e){}
+            }
+        });
     } else {
-        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>No</th><th>Kode Inventory</th><th>Kategori</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
-        if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="15" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
+        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>QR</th><th>No</th><th>Kode Inventory</th><th>Kategori</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
+        if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="16" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
         tbody.innerHTML = filtered.map((item, idx) => {
             let gambarCell = '-';
             if (item.gambar) { const g = String(item.gambar).trim(); const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); gambarCell = `<img src="${imgUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="viewImage('${imgUrl}')" onerror="this.parentElement.innerHTML='-'">`; }
@@ -734,6 +761,7 @@ function renderTable(data) {
             const kat = item.kategori || detectKategori(item.nama_material);
             return `<tr>
                 <td><input type="checkbox" class="row-check" data-id="${item.id}" onchange="toggleRow(this, '${item.id}')"></td>
+                <td><canvas class="qr-code" data-value="${item.kode_inventory || item.nama_material}" width="42" height="42" onclick="printQrGeneral(${item.id})"></canvas></td>
                 <td>${idx + 1}</td>
                 <td class="font-mono text-indigo-300 text-xs" style="cursor:pointer" onclick="copyToClipboard('${item.kode_inventory || ''}')" title="Klik copy">${item.kode_inventory || '-'} 📋</td>
                 <td><span class="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">${kat}</span></td>
@@ -749,12 +777,17 @@ function renderTable(data) {
                 <td>${item.lokasi || '-'}</td>
                 <td><div class="flex gap-1 justify-center flex-wrap">
                     <button onclick="editGeneralAsset(${item.id})" class="btn-action edit">✏️</button>
-                    <button onclick="printSingleGeneral(${item.id})" class="btn-action label">🖨️</button>
+                    <button onclick="printQrGeneral(${item.id})" class="btn-action label">🏷️</button>
                     <button onclick="showDetailGeneral(${item.id})" class="btn-action transfer">👁️</button>
                     <button onclick="deleteGeneralItem(${item.id})" class="btn-action delete">🗑️</button>
                 </div></td>
             </tr>`;
         }).join('');
+        document.querySelectorAll('canvas.qr-code').forEach(c => {
+            try { renderQrWithLogo(c, c.dataset.value || 'N/A', 42); } catch(e) {
+                try { new QRious({ element: c, value: c.dataset.value || 'N/A', size: 42, background: 'white', foreground: '#111827' }); } catch(e){}
+            }
+        });
     }
     updateBulkBar();
 }
@@ -1266,10 +1299,7 @@ function editGeneralAsset(id) {
     const form = document.getElementById('dynamicForm');
     const currentImg = item.gambar ? (item.gambar.startsWith('http') ? item.gambar : STORAGE_BUCKET_URL + encodeURIComponent(item.gambar)) : null;
     form.innerHTML = `
-        <div>
-            <label>Kode Inventory *</label>
-            <input type="text" id="gen_kode" value="${item.kode_inventory || ''}" />
-        </div>
+        <div><label>Kode Inventory *</label><input type="text" id="gen_kode" value="${item.kode_inventory || ''}" /></div>
         <div><label>Nama Material *</label><input type="text" id="gen_nama" value="${item.nama_material || ''}" /></div>
         <div><label>材料名称</label><input type="text" id="gen_mandarin" value="${item.nama_material_mandarin || ''}" /></div>
         <div><label>Spesifikasi</label><input type="text" id="gen_specs" value="${item.spesifikasi || ''}" /></div>
@@ -1353,31 +1383,397 @@ async function deleteGeneralItem(id) {
         await refreshAll(true);
     }
 }
-function showDetailGeneral(id) {
-    const item = rawData.find(x => String(x.id) === String(id));
+
+/* ═══════════════════════════════════════════════════════════
+   DETAIL MODAL (IT & General) with QR
+   ═══════════════════════════════════════════════════════════ */
+function showDetailIT(id_aset) {
+    const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
     let imgHtml = '';
-    if (item.gambar) { const g = String(item.gambar).trim(); const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); imgHtml = `<div class="mt-4"><img src="${imgUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;" /></div>`; }
+    if (item.gambar_url) {
+        const imgUrl = item.gambar_url.startsWith('http') ? item.gambar_url : STORAGE_BUCKET_URL + item.gambar_url;
+        imgHtml = `<div class="mt-4"><img src="${imgUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;" /></div>`;
+    }
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">📋 Detail Aset</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-white">💻 Detail IT Aset</h2>
+            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+        </div>
+        <div class="mb-4 flex flex-col items-center">
+            <canvas id="detailQrIT" width="180" height="180" style="background:white;padding:8px;border-radius:12px;"></canvas>
+            <p class="text-xs text-indigo-300 mt-2 font-mono">${item.id_aset || '-'}</p>
+        </div>
         <div class="space-y-2 text-sm">
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kode</span><span class="text-indigo-300 font-mono font-bold">${item.kode_inventory || '-'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kategori</span><span class="text-purple-300 font-mono">${item.kategori || detectKategori(item.nama_material)}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Nama</span><span class="text-white font-semibold">${item.nama_material || '-'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">材料名称</span><span class="text-white">${item.nama_material_mandarin || '-'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jumlah</span><span class="text-white font-bold">${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Department</span><span class="text-white">${item.department || '-'}</span></div>
-            <div class="flex justify-between pb-2"><span class="text-gray-400">Lokasi</span><span class="text-white">${item.lokasi || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">ID Aset</span><span class="text-white font-mono font-bold">${item.id_aset || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">User</span><span class="text-white">${item.user || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Dept</span><span class="text-white">${item.dept || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Device</span><span class="text-white">${item.device || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Status</span><span class="text-white">${item.status || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">IP</span><span class="text-white font-mono">${item.ip_address || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Specs</span><span class="text-white text-right" style="max-width:60%">${item.specs || '-'}</span></div>
+            <div class="flex justify-between pb-2"><span class="text-gray-400">Dibuat</span><span class="text-white">${item.created_at ? new Date(item.created_at).toLocaleString('id-ID') : '-'}</span></div>
         </div>
         ${imgHtml}
-        <div class="flex gap-2 justify-center mt-4">
-            <button onclick="this.closest('.modal-overlay').remove(); editGeneralAsset(${item.id})" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">✏️ Edit</button>
+        <div class="flex gap-2 justify-center mt-4 flex-wrap">
+            <button onclick="this.closest('.modal-overlay').remove(); editITAsset('${item.id_aset}')" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">✏️ Edit</button>
+            <button onclick="printQR('${item.id_aset}')" class="btn bg-amber-500 text-white px-4 py-2 rounded-xl text-sm border-none">🏷️ Print QR</button>
+            <button onclick="downloadSingleQrIT('${item.id_aset}')" class="btn bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 Download QR</button>
         </div>
     </div>`;
     document.body.appendChild(modal);
+    setTimeout(() => {
+        const canvas = document.getElementById('detailQrIT');
+        if (canvas) renderQrWithLogo(canvas, item.id_aset || 'N/A', 180);
+    }, 100);
+}
+
+function showDetailGeneral(id) {
+    const item = rawData.find(x => String(x.id) === String(id));
+    if (!item) return;
+    let imgHtml = '';
+    if (item.gambar) { 
+        const g = String(item.gambar).trim(); 
+        const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); 
+        imgHtml = `<div class="mt-4"><img src="${imgUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;" /></div>`; 
+    }
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-white">📋 Detail Aset General</h2>
+            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
+        </div>
+        <div class="mb-4 flex flex-col items-center">
+            <canvas id="detailQrGeneral" width="180" height="180" style="background:white;padding:8px;border-radius:12px;"></canvas>
+            <p class="text-xs text-indigo-300 mt-2 font-mono text-center">${item.kode_inventory || '-'}</p>
+        </div>
+        <div class="space-y-2 text-sm">
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kode</span><span class="text-indigo-300 font-mono font-bold text-right" style="max-width:60%">${item.kode_inventory || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kategori</span><span class="text-purple-300 font-mono">${item.kategori || detectKategori(item.nama_material)}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Nama</span><span class="text-white font-semibold text-right" style="max-width:60%">${item.nama_material || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">材料名称</span><span class="text-white text-right" style="max-width:60%">${item.nama_material_mandarin || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Spesifikasi</span><span class="text-white text-right" style="max-width:60%">${item.spesifikasi || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jumlah</span><span class="text-white font-bold">${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jenis</span><span class="text-white">${item.jenis_inventaris || 'Fixed Asset'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Department</span><span class="text-white">${item.department || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Lokasi</span><span class="text-white">${item.lokasi || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Harga Beli</span><span class="text-emerald-300">Rp ${(item.harga_beli || 0).toLocaleString('id-ID')}</span></div>
+            <div class="flex justify-between pb-2"><span class="text-gray-400">Nilai Sekarang</span><span class="text-emerald-300 font-bold">Rp ${(item.nilai_sekarang || 0).toLocaleString('id-ID')}</span></div>
+        </div>
+        ${imgHtml}
+        <div class="flex gap-2 justify-center mt-4 flex-wrap">
+            <button onclick="this.closest('.modal-overlay').remove(); editGeneralAsset(${item.id})" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">✏️ Edit</button>
+            <button onclick="printQrGeneral(${item.id})" class="btn bg-amber-500 text-white px-4 py-2 rounded-xl text-sm border-none">🏷️ Print QR</button>
+            <button onclick="downloadSingleQrGeneral(${item.id})" class="btn bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 Download QR</button>
+        </div>
+    </div>`;
+    document.body.appendChild(modal);
+    setTimeout(() => {
+        const canvas = document.getElementById('detailQrGeneral');
+        if (canvas) renderQrWithLogo(canvas, item.kode_inventory || item.nama_material || 'N/A', 180);
+    }, 100);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRINT QR (Single, IT & General)
+   ═══════════════════════════════════════════════════════════ */
+function printQR(id_aset) {
+    const item = rawData.find(x => String(x.id_aset) === String(id_aset));
+    if (!item) return;
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>${id_aset}</title>
+    <style>
+        body{font-family:Arial;padding:20px;text-align:center}
+        .label{border:2px dashed #333;padding:20px;max-width:420px;margin:20px auto;border-radius:12px}
+        h1{font-size:18px;margin:8px 0;font-family:monospace}
+        h2{font-size:14px;color:#666;font-weight:normal;margin:5px 0}
+        .info{text-align:left;font-size:12px;margin-top:15px}
+        .info div{padding:4px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
+        .info div span:first-child{color:#666}
+        .info div span:last-child{font-weight:600;text-align:right}
+    </style></head><body>
+    <div class="label">
+        <canvas id="qr"></canvas>
+        <h1>${item.id_aset}</h1>
+        <h2>${item.user||''} · ${item.dept||''}</h2>
+        <div class="info">
+            <div><span>Device:</span><span>${item.device||'-'}</span></div>
+            <div><span>Specs:</span><span>${item.specs||'-'}</span></div>
+            <div><span>Status:</span><span>${item.status||'-'}</span></div>
+            <div><span>IP:</span><span>${item.ip_address||'-'}</span></div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
+    <script>
+        new QRious({element:document.getElementById('qr'),value:'${item.id_aset}',size:200,background:'white',foreground:'#111827',level:'H'});
+        var canvas = document.getElementById('qr');
+        var ctx = canvas.getContext('2d');
+        var logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        logo.src = '${COMPANY_LOGO_URL}';
+        logo.onload = function() {
+            var ls = 200 * 0.22;
+            var x = (200 - ls) / 2;
+            var y = (200 - ls) / 2;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x - 2, y - 2, ls + 4, ls + 4);
+            ctx.strokeStyle = '#e5e7eb';
+            ctx.strokeRect(x - 2, y - 2, ls + 4, ls + 4);
+            ctx.drawImage(logo, x, y, ls, ls);
+        };
+        setTimeout(function(){ window.print(); }, 800);
+    <\/script>
+    </body></html>`);
+    w.document.close();
+}
+
+function printQrGeneral(id) {
+    const item = rawData.find(x => String(x.id) === String(id));
+    if (!item) return;
+    const qrValue = item.kode_inventory || item.nama_material;
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>QR - ${qrValue}</title>
+    <style>
+        body{font-family:Arial;padding:20px;text-align:center}
+        .label{border:2px dashed #333;padding:20px;max-width:420px;margin:20px auto;border-radius:12px}
+        h1{font-size:16px;margin:8px 0;font-family:monospace;word-break:break-all}
+        h2{font-size:14px;color:#333;font-weight:bold;margin:5px 0}
+        .info{text-align:left;font-size:12px;margin-top:15px}
+        .info div{padding:4px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
+        .info div span:first-child{color:#666}
+        .info div span:last-child{font-weight:600;text-align:right}
+    </style></head><body>
+    <div class="label">
+        <canvas id="qr"></canvas>
+        <h1>${qrValue}</h1>
+        <h2>${item.nama_material || ''}</h2>
+        <div class="info">
+            <div><span>Kategori:</span><span>${item.kategori || detectKategori(item.nama_material)}</span></div>
+            <div><span>材料名称:</span><span>${item.nama_material_mandarin || '-'}</span></div>
+            <div><span>Jumlah:</span><span>${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
+            <div><span>Department:</span><span>${item.department || '-'}</span></div>
+            <div><span>Lokasi:</span><span>${item.lokasi || '-'}</span></div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
+    <script>
+        new QRious({element:document.getElementById('qr'),value:'${qrValue}',size:200,background:'white',foreground:'#111827',level:'H'});
+        var canvas = document.getElementById('qr');
+        var ctx = canvas.getContext('2d');
+        var logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        logo.src = '${COMPANY_LOGO_URL}';
+        logo.onload = function() {
+            var ls = 200 * 0.22;
+            var x = (200 - ls) / 2;
+            var y = (200 - ls) / 2;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x - 2, y - 2, ls + 4, ls + 4);
+            ctx.strokeStyle = '#e5e7eb';
+            ctx.strokeRect(x - 2, y - 2, ls + 4, ls + 4);
+            ctx.drawImage(logo, x, y, ls, ls);
+        };
+        setTimeout(function(){ window.print(); }, 800);
+    <\/script>
+    </body></html>`);
+    w.document.close();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRINT ALL LABELS (3 Columns per Page)
+   ═══════════════════════════════════════════════════════════ */
+function printAllLabels() {
+    const data = applyFilters(rawData);
+    if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
+    
+    const isIT = activeModule === 'it';
+    const w = window.open('', '_blank');
+    
+    let itemsHtml = '';
+    if (isIT) {
+        itemsHtml = data.filter(i => i.id_aset).map(i => `
+            <div class="label">
+                <canvas data-id="${i.id_aset}"></canvas>
+                <h3>${i.id_aset}</h3>
+                <p class="nama">${i.user || ''}</p>
+                <p>${i.dept || ''}</p>
+                <p class="specs">${i.specs || ''}</p>
+            </div>
+        `).join('');
+    } else {
+        itemsHtml = data.filter(i => i.kode_inventory).map(i => `
+            <div class="label">
+                <canvas data-id="${i.kode_inventory}"></canvas>
+                <h3>${i.kode_inventory}</h3>
+                <p class="nama">${i.nama_material || ''}</p>
+                <p>${i.department || ''}</p>
+                <p class="specs">${i.lokasi || ''}</p>
+            </div>
+        `).join('');
+    }
+    
+    w.document.write(`<html><head><title>Label ${isIT ? 'IT' : 'General'} - ${currentPTName}</title>
+    <style>
+        body{font-family:Arial;padding:10px;margin:0}
+        h2{text-align:center;margin:10px 0 20px;font-size:16px}
+        .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 10px}
+        .label{border:1px dashed #555;padding:12px 8px;text-align:center;page-break-inside:avoid;border-radius:8px;background:white}
+        .label h3{font-size:11px;margin:6px 0 3px;font-family:monospace;word-break:break-all;color:#111}
+        .label p{font-size:9px;color:#555;margin:2px 0}
+        .label p.nama{font-size:10px;color:#111;font-weight:600}
+        .label p.specs{font-size:8px;color:#777}
+        canvas{width:110px!important;height:110px!important;display:block;margin:0 auto}
+        @media print { @page { size: A4 portrait; margin: 8mm; } }
+    </style></head><body>
+    <h2>🏷️ Label QR Code - ${currentPTName} (${isIT ? 'IT Assets' : 'General Assets'})</h2>
+    <div class="grid">${itemsHtml}</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
+    <script>
+        var logoUrl = '${COMPANY_LOGO_URL}';
+        var logoImg = new Image();
+        logoImg.crossOrigin = 'anonymous';
+        logoImg.src = logoUrl;
+        
+        logoImg.onload = function() { renderAllQr(); };
+        logoImg.onerror = function() { renderAllQr(); };
+        
+        function renderAllQr() {
+            document.querySelectorAll('canvas[data-id]').forEach(function(c) {
+                var size = 110;
+                new QRious({
+                    element: c,
+                    value: c.dataset.id,
+                    size: size,
+                    background: 'white',
+                    foreground: '#111827',
+                    level: 'H'
+                });
+                
+                if (logoImg.complete && logoImg.naturalHeight !== 0) {
+                    try {
+                        var ctx = c.getContext('2d');
+                        var ls = size * 0.22;
+                        var x = (size - ls) / 2;
+                        var y = (size - ls) / 2;
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(x - 2, y - 2, ls + 4, ls + 4);
+                        ctx.drawImage(logoImg, x, y, ls, ls);
+                    } catch(e) {}
+                }
+            });
+        }
+        
+        setTimeout(function(){ window.print(); }, 1200);
+    <\/script>
+    </body></html>`);
+    w.document.close();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DOWNLOAD QR (Single & ZIP)
+   ═══════════════════════════════════════════════════════════ */
+function downloadSingleQrIT(id_aset) {
+    const item = rawData.find(x => String(x.id_aset) === String(id_aset));
+    if (!item) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 500; canvas.height = 500;
+    renderQrWithLogo(canvas, item.id_aset, 500, () => {
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `QR_${item.id_aset}.png`;
+        a.click();
+        showToast('Sukses', `QR ${item.id_aset} didownload!`, 'success');
+    });
+}
+
+function downloadSingleQrGeneral(id) {
+    const item = rawData.find(x => String(x.id) === String(id));
+    if (!item) return;
+    const qrValue = item.kode_inventory || item.nama_material;
+    const canvas = document.createElement('canvas');
+    canvas.width = 500; canvas.height = 500;
+    renderQrWithLogo(canvas, qrValue, 500, () => {
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `QR_${qrValue}.png`;
+        a.click();
+        showToast('Sukses', `QR ${qrValue} didownload!`, 'success');
+    });
+}
+
+async function downloadAllQR() {
+    let data, valueKey;
+    if (activeModule === 'it') {
+        data = applyFilters(rawData).filter(i => i.id_aset);
+        valueKey = 'id_aset';
+    } else {
+        data = applyFilters(rawData).filter(i => i.kode_inventory);
+        valueKey = 'kode_inventory';
+    }
+    if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
+    showToast('Generating', `Membuat ${data.length} QR (dengan logo)...`, 'info');
+    
+    // Preload logo
+    const logoImg = new Image();
+    logoImg.crossOrigin = 'anonymous';
+    let logoLoaded = false;
+    await new Promise((resolve) => {
+        logoImg.onload = () => { logoLoaded = true; resolve(); };
+        logoImg.onerror = () => { resolve(); };
+        logoImg.src = COMPANY_LOGO_URL;
+        setTimeout(resolve, 3000);
+    });
+    
+    const zip = new JSZip();
+    for (const item of data) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 500; 
+        canvas.height = 500;
+        const size = 500;
+        const qrValue = String(item[valueKey]);
+        
+        new QRious({ 
+            element: canvas, 
+            value: qrValue, 
+            size: size, 
+            background: 'white', 
+            foreground: '#111827',
+            level: 'H'
+        });
+        
+        if (logoLoaded && logoImg.naturalHeight !== 0) {
+            try {
+                const ctx = canvas.getContext('2d');
+                const ls = size * 0.22;
+                const x = (size - ls) / 2;
+                const y = (size - ls) / 2;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(x - 4, y - 4, ls + 8, ls + 8);
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x - 4, y - 4, ls + 8, ls + 8);
+                ctx.drawImage(logoImg, x, y, ls, ls);
+            } catch(e) {}
+        }
+        
+        zip.file(`QR_${qrValue}.png`, canvas.toDataURL('image/png').split(',')[1], { base64: true });
+    }
+    
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; 
+    a.download = `QR_Codes_${activeModule}_${Date.now()}.zip`;
+    a.click(); 
+    URL.revokeObjectURL(url);
+    showToast('Sukses', `${data.length} QR didownload! (dengan logo)`, 'success');
 }
 
 /* ═══ IMPORT EXCEL ═══ */
@@ -1505,13 +1901,6 @@ async function restoreAsset(id) {
 /* ═══ UTILITIES ═══ */
 document.getElementById('searchInput').addEventListener('input', () => renderTable(rawData));
 function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => showToast('Copied!', `"${text}"`, 'success')); }
-function printSingleGeneral(id) {
-    const item = rawData.find(x => String(x.id) === String(id));
-    if (!item) return;
-    const w = window.open('', '_blank');
-    w.document.write(`<html><head><title>Kartu</title><style>body{font-family:Arial;padding:30px}.card{border:2px solid #4f46e5;border-radius:12px;padding:25px;max-width:500px;margin:20px auto}.header{background:#4f46e5;color:white;padding:15px;margin:-25px -25px 20px -25px;border-radius:10px 10px 0 0;text-align:center}.kode{font-family:monospace;font-size:14px;margin-top:4px}.info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}</style></head><body><div class="card"><div class="header"><h1>📋 KARTU ASET</h1><div class="kode">${item.kode_inventory || '-'}</div></div><div class="info"><div class="row"><span>Kategori</span><span>${item.kategori || detectKategori(item.nama_material)}</span></div><div class="row"><span>Nama</span><span>${item.nama_material||'-'}</span></div><div class="row"><span>材料名称</span><span>${item.nama_material_mandarin||'-'}</span></div><div class="row"><span>Jumlah</span><span>${item.jumlah||1} ${item.satuan||'Buah'}</span></div><div class="row"><span>Dept</span><span>${item.department||'-'}</span></div><div class="row"><span>Lokasi</span><span>${item.lokasi||'-'}</span></div></div></div><script>setTimeout(()=>window.print(),500);<\/script></body></html>`);
-    w.document.close();
-}
 function exportToExcel() {
     const data = applyFilters(rawData);
     if (data.length === 0) { showToast('Info', 'Kosong', 'info'); return; }
@@ -1527,15 +1916,19 @@ function initScanner() {
     try {
         html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 180 });
         html5QrcodeScanner.render((txt) => {
-            const found = rawData.find(i => String(i.id_aset || '').toUpperCase() === txt.trim().toUpperCase());
-            if (found) { showToast('QR Ditemukan', `ID: ${found.id_aset}`, 'success'); }
+            const found = rawData.find(i => String(i.id_aset || '').toUpperCase() === txt.trim().toUpperCase() || String(i.kode_inventory || '').toUpperCase() === txt.trim().toUpperCase());
+            if (found) { 
+                showToast('QR Ditemukan', `ID: ${found.id_aset || found.kode_inventory}`, 'success');
+                if (found.id_aset) showDetailIT(found.id_aset);
+                else if (found.id) showDetailGeneral(found.id);
+            } else showToast('Tidak Ditemukan', `QR "${txt}"`, 'error');
         }, () => {});
     } catch(e) {}
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 
 /* ═══════════════════════════════════════════════════════════
-   MAINTENANCE LOG (FULL)
+   MAINTENANCE LOG
    ═══════════════════════════════════════════════════════════ */
 async function showMaintenanceModal() {
     const { data } = await supabaseClient.from('maintenance_log').select('*').order('maintenance_date', { ascending: false }).limit(100);
@@ -1543,72 +1936,36 @@ async function showMaintenanceModal() {
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     const totalCost = (data || []).reduce((s, m) => s + (parseFloat(m.cost) || 0), 0);
-    const thisMonth = (data || []).filter(m => {
-        const d = new Date(m.maintenance_date);
-        const now = new Date();
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    });
-    const monthCost = thisMonth.reduce((s, m) => s + (parseFloat(m.cost) || 0), 0);
     modal.innerHTML = `
         <div class="glass-card p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <div><h2 class="text-xl font-bold text-white">🔧 Maintenance Log</h2><p class="text-gray-400 text-xs">Catatan maintenance aset</p></div>
+                <div><h2 class="text-xl font-bold text-white">🔧 Maintenance Log</h2></div>
                 <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
             </div>
-            <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="grid grid-cols-2 gap-3 mb-4">
                 <div class="glass-card p-3 text-center"><div class="text-2xl font-bold text-indigo-400">${data?.length || 0}</div><div class="text-[10px] text-gray-400 uppercase">Total Log</div></div>
                 <div class="glass-card p-3 text-center"><div class="text-2xl font-bold text-emerald-400">Rp ${(totalCost/1000000).toFixed(1)}Jt</div><div class="text-[10px] text-gray-400 uppercase">Total Biaya</div></div>
-                <div class="glass-card p-3 text-center"><div class="text-2xl font-bold text-amber-400">Rp ${(monthCost/1000000).toFixed(1)}Jt</div><div class="text-[10px] text-gray-400 uppercase">Bulan Ini</div></div>
             </div>
-            <button onclick="addMaintenanceForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah Maintenance</button>
+            <button onclick="addMaintenanceForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah</button>
             <div id="maintenanceFormContainer"></div>
-            ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada log maintenance.</p>' : `
-            <div class="overflow-x-auto rounded-xl border border-white/10">
-                <table class="w-full text-xs">
-                    <thead class="bg-white/5"><tr class="text-left text-gray-400">
-                        <th class="p-2">Tanggal</th><th class="p-2">Asset ID</th><th class="p-2">Tipe</th>
-                        <th class="p-2">Biaya</th><th class="p-2">Vendor</th><th class="p-2">Notes</th><th class="p-2">Aksi</th>
-                    </tr></thead>
-                    <tbody>${data.map(m => `
-                        <tr class="border-t border-white/5 hover:bg-white/5">
-                            <td class="p-2 text-gray-400">${m.maintenance_date}</td>
-                            <td class="p-2 text-indigo-300 font-mono">${m.asset_id}</td>
-                            <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] ${m.maintenance_type === 'Preventive' ? 'bg-emerald-500/20 text-emerald-400' : m.maintenance_type === 'Corrective' ? 'bg-amber-500/20 text-amber-400' : 'bg-purple-500/20 text-purple-400'}">${m.maintenance_type}</span></td>
-                            <td class="p-2 text-emerald-300">Rp ${(m.cost || 0).toLocaleString('id-ID')}</td>
-                            <td class="p-2 text-gray-300">${m.vendor || '-'}</td>
-                            <td class="p-2 text-gray-400 text-[10px]">${m.notes || '-'}</td>
-                            <td class="p-2"><button onclick="deleteMaintenance(${m.id})" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button></td>
-                        </tr>
-                    `).join('')}</tbody>
-                </table>
-            </div>`}
+            ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada log.</p>' : `<table class="w-full text-xs"><thead><tr class="text-left text-gray-400"><th class="p-2">Tgl</th><th class="p-2">Aset</th><th class="p-2">Tipe</th><th class="p-2">Biaya</th><th class="p-2">Vendor</th><th class="p-2">Aksi</th></tr></thead><tbody>${data.map(m => `<tr class="border-t border-white/5"><td class="p-2 text-gray-400">${m.maintenance_date}</td><td class="p-2 text-indigo-300 font-mono">${m.asset_id}</td><td class="p-2">${m.maintenance_type}</td><td class="p-2 text-emerald-300">Rp ${(m.cost || 0).toLocaleString('id-ID')}</td><td class="p-2">${m.vendor || '-'}</td><td class="p-2"><button onclick="deleteMaintenance(${m.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">🗑️</button></td></tr>`).join('')}</tbody></table>`}
         </div>
     `;
     document.body.appendChild(modal);
 }
 function addMaintenanceForm() {
     const c = document.getElementById('maintenanceFormContainer');
-    c.innerHTML = `
-        <div class="glass-card p-4 mb-4 border border-indigo-500/30">
-            <h3 class="text-white font-semibold text-sm mb-3">➕ Tambah Maintenance Baru</h3>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div><label class="text-xs text-gray-400">Tanggal *</label><input type="date" id="mt_date" value="${new Date().toISOString().split('T')[0]}" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Asset ID *</label><input type="text" id="mt_asset" placeholder="PC-001 / MGI.IT.ELV..." class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Tipe</label>
-                    <select id="mt_type" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm">
-                        <option>Preventive</option><option>Corrective</option><option>Upgrade</option><option>Inspection</option>
-                    </select>
-                </div>
-                <div><label class="text-xs text-gray-400">Biaya (Rp)</label><input type="number" id="mt_cost" value="0" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Vendor / Teknisi</label><input type="text" id="mt_vendor" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Catatan</label><input type="text" id="mt_notes" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-            </div>
-            <div class="flex gap-2 mt-3">
-                <button onclick="saveMaintenance()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
-                <button onclick="document.getElementById('maintenanceFormContainer').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
-            </div>
+    c.innerHTML = `<div class="glass-card p-4 mb-4 border border-indigo-500/30">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div><label class="text-xs text-gray-400">Tanggal</label><input type="date" id="mt_date" value="${new Date().toISOString().split('T')[0]}" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+            <div><label class="text-xs text-gray-400">Asset ID</label><input type="text" id="mt_asset" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+            <div><label class="text-xs text-gray-400">Tipe</label><select id="mt_type" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option>Preventive</option><option>Corrective</option><option>Upgrade</option></select></div>
+            <div><label class="text-xs text-gray-400">Biaya</label><input type="number" id="mt_cost" value="0" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+            <div><label class="text-xs text-gray-400">Vendor</label><input type="text" id="mt_vendor" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
+            <div><label class="text-xs text-gray-400">Notes</label><input type="text" id="mt_notes" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
         </div>
-    `;
+        <button onclick="saveMaintenance()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button>
+    </div>`;
 }
 async function saveMaintenance() {
     const payload = {
@@ -1620,256 +1977,123 @@ async function saveMaintenance() {
         vendor: document.getElementById('mt_vendor').value.trim(),
         notes: document.getElementById('mt_notes').value.trim()
     };
-    if (!payload.asset_id) { showToast('Error', 'Asset ID wajib diisi', 'error'); return; }
+    if (!payload.asset_id) { showToast('Error', 'Asset ID wajib', 'error'); return; }
     const { error } = await supabaseClient.from('maintenance_log').insert([payload]);
     if (error) showToast('Gagal', error.message, 'error');
     else {
-        await logActivity('maintenance', payload.asset_table, payload.asset_id, `Maintenance ${payload.maintenance_type}: Rp ${payload.cost.toLocaleString('id-ID')}`);
+        await logActivity('maintenance', payload.asset_table, payload.asset_id, `Maintenance ${payload.maintenance_type}`);
         await triggerWebhooks('maintenance.created', payload);
-        showToast('Sukses', 'Maintenance tersimpan!', 'success');
+        showToast('Sukses', 'Tersimpan!', 'success');
         document.querySelector('.modal-overlay')?.remove();
         showMaintenanceModal();
     }
 }
 async function deleteMaintenance(id) {
-    if (!confirm('Hapus log maintenance ini?')) return;
+    if (!confirm('Hapus?')) return;
     await supabaseClient.from('maintenance_log').delete().eq('id', id);
-    showToast('Terhapus', 'Log dihapus', 'success');
+    showToast('Terhapus', '', 'success');
     document.querySelector('.modal-overlay')?.remove();
     showMaintenanceModal();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   WEBHOOKS (FULL)
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ WEBHOOKS ═══ */
 async function showWebhooks() {
     const { data } = await supabaseClient.from('webhooks').select('*').order('created_at', { ascending: false });
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `
-        <div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <div><h2 class="text-xl font-bold text-white">🔗 Webhooks</h2><p class="text-gray-400 text-xs">Kirim notifikasi ke Slack/Telegram/Discord saat ada event</p></div>
-                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-            </div>
-            <div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <p class="text-blue-300 text-xs">💡 <strong>Format:</strong> URL endpoint yang menerima POST JSON. Bisa Slack, Discord, Telegram, atau custom API.</p>
-            </div>
-            <button onclick="addWebhookForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah Webhook</button>
-            <div id="webhookFormContainer"></div>
-            ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada webhook.</p>' : `
-            <div class="space-y-2">
-                ${data.map(w => `
-                    <div class="glass-card p-4 flex justify-between items-center flex-wrap gap-2">
-                        <div class="flex-1 min-w-[200px]">
-                            <div class="flex items-center gap-2">
-                                <span class="text-white font-semibold text-sm">${w.name}</span>
-                                <span class="text-[10px] px-2 py-0.5 rounded ${w.is_active !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'}">${w.is_active !== false ? 'ACTIVE' : 'OFF'}</span>
-                            </div>
-                            <div class="text-gray-400 text-xs mt-1">Event: <span class="text-indigo-300 font-mono">${w.event_type}</span></div>
-                            <div class="text-gray-500 text-[10px] font-mono truncate">${w.url}</div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="testWebhook(${w.id})" class="text-cyan-400 text-xs bg-cyan-500/10 hover:bg-cyan-500/20 px-2 py-1 rounded">🧪 Test</button>
-                            <button onclick="toggleWebhookActive(${w.id}, ${w.is_active !== false})" class="text-amber-400 text-xs bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded">${w.is_active !== false ? '⏸️' : '▶️'}</button>
-                            <button onclick="deleteWebhook(${w.id})" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>`}
-        </div>
-    `;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">🔗 Webhooks</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+        <button onclick="addWebhookForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah</button>
+        <div id="webhookFormContainer"></div>
+        ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada webhook.</p>' : `<div class="space-y-2">${data.map(w => `<div class="glass-card p-4 flex justify-between items-center flex-wrap gap-2"><div class="flex-1 min-w-[200px]"><div class="flex items-center gap-2"><span class="text-white font-semibold text-sm">${w.name}</span><span class="text-[10px] px-2 py-0.5 rounded ${w.is_active !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'}">${w.is_active !== false ? 'ACTIVE' : 'OFF'}</span></div><div class="text-gray-400 text-xs mt-1">Event: ${w.event_type}</div><div class="text-gray-500 text-[10px] font-mono truncate">${w.url}</div></div><div class="flex gap-2"><button onclick="testWebhook(${w.id})" class="text-cyan-400 text-xs bg-cyan-500/10 px-2 py-1 rounded">🧪 Test</button><button onclick="deleteWebhook(${w.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">🗑️</button></div></div>`).join('')}</div>`}
+    </div>`;
     document.body.appendChild(modal);
 }
 function addWebhookForm() {
-    const c = document.getElementById('webhookFormContainer');
-    c.innerHTML = `
-        <div class="glass-card p-4 mb-4 border border-indigo-500/30">
-            <h3 class="text-white font-semibold text-sm mb-3">➕ Tambah Webhook Baru</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div><label class="text-xs text-gray-400">Nama *</label><input type="text" id="wh_name" placeholder="Notif HRD Slack" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-                <div><label class="text-xs text-gray-400">Event *</label>
-                    <select id="wh_event" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm">
-                        <option value="asset.created">Asset Created</option>
-                        <option value="asset.updated">Asset Updated</option>
-                        <option value="asset.deleted">Asset Deleted</option>
-                        <option value="maintenance.created">Maintenance Created</option>
-                        <option value="approval.requested">Approval Requested</option>
-                        <option value="approval.approved">Approval Approved</option>
-                    </select>
-                </div>
-                <div class="md:col-span-2"><label class="text-xs text-gray-400">URL *</label><input type="text" id="wh_url" placeholder="https://hooks.slack.com/services/..." class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /></div>
-            </div>
-            <div class="flex gap-2 mt-3">
-                <button onclick="saveWebhook()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
-                <button onclick="document.getElementById('webhookFormContainer').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
-            </div>
-        </div>
-    `;
+    document.getElementById('webhookFormContainer').innerHTML = `<div class="glass-card p-4 mb-4"><div class="grid grid-cols-2 gap-3"><input type="text" id="wh_name" placeholder="Nama" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" /><select id="wh_event" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm"><option value="asset.created">Asset Created</option><option value="asset.updated">Asset Updated</option><option value="asset.deleted">Asset Deleted</option></select><input type="text" id="wh_url" placeholder="URL" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm col-span-2" /></div><button onclick="saveWebhook()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm mt-3 border-none">💾 Simpan</button></div>`;
 }
 async function saveWebhook() {
-    const payload = {
-        name: document.getElementById('wh_name').value.trim(),
-        event_type: document.getElementById('wh_event').value,
-        url: document.getElementById('wh_url').value.trim(),
-        is_active: true
-    };
-    if (!payload.name || !payload.url) { showToast('Error', 'Nama dan URL wajib', 'error'); return; }
-    const { error } = await supabaseClient.from('webhooks').insert([payload]);
-    if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', 'Webhook ditambahkan', 'success'); document.querySelector('.modal-overlay')?.remove(); showWebhooks(); }
-}
-async function deleteWebhook(id) {
-    if (!confirm('Hapus webhook ini?')) return;
-    await supabaseClient.from('webhooks').delete().eq('id', id);
-    showToast('Terhapus', 'Webhook dihapus', 'success');
+    const payload = { name: document.getElementById('wh_name').value.trim(), event_type: document.getElementById('wh_event').value, url: document.getElementById('wh_url').value.trim(), is_active: true };
+    if (!payload.name || !payload.url) { showToast('Error', 'Wajib diisi', 'error'); return; }
+    await supabaseClient.from('webhooks').insert([payload]);
+    showToast('Sukses', 'Webhook ditambahkan', 'success');
     document.querySelector('.modal-overlay')?.remove();
     showWebhooks();
 }
-async function toggleWebhookActive(id, currentState) {
-    await supabaseClient.from('webhooks').update({ is_active: !currentState }).eq('id', id);
-    showToast('Sukses', `Webhook ${!currentState ? 'diaktifkan' : 'dimatikan'}`, 'success');
+async function deleteWebhook(id) {
+    if (!confirm('Hapus?')) return;
+    await supabaseClient.from('webhooks').delete().eq('id', id);
     document.querySelector('.modal-overlay')?.remove();
     showWebhooks();
 }
 async function testWebhook(id) {
     const { data } = await supabaseClient.from('webhooks').select('*').eq('id', id).single();
     if (!data) return;
-    showToast('Testing', 'Mengirim test payload...', 'info');
     try {
-        const res = await fetch(data.url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ event: 'test', message: 'Test dari Enterprise Asset Manager', timestamp: new Date().toISOString() })
-        });
+        const res = await fetch(data.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event: 'test', timestamp: new Date().toISOString() }) });
         if (res.ok) showToast('Sukses', 'Webhook terkirim!', 'success');
         else showToast('Gagal', `HTTP ${res.status}`, 'error');
-    } catch (err) { showToast('Gagal', 'CORS atau URL invalid', 'error'); }
+    } catch (err) { showToast('Gagal', 'CORS/URL invalid', 'error'); }
 }
 async function triggerWebhooks(event, data) {
     try {
         const { data: hooks } = await supabaseClient.from('webhooks').select('*').eq('event_type', event).eq('is_active', true);
-        (hooks || []).forEach(h => {
-            fetch(h.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event, data, timestamp: new Date().toISOString() }) }).catch(() => {});
-        });
-    } catch (err) { console.warn('Webhook fail:', err); }
+        (hooks || []).forEach(h => { fetch(h.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event, data, timestamp: new Date().toISOString() }) }).catch(() => {}); });
+    } catch (err) {}
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SAVED REPORTS (FULL)
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ SAVED REPORTS ═══ */
 async function showSavedReports() {
     const { data } = await supabaseClient.from('saved_reports').select('*').order('created_at', { ascending: false });
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `
-        <div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <div><h2 class="text-xl font-bold text-white">📁 Saved Reports</h2><p class="text-gray-400 text-xs">Simpan template report untuk dipakai ulang</p></div>
-                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-            </div>
-            <button onclick="showAddReportForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Buat Report Baru</button>
-            <div id="reportFormContainer"></div>
-            ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada report tersimpan.</p>' : `
-            <div class="space-y-2">
-                ${data.map(r => `
-                    <div class="glass-card p-4">
-                        <div class="flex justify-between items-start flex-wrap gap-2">
-                            <div class="flex-1 min-w-[200px]">
-                                <div class="text-white font-semibold text-sm">${r.report_name}</div>
-                                <div class="text-gray-400 text-xs mt-1">Module: <span class="text-indigo-300">${r.config?.module || '-'}</span> · PT: <span class="text-indigo-300">${r.config?.pt || '-'}</span></div>
-                                <div class="text-gray-500 text-[10px]">Dibuat: ${new Date(r.created_at).toLocaleString('id-ID')}</div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="runSavedReport(${r.id})" class="text-emerald-400 text-xs bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-1 rounded">▶️ Run</button>
-                                <button onclick="deleteSavedReport(${r.id})" class="text-rose-400 text-xs bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded">🗑️</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>`}
-        </div>
-    `;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">📁 Saved Reports</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
+        <button onclick="showAddReportForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Buat Report</button>
+        <div id="reportFormContainer"></div>
+        ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada report.</p>' : `<div class="space-y-2">${data.map(r => `<div class="glass-card p-4"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex-1"><div class="text-white font-semibold text-sm">${r.report_name}</div><div class="text-gray-400 text-xs">${r.config?.module || '-'}</div></div><div class="flex gap-2"><button onclick="runSavedReport(${r.id})" class="text-emerald-400 text-xs bg-emerald-500/10 px-3 py-1 rounded">▶️</button><button onclick="deleteSavedReport(${r.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">🗑️</button></div></div></div>`).join('')}</div>`}
+    </div>`;
     document.body.appendChild(modal);
 }
 function showAddReportForm() {
-    const c = document.getElementById('reportFormContainer');
-    const itCols = ['id_aset', 'user', 'dept', 'device', 'status', 'ip_address', 'license_os', 'license_expiry', 'specs', 'harga_beli', 'nilai_sekarang'];
-    const genCols = ['kode_inventory', 'kategori', 'nama_material', 'nama_material_mandarin', 'spesifikasi', 'jumlah', 'satuan', 'jenis_inventaris', 'department', 'lokasi', 'harga_beli', 'nilai_sekarang'];
-    const cols = activeModule === 'it' ? itCols : genCols;
-    c.innerHTML = `
-        <div class="glass-card p-4 mb-4 border border-indigo-500/30">
-            <h3 class="text-white font-semibold text-sm mb-3">➕ Buat Report Baru</h3>
-            <div class="mb-3">
-                <label class="text-xs text-gray-400">Nama Report *</label>
-                <input type="text" id="rp_name" placeholder="Laporan Bulanan IT" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm" />
-            </div>
-            <div class="mb-3">
-                <label class="text-xs text-gray-400 mb-2 block">Pilih Kolom:</label>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    ${cols.map((col, i) => `<label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-white"><input type="checkbox" class="rp-col" value="${col}" ${i < 6 ? 'checked' : ''} style="accent-color: #818cf8;" /><span>${col}</span></label>`).join('')}
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="saveNewReport()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button>
-                <button onclick="document.getElementById('reportFormContainer').innerHTML=''" class="btn bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10">Batal</button>
-            </div>
-        </div>
-    `;
+    const cols = activeModule === 'it' ? ['id_aset', 'user', 'dept', 'device', 'status', 'ip_address'] : ['kode_inventory', 'kategori', 'nama_material', 'nama_material_mandarin', 'jumlah', 'department'];
+    document.getElementById('reportFormContainer').innerHTML = `<div class="glass-card p-4 mb-4"><input type="text" id="rp_name" placeholder="Nama Report" class="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm mb-2" /><div class="grid grid-cols-2 gap-2 mb-2">${cols.map((c, i) => `<label class="text-xs text-gray-300 flex items-center gap-1"><input type="checkbox" class="rp-col" value="${c}" ${i < 4 ? 'checked' : ''} />${c}</label>`).join('')}</div><button onclick="saveNewReport()" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">💾 Simpan</button></div>`;
 }
 async function saveNewReport() {
     const name = document.getElementById('rp_name').value.trim();
     const cols = [...document.querySelectorAll('.rp-col:checked')].map(c => c.value);
-    if (!name) { showToast('Error', 'Nama report wajib', 'error'); return; }
-    if (cols.length === 0) { showToast('Error', 'Pilih minimal 1 kolom', 'error'); return; }
-    const config = { columns: cols, module: activeModule, pt: currentPTTable };
-    const { error } = await supabaseClient.from('saved_reports').insert([{ report_name: name, config, created_by: currentUser?.email }]);
-    if (error) showToast('Gagal', error.message, 'error');
-    else { showToast('Sukses', 'Report tersimpan', 'success'); document.querySelector('.modal-overlay')?.remove(); showSavedReports(); }
+    if (!name || cols.length === 0) { showToast('Error', 'Isi nama & kolom', 'error'); return; }
+    await supabaseClient.from('saved_reports').insert([{ report_name: name, config: { columns: cols, module: activeModule, pt: currentPTTable }, created_by: currentUser?.email }]);
+    showToast('Sukses', 'Report tersimpan', 'success');
+    document.querySelector('.modal-overlay')?.remove();
+    showSavedReports();
 }
 async function runSavedReport(id) {
     const { data } = await supabaseClient.from('saved_reports').select('*').eq('id', id).single();
-    if (!data?.config?.columns) { showToast('Error', 'Config invalid', 'error'); return; }
-    const cols = data.config.columns;
-    const selected = rawData.map(row => { const o = {}; cols.forEach(c => o[c] = row[c] || ''); return o; });
-    if (selected.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
+    if (!data?.config?.columns) return;
+    const selected = rawData.map(row => { const o = {}; data.config.columns.forEach(c => o[c] = row[c] || ''); return o; });
     const ws = XLSX.utils.json_to_sheet(selected);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, data.report_name.substring(0, 20));
-    XLSX.writeFile(wb, `${data.report_name.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
-    showToast('Sukses', `Report "${data.report_name}" didownload`, 'success');
+    XLSX.writeFile(wb, `${data.report_name}_${Date.now()}.xlsx`);
+    showToast('Sukses', `Report didownload`, 'success');
 }
 async function deleteSavedReport(id) {
-    if (!confirm('Hapus report ini?')) return;
+    if (!confirm('Hapus?')) return;
     await supabaseClient.from('saved_reports').delete().eq('id', id);
-    showToast('Terhapus', 'Report dihapus', 'success');
     document.querySelector('.modal-overlay')?.remove();
     showSavedReports();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ANALYTICS & EXECUTIVE DASHBOARD
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ ANALYTICS & EXECUTIVE ═══ */
 async function showAnalytics() {
     const totalValue = rawData.reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0);
-    const totalCost = rawData.reduce((s, i) => s + (parseFloat(i.harga_beli) || 0), 0);
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-white">📈 Analytics</h2>
-            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total Aset</div></div>
-            <div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Nilai Sekarang</div></div>
-            <div class="kpi-card"><div class="kpi-value">Rp ${(totalCost/1000000).toFixed(0)}Jt</div><div class="kpi-label">Harga Beli</div></div>
-            <div class="kpi-card"><div class="kpi-value">${new Set(rawData.map(i => i.dept || i.department)).size}</div><div class="kpi-label">Department</div></div>
-        </div>
-    </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold text-white">📈 Analytics</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div><div class="grid grid-cols-2 md:grid-cols-4 gap-4"><div class="kpi-card"><div class="kpi-value">${rawData.length}</div><div class="kpi-label">Total</div></div><div class="kpi-card"><div class="kpi-value">Rp ${(totalValue/1000000).toFixed(0)}Jt</div><div class="kpi-label">Nilai</div></div></div></div>`;
     document.body.appendChild(modal);
 }
 async function showExecutiveDashboard() {
@@ -1878,24 +2102,11 @@ async function showExecutiveDashboard() {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-white">📊 Dashboard Eksekutif</h2>
-            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏢</div><div class="text-2xl font-bold text-indigo-400">${itData?.length || 0}</div><div class="text-xs text-gray-400">Aset IT</div></div>
-            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">📋</div><div class="text-2xl font-bold text-purple-400">${genData?.length || 0}</div><div class="text-xs text-gray-400">Aset General</div></div>
-            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">💰</div><div class="text-2xl font-bold text-emerald-400">Rp ${([...(itData||[]), ...(genData||[])].reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0)/1000000).toFixed(0)}Jt</div><div class="text-xs text-gray-400">Nilai</div></div>
-            <div class="glass-card p-4 text-center"><div class="text-3xl mb-1">🏬</div><div class="text-2xl font-bold text-amber-400">2</div><div class="text-xs text-gray-400">PT</div></div>
-        </div>
-    </div>`;
+    modal.innerHTML = `<div class="glass-card p-6 max-w-4xl w-full"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold text-white">📊 Eksekutif</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div><div class="grid grid-cols-2 md:grid-cols-4 gap-4"><div class="glass-card p-4 text-center"><div class="text-3xl">🏢</div><div class="text-2xl font-bold text-indigo-400">${itData?.length || 0}</div><div class="text-xs text-gray-400">IT</div></div><div class="glass-card p-4 text-center"><div class="text-3xl">📋</div><div class="text-2xl font-bold text-purple-400">${genData?.length || 0}</div><div class="text-xs text-gray-400">General</div></div><div class="glass-card p-4 text-center"><div class="text-3xl">💰</div><div class="text-2xl font-bold text-emerald-400">Rp ${([...(itData||[]), ...(genData||[])].reduce((s, i) => s + (parseFloat(i.nilai_sekarang) || 0), 0)/1000000).toFixed(0)}Jt</div><div class="text-xs text-gray-400">Nilai</div></div><div class="glass-card p-4 text-center"><div class="text-3xl">🏬</div><div class="text-2xl font-bold text-amber-400">2</div><div class="text-xs text-gray-400">PT</div></div></div></div>`;
     document.body.appendChild(modal);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   APPROVAL & USER MANAGEMENT
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ APPROVAL & USER ═══ */
 async function showApprovalQueue() {
     const { data } = await supabaseClient.from('approval_queue').select('*').order('requested_at', { ascending: false }).limit(50);
     const modal = document.createElement('div');
@@ -1930,7 +2141,29 @@ async function saveNewUserProfile() {
     await loadUserList();
 }
 
-console.log('🚀 Enterprise Asset Manager v9.0 LOADED');
+/* ═══ AUTO OPEN DETAIL SAAT SCAN URL ═══ */
+window.addEventListener('load', () => {
+    const params = new URLSearchParams(window.location.search);
+    const scanModule = params.get('scan');
+    const scanId = params.get('id');
+    if (!scanModule || !scanId) return;
+    const checkInterval = setInterval(() => {
+        if (rawData.length === 0) return;
+        const found = rawData.find(i => String(i.id_aset) === scanId || String(i.kode_inventory) === scanId);
+        if (found) {
+            clearInterval(checkInterval);
+            if (scanModule === 'it' && activeModule !== 'it') switchModule('it');
+            if (scanModule === 'general' && activeModule !== 'general') switchModule('general');
+            setTimeout(() => {
+                if (found.id_aset) showDetailIT(found.id_aset);
+                else if (found.id) showDetailGeneral(found.id);
+            }, 500);
+        }
+    }, 500);
+    setTimeout(() => clearInterval(checkInterval), 15000);
+});
+
+console.log('🚀 Enterprise Asset Manager v10.0 LOADED — QR + Logo Magicase');
 </script>
 </body>
 </html>
