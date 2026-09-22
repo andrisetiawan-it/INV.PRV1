@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v10</title>
+<title>Enterprise Asset Manager Pro v11</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -102,7 +102,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <!-- LOGIN -->
 <div id="loginSection" class="flex items-center justify-center min-h-screen p-4">
 <div class="login-box text-center">
-<img src="logo-magicase.png" alt="Magicase Logo" style="height: 35px; width: auto;">
+<div class="text-5xl mb-3">⚡</div>
 <h1 class="text-2xl font-bold gradient-text">Enterprise Asset Manager</h1>
 <p class="text-gray-400 text-sm mt-2 mb-6">Secure Enterprise Inventory System</p>
 <div class="space-y-4">
@@ -111,7 +111,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v10.0 • QR + Logo Edition</p>
+<p class="text-gray-500 text-xs mt-6">v11.0 • Purchase Date Edition</p>
 </div>
 </div>
 
@@ -197,7 +197,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <div id="main-content" class="hidden">
 <nav class="glass px-6 py-3 flex items-center justify-between sticky top-0 z-50 flex-wrap gap-2">
 <div class="flex items-center gap-3">
-<img src="logo-magicase.png" alt="Magicase Logo" style="height: 35px; width: auto;">
+<span class="text-xl">⚡</span>
 <div>
 <span class="text-white font-bold text-lg">Asset Manager</span>
 <span id="companyBadge" class="text-indigo-400 font-bold text-sm ml-2"></span>
@@ -339,8 +339,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const STORAGE_BUCKET_URL = 'https://xsqabypdhudqwyeegfci.supabase.co/storage/v1/object/public/aset-images/';
 
-/* ═══ LOGO MAGICASE ═══ */
-const COMPANY_LOGO_URL = 'https://cdn.jsdelivr.net/gh/andrisetiawan-it/INV.PRV1@main/logo.png';
+/* ═══ LOGO MAGICASE (dari GitHub) ═══ */
+const COMPANY_LOGO_URL = 'https://cdn.jsdelivr.net/gh/andrisetiawan-it/INV.PRV1@main/logo-magicase.png';
 
 let currentPTTable = '';
 let currentPTName = '';
@@ -395,31 +395,54 @@ function detectKategori(namaMaterial) {
     return 'GEN';
 }
 
-/* ═══ GENERATE KODE ═══ */
-async function generateKodeInventoryPreview(dept = null, namaMaterial = null) {
+/* ═══ GENERATE KODE DARI TANGGAL PEMBELIAN ═══ */
+async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tglPembelian = null) {
     try {
-        const now = new Date();
-        const bulan = String(now.getMonth() + 1).padStart(2, '0');
-        const tahun = now.getFullYear();
+        const tglValue = tglPembelian 
+            || document.getElementById('gen_pdate')?.value 
+            || new Date().toISOString().split('T')[0];
+        
+        const tanggal = new Date(tglValue);
+        const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
+        const tahun = tanggal.getFullYear();
         const periode = `${bulan}${tahun}`;
+        
         const deptValue = dept || document.getElementById('gen_dept')?.value || 'UMUM';
-        const deptUpper = String(deptValue).trim().toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UMUM';
+        const deptUpper = String(deptValue).trim().toUpperCase()
+            .replace(/\s+/g, '')
+            .replace(/[^A-Z0-9]/g, '') || 'UMUM';
+        
         const namaValue = namaMaterial || document.getElementById('gen_nama')?.value || '';
         const kategori = detectKategori(namaValue);
+        
         const prefix = `MGI.${deptUpper}.${kategori}.${periode}.`;
-        const { data } = await supabaseClient.from('general_assets').select('kode_inventory').like('kode_inventory', `${prefix}%`).order('kode_inventory', { ascending: false }).limit(50);
+        
+        const { data } = await supabaseClient
+            .from('general_assets')
+            .select('kode_inventory')
+            .like('kode_inventory', `${prefix}%`);
+        
         let maxNum = 0;
         (data || []).forEach(item => {
-            const match = String(item.kode_inventory).match(new RegExp(`MGI\\.${deptUpper}\\.${kategori}\\.${periode}\\.(\\d+)`));
-            if (match) { const num = parseInt(match[1]); if (num > maxNum) maxNum = num; }
+            const match = String(item.kode_inventory).match(
+                new RegExp(`MGI\\.${deptUpper}\\.${kategori}\\.${periode}\\.(\\d+)`)
+            );
+            if (match) {
+                const num = parseInt(match[1]);
+                if (num > maxNum) maxNum = num;
+            }
         });
+        
         return `${prefix}${String(maxNum + 1).padStart(3, '0')}`;
+        
     } catch (err) {
-        const now = new Date();
-        const periode = `${String(now.getMonth() + 1).padStart(2, '0')}${now.getFullYear()}`;
+        console.warn('Generate kode err:', err);
+        const tgl = new Date();
+        const periode = `${String(tgl.getMonth() + 1).padStart(2, '0')}${tgl.getFullYear()}`;
         return `MGI.UMUM.GEN.${periode}.001`;
     }
 }
+
 async function autoUpdateKode() {
     const kodeInput = document.getElementById('gen_kode');
     if (!kodeInput) return;
@@ -429,7 +452,8 @@ async function autoUpdateKode() {
         try {
             const dept = document.getElementById('gen_dept')?.value || '';
             const nama = document.getElementById('gen_nama')?.value || '';
-            const newKode = await generateKodeInventoryPreview(dept, nama);
+            const tgl = document.getElementById('gen_pdate')?.value || '';
+            const newKode = await generateKodeInventoryPreview(dept, nama, tgl);
             if (kodeInput.dataset.manualEdited !== 'true') kodeInput.value = newKode;
         } catch (err) {}
     }, 500);
@@ -438,7 +462,7 @@ document.addEventListener('input', function(e) {
     if (e.target && e.target.id === 'gen_kode') e.target.dataset.manualEdited = 'true';
 }, true);
 
-/* ═══ QR CODE WITH LOGO ═══ */
+/* ═══ QR WITH LOGO ═══ */
 function renderQrWithLogo(canvas, value, size = 200, callback = null) {
     try {
         new QRious({ 
@@ -458,14 +482,12 @@ function renderQrWithLogo(canvas, value, size = 200, callback = null) {
             const logoSize = size * 0.22;
             const x = (size - logoSize) / 2;
             const y = (size - logoSize) / 2;
-            
             ctx.fillStyle = 'white';
             ctx.fillRect(x - 2, y - 2, logoSize + 4, logoSize + 4);
             ctx.strokeStyle = '#e5e7eb';
             ctx.lineWidth = 1;
             ctx.strokeRect(x - 2, y - 2, logoSize + 4, logoSize + 4);
             ctx.drawImage(logo, x, y, logoSize, logoSize);
-            
             if (callback) callback();
         };
         logo.onerror = () => {
@@ -478,10 +500,6 @@ function renderQrWithLogo(canvas, value, size = 200, callback = null) {
             new QRious({ element: canvas, value: value, size: size, background: 'white', foreground: '#111827' });
         } catch(e) {}
     }
-}
-
-function getQrValue(item) {
-    return item.id_aset || item.kode_inventory || item.nama_material || 'N/A';
 }
 
 /* ═══ TOAST ═══ */
@@ -751,7 +769,7 @@ function renderTable(data) {
             }
         });
     } else {
-        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>QR</th><th>No</th><th>Kode Inventory</th><th>Kategori</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Jenis</th><th>Department</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
+        thead.innerHTML = `<tr><th><input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)"></th><th>QR</th><th>No</th><th>Kode Inventory</th><th>Kategori</th><th>Nama Material</th><th>材料名称</th><th>Spesifikasi</th><th>Jumlah</th><th>Satuan</th><th>Department</th><th>📅 Tgl Beli</th><th>Gambar</th><th>Nilai</th><th>Lokasi</th><th class="text-center">Aksi</th></tr>`;
         if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="16" class="text-center py-10 text-gray-400">Belum ada data.</td></tr>`; return; }
         tbody.innerHTML = filtered.map((item, idx) => {
             let gambarCell = '-';
@@ -759,6 +777,7 @@ function renderTable(data) {
             const nilai = item.nilai_sekarang || 0;
             const nilaiFmt = nilai > 0 ? `Rp ${(nilai/1000000).toFixed(1)}Jt` : '-';
             const kat = item.kategori || detectKategori(item.nama_material);
+            const tglBeli = item.purchase_date || (item.created_at ? item.created_at.split('T')[0] : '-');
             return `<tr>
                 <td><input type="checkbox" class="row-check" data-id="${item.id}" onchange="toggleRow(this, '${item.id}')"></td>
                 <td><canvas class="qr-code" data-value="${item.kode_inventory || item.nama_material}" width="42" height="42" onclick="printQrGeneral(${item.id})"></canvas></td>
@@ -770,8 +789,8 @@ function renderTable(data) {
                 <td>${item.spesifikasi || '-'}</td>
                 <td class="font-bold text-indigo-300">${item.jumlah || 1}</td>
                 <td>${item.satuan || 'Buah'}</td>
-                <td><span class="badge-status active">${item.jenis_inventaris || 'Fixed Asset'}</span></td>
                 <td>${item.department || '-'}</td>
+                <td class="text-xs text-amber-300 font-mono">${tglBeli}</td>
                 <td>${gambarCell}</td>
                 <td class="text-xs text-emerald-300 font-semibold">${nilaiFmt}</td>
                 <td>${item.lokasi || '-'}</td>
@@ -1041,7 +1060,7 @@ function renderCalendar() {
     for (let i = 0; i < firstDay; i++) html += '<div></div>';
     for (let d = 1; d <= daysInMonth; d++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
+        const events = rawData.filter(i => i.purchase_date === dateStr || i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
         html += `<div class="glass-card p-2 min-h-[80px] cursor-pointer hover:border-indigo-400 ${isToday ? 'border-emerald-500' : ''} ${events.length > 0 ? 'bg-indigo-500/5' : ''}" onclick="showDayEvents('${dateStr}')">
             <div class="text-white text-xs font-bold">${d}</div>
@@ -1054,7 +1073,7 @@ function renderCalendar() {
 function calendarPrev() { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(); }
 function calendarNext() { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); }
 function showDayEvents(dateStr) {
-    const events = rawData.filter(i => i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
+    const events = rawData.filter(i => i.purchase_date === dateStr || i.created_at?.split('T')[0] === dateStr || i.maintenance_next_date === dateStr);
     if (events.length === 0) { showToast('Info', 'Tidak ada event', 'info'); return; }
     showToast('Events', `${events.length} event pada ${dateStr}`, 'info');
 }
@@ -1098,6 +1117,7 @@ async function toggleForm() {
             <div><label>IP Address</label><input type="text" id="it_ip" /></div>
             <div><label>License OS</label><input type="text" id="it_los" /></div>
             <div><label>License Expiry</label><input type="date" id="it_lexp" /></div>
+            <div><label>Tanggal Beli</label><input type="date" id="it_pdate" /></div>
             <div><label>Harga Beli</label><input type="number" id="it_harga" /></div>
             <div><label>Umur Ekonomis</label><input type="number" id="it_umur" value="5" /></div>
             <div class="form-section"><label>Upload Gambar</label>
@@ -1115,12 +1135,13 @@ async function toggleForm() {
         `;
     } else {
         document.getElementById('formTitle').innerText = "➕ Input Aset General Baru";
-        const previewKode = await generateKodeInventoryPreview();
+        const today = new Date().toISOString().split('T')[0];
+        const previewKode = await generateKodeInventoryPreview(null, null, today);
         form.innerHTML = `
             <div>
                 <label>Kode Inventory *</label>
                 <input type="text" id="gen_kode" value="${previewKode}" placeholder="MGI.IT.ELV.052026.001" />
-                <p class="text-[10px] text-gray-500 mt-1">Auto-generate dari Nama Material + Department</p>
+                <p class="text-[10px] text-gray-500 mt-1">Auto-generate dari Dept + Nama + Tanggal Beli</p>
             </div>
             <div>
                 <label>Nama Material *</label>
@@ -1137,6 +1158,11 @@ async function toggleForm() {
                 <input type="text" id="gen_dept" list="deptListGen" oninput="autoUpdateKode()" onchange="autoUpdateKode()" />
             </div>
             <datalist id="deptListGen">${[...knownDepts].map(d => `<option value="${d}">`).join('')}</datalist>
+            <div>
+                <label>📅 Tanggal Pembelian *</label>
+                <input type="date" id="gen_pdate" value="${today}" onchange="autoUpdateKode()" required />
+                <p class="text-[10px] text-gray-500 mt-1">Isi tanggal beli → kode auto-update</p>
+            </div>
             <div><label>Lokasi</label><input type="text" id="gen_lokasi" /></div>
             <div><label>Harga Beli</label><input type="number" id="gen_harga" /></div>
             <div><label>Umur Ekonomis</label><input type="number" id="gen_umur" value="5" /></div>
@@ -1170,6 +1196,7 @@ async function saveITAsset() {
         id_aset: v('it_id'), user: v('it_user') || '-', dept: v('it_dept'), device: v('it_device'),
         specs: v('it_specs') || '-', status: v('it_status') || 'Active',
         ip_address: v('it_ip'), license_os: v('it_los'), license_expiry: v('it_lexp') || null,
+        purchase_date: v('it_pdate') || null,
         harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
         gambar_url: imgUrl, deleted_at: null
     };
@@ -1193,45 +1220,99 @@ async function saveITAsset() {
         await refreshAll(true);
     }
 }
+
 async function saveGeneralAsset() {
     if (!hasPermission('create')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
+    
     const imgInput = document.getElementById('gen_img_input');
     let imgUrl = null;
-    if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], v('gen_nama') || 'img'); }
+    if (imgInput && imgInput.files[0]) { 
+        showToast('Upload', 'Mengupload...', 'info'); 
+        imgUrl = await uploadImage(imgInput.files[0], v('gen_nama') || 'img'); 
+    }
+    
     const harga = parseFloat(v('gen_harga')) || 0;
     const umur = parseInt(v('gen_umur')) || 5;
     const namaMat = v('gen_nama');
     const deptVal = v('gen_dept');
+    const tglPembelian = v('gen_pdate');
     const kategori = detectKategori(namaMat);
-    const payload = {
-        kode_inventory: v('gen_kode') || await generateKodeInventoryPreview(deptVal, namaMat),
-        kategori: kategori,
-        nama_material: namaMat, nama_material_mandarin: v('gen_mandarin'),
-        spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
-        satuan: v('gen_satuan') || 'Buah', keterangan: v('gen_keterangan'),
-        jenis_inventaris: v('gen_jenis'), department: deptVal, lokasi: v('gen_lokasi'),
-        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
-        maintenance_next_date: v('gen_mnext') || null, gambar: imgUrl, deleted_at: null
-    };
-    if (!payload.nama_material) { showToast('Error', 'Nama Material wajib!', 'error'); return; }
-    const needsApproval = !hasPermission('approve');
-    if (needsApproval) {
-        const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{ table_name: 'general_assets', record_data: payload, action_type: 'CREATE', requested_by: currentUser.email, status: 'pending' }]);
-        if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
-        showToast('⏳ Menunggu Approval', `${payload.kode_inventory} dikirim`, 'info');
-        toggleForm();
-        return;
+    
+    if (!namaMat) { showToast('Error', 'Nama Material wajib!', 'error'); return; }
+    if (!tglPembelian) { showToast('Error', 'Tanggal Pembelian wajib!', 'error'); return; }
+    
+    // ✅ RETRY LOGIC anti-duplikat
+    let attempts = 0;
+    const maxAttempts = 5;
+    let success = false;
+    
+    while (attempts < maxAttempts && !success) {
+        attempts++;
+        
+        // Generate kode baru setiap attempt (dapat counter terbaru)
+        const kodeInv = await generateKodeInventoryPreview(deptVal, namaMat, tglPembelian);
+        
+        const payload = {
+            kode_inventory: kodeInv,
+            kategori: kategori,
+            nama_material: namaMat, 
+            nama_material_mandarin: v('gen_mandarin'),
+            spesifikasi: v('gen_specs'), 
+            jumlah: parseInt(v('gen_jumlah')) || 1,
+            satuan: v('gen_satuan') || 'Buah', 
+            keterangan: v('gen_keterangan'),
+            jenis_inventaris: v('gen_jenis'), 
+            department: deptVal, 
+            lokasi: v('gen_lokasi'),
+            purchase_date: tglPembelian,
+            harga_beli: harga, 
+            umur_ekonomis: umur, 
+            nilai_sekarang: calcDepreciation(harga, umur),
+            maintenance_next_date: v('gen_mnext') || null, 
+            gambar: imgUrl, 
+            deleted_at: null
+        };
+        
+        console.log(`🔧 Attempt ${attempts}: ${kodeInv}`);
+        
+        const needsApproval = !hasPermission('approve');
+        
+        if (needsApproval) {
+            const { error: aqErr } = await supabaseClient.from('approval_queue').insert([{
+                table_name: 'general_assets', 
+                record_data: payload, 
+                action_type: 'CREATE',
+                requested_by: currentUser.email, 
+                status: 'pending'
+            }]);
+            if (aqErr) { showToast('Gagal', aqErr.message, 'error'); return; }
+            showToast('⏳ Menunggu Approval', `${kodeInv} dikirim`, 'info');
+            toggleForm();
+            return;
+        }
+        
+        const { error } = await supabaseClient.from('general_assets').insert([payload]);
+        
+        if (!error) {
+            success = true;
+            await logActivity('create', 'general_assets', kodeInv, `Tambah: ${namaMat}`);
+            await triggerWebhooks('asset.created', payload);
+            showToast('Sukses', `${kodeInv} disimpan!`, 'success');
+            showConfetti();
+            toggleForm();
+            await refreshAll(true);
+        } else if (error.code === '23505' || error.message.includes('duplicate') || error.message.includes('unique')) {
+            console.warn(`⚠️ Duplikat: ${kodeInv}, retry...`);
+            showToast('Retry', `Kode duplikat, generate ulang... (${attempts}/${maxAttempts})`, 'warning');
+            await new Promise(r => setTimeout(r, 200));
+        } else {
+            showToast('Gagal', error.message, 'error');
+            console.error('Save error:', error);
+            return;
+        }
     }
-    const { error } = await supabaseClient.from('general_assets').insert([payload]);
-    if (error) showToast('Gagal', error.message, 'error');
-    else {
-        await logActivity('create', 'general_assets', payload.kode_inventory, `Tambah: ${namaMat}`);
-        await triggerWebhooks('asset.created', payload);
-        showToast('Sukses', `${payload.kode_inventory} (${kategori}) disimpan!`, 'success');
-        showConfetti();
-        toggleForm();
-        await refreshAll(true);
-    }
+    
+    if (!success) showToast('Gagal', `Gagal setelah ${maxAttempts} percobaan. Cek data duplikat.`, 'error');
 }
 
 /* ═══ EDIT & UPDATE ═══ */
@@ -1254,6 +1335,7 @@ function editITAsset(id_aset) {
         <div><label>IP</label><input type="text" id="it_ip" value="${item.ip_address || ''}" /></div>
         <div><label>License OS</label><input type="text" id="it_los" value="${item.license_os || ''}" /></div>
         <div><label>License Expiry</label><input type="date" id="it_lexp" value="${item.license_expiry || ''}" /></div>
+        <div><label>Tanggal Beli</label><input type="date" id="it_pdate" value="${item.purchase_date || ''}" /></div>
         <div><label>Harga Beli</label><input type="number" id="it_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="it_umur" value="${item.umur_ekonomis || 5}" /></div>
         <div class="form-section"><label>📸 Upload Gambar Baru</label>
@@ -1278,7 +1360,13 @@ async function updateITAsset(id_aset) {
     if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], 'it_' + id_aset); }
     const harga = parseFloat(v('it_harga')) || 0;
     const umur = parseInt(v('it_umur')) || 5;
-    const payload = { user: v('it_user'), dept: v('it_dept'), device: v('it_device'), specs: v('it_specs'), status: v('it_status'), ip_address: v('it_ip'), license_os: v('it_los'), license_expiry: v('it_lexp') || null, harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur) };
+    const payload = { 
+        user: v('it_user'), dept: v('it_dept'), device: v('it_device'), specs: v('it_specs'), 
+        status: v('it_status'), ip_address: v('it_ip'), license_os: v('it_los'), 
+        license_expiry: v('it_lexp') || null, 
+        purchase_date: v('it_pdate') || null,
+        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur) 
+    };
     if (imgUrl) payload.gambar_url = imgUrl;
     const { error } = await supabaseClient.from(currentPTTable).update(payload).eq('id_aset', id_aset);
     if (error) showToast('Gagal', error.message, 'error');
@@ -1298,6 +1386,7 @@ function editGeneralAsset(id) {
     document.getElementById('formTitle').innerText = `✏️ Edit: ${item.nama_material}`;
     const form = document.getElementById('dynamicForm');
     const currentImg = item.gambar ? (item.gambar.startsWith('http') ? item.gambar : STORAGE_BUCKET_URL + encodeURIComponent(item.gambar)) : null;
+    const purchaseDate = item.purchase_date || item.created_at?.split('T')[0] || '';
     form.innerHTML = `
         <div><label>Kode Inventory *</label><input type="text" id="gen_kode" value="${item.kode_inventory || ''}" /></div>
         <div><label>Nama Material *</label><input type="text" id="gen_nama" value="${item.nama_material || ''}" /></div>
@@ -1308,6 +1397,7 @@ function editGeneralAsset(id) {
         <div><label>Keterangan</label><input type="text" id="gen_keterangan" value="${item.keterangan || ''}" /></div>
         <div><label>Jenis</label><select id="gen_jenis"><option ${item.jenis_inventaris === 'Fixed Asset' ? 'selected' : ''}>Fixed Asset</option><option ${item.jenis_inventaris === 'Consumable' ? 'selected' : ''}>Consumable</option></select></div>
         <div><label>Department</label><input type="text" id="gen_dept" value="${item.department || ''}" /></div>
+        <div><label>📅 Tanggal Pembelian</label><input type="date" id="gen_pdate" value="${purchaseDate}" /></div>
         <div><label>Lokasi</label><input type="text" id="gen_lokasi" value="${item.lokasi || ''}" /></div>
         <div><label>Harga Beli</label><input type="number" id="gen_harga" value="${item.harga_beli || 0}" /></div>
         <div><label>Umur Ekonomis</label><input type="number" id="gen_umur" value="${item.umur_ekonomis || 5}" /></div>
@@ -1342,6 +1432,7 @@ async function updateGeneralAsset(id) {
         spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
         satuan: v('gen_satuan'), keterangan: v('gen_keterangan'),
         jenis_inventaris: v('gen_jenis'), department: v('gen_dept'), lokasi: v('gen_lokasi'),
+        purchase_date: v('gen_pdate') || null,
         harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
         maintenance_next_date: v('gen_mnext') || null
     };
@@ -1384,9 +1475,7 @@ async function deleteGeneralItem(id) {
     }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   DETAIL MODAL (IT & General) with QR
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ DETAIL MODAL ═══ */
 function showDetailIT(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1399,29 +1488,25 @@ function showDetailIT(id_aset) {
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-white">💻 Detail IT Aset</h2>
-            <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
-        </div>
+        <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">💻 Detail IT</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
         <div class="mb-4 flex flex-col items-center">
             <canvas id="detailQrIT" width="180" height="180" style="background:white;padding:8px;border-radius:12px;"></canvas>
             <p class="text-xs text-indigo-300 mt-2 font-mono">${item.id_aset || '-'}</p>
         </div>
         <div class="space-y-2 text-sm">
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">ID Aset</span><span class="text-white font-mono font-bold">${item.id_aset || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">ID</span><span class="text-white font-mono">${item.id_aset || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">User</span><span class="text-white">${item.user || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Dept</span><span class="text-white">${item.dept || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Device</span><span class="text-white">${item.device || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Status</span><span class="text-white">${item.status || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">IP</span><span class="text-white font-mono">${item.ip_address || '-'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Specs</span><span class="text-white text-right" style="max-width:60%">${item.specs || '-'}</span></div>
-            <div class="flex justify-between pb-2"><span class="text-gray-400">Dibuat</span><span class="text-white">${item.created_at ? new Date(item.created_at).toLocaleString('id-ID') : '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Tgl Beli</span><span class="text-amber-300">${item.purchase_date || '-'}</span></div>
         </div>
         ${imgHtml}
         <div class="flex gap-2 justify-center mt-4 flex-wrap">
             <button onclick="this.closest('.modal-overlay').remove(); editITAsset('${item.id_aset}')" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">✏️ Edit</button>
             <button onclick="printQR('${item.id_aset}')" class="btn bg-amber-500 text-white px-4 py-2 rounded-xl text-sm border-none">🏷️ Print QR</button>
-            <button onclick="downloadSingleQrIT('${item.id_aset}')" class="btn bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 Download QR</button>
+            <button onclick="downloadSingleQrIT('${item.id_aset}')" class="btn bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 QR</button>
         </div>
     </div>`;
     document.body.appendChild(modal);
@@ -1440,12 +1525,13 @@ function showDetailGeneral(id) {
         const imgUrl = g.startsWith('http') ? g : STORAGE_BUCKET_URL + encodeURIComponent(g); 
         imgHtml = `<div class="mt-4"><img src="${imgUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;" /></div>`; 
     }
+    const tglBeli = item.purchase_date || (item.created_at ? item.created_at.split('T')[0] : '-');
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     modal.innerHTML = `<div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-white">📋 Detail Aset General</h2>
+            <h2 class="text-xl font-bold text-white">📋 Detail Aset</h2>
             <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
         </div>
         <div class="mb-4 flex flex-col items-center">
@@ -1457,10 +1543,9 @@ function showDetailGeneral(id) {
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Kategori</span><span class="text-purple-300 font-mono">${item.kategori || detectKategori(item.nama_material)}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Nama</span><span class="text-white font-semibold text-right" style="max-width:60%">${item.nama_material || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">材料名称</span><span class="text-white text-right" style="max-width:60%">${item.nama_material_mandarin || '-'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Spesifikasi</span><span class="text-white text-right" style="max-width:60%">${item.spesifikasi || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jumlah</span><span class="text-white font-bold">${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
-            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Jenis</span><span class="text-white">${item.jenis_inventaris || 'Fixed Asset'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Department</span><span class="text-white">${item.department || '-'}</span></div>
+            <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">📅 Tgl Beli</span><span class="text-amber-300 font-mono">${tglBeli}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Lokasi</span><span class="text-white">${item.lokasi || '-'}</span></div>
             <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-gray-400">Harga Beli</span><span class="text-emerald-300">Rp ${(item.harga_beli || 0).toLocaleString('id-ID')}</span></div>
             <div class="flex justify-between pb-2"><span class="text-gray-400">Nilai Sekarang</span><span class="text-emerald-300 font-bold">Rp ${(item.nilai_sekarang || 0).toLocaleString('id-ID')}</span></div>
@@ -1469,7 +1554,7 @@ function showDetailGeneral(id) {
         <div class="flex gap-2 justify-center mt-4 flex-wrap">
             <button onclick="this.closest('.modal-overlay').remove(); editGeneralAsset(${item.id})" class="btn bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm border-none">✏️ Edit</button>
             <button onclick="printQrGeneral(${item.id})" class="btn bg-amber-500 text-white px-4 py-2 rounded-xl text-sm border-none">🏷️ Print QR</button>
-            <button onclick="downloadSingleQrGeneral(${item.id})" class="btn bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 Download QR</button>
+            <button onclick="downloadSingleQrGeneral(${item.id})" class="btn bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm border-none">📥 QR</button>
         </div>
     </div>`;
     document.body.appendChild(modal);
@@ -1480,7 +1565,7 @@ function showDetailGeneral(id) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   PRINT QR (Single, IT & General)
+   PRINT QR
    ═══════════════════════════════════════════════════════════ */
 function printQR(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
@@ -1522,8 +1607,6 @@ function printQR(id_aset) {
             var y = (200 - ls) / 2;
             ctx.fillStyle = 'white';
             ctx.fillRect(x - 2, y - 2, ls + 4, ls + 4);
-            ctx.strokeStyle = '#e5e7eb';
-            ctx.strokeRect(x - 2, y - 2, ls + 4, ls + 4);
             ctx.drawImage(logo, x, y, ls, ls);
         };
         setTimeout(function(){ window.print(); }, 800);
@@ -1536,6 +1619,7 @@ function printQrGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
     const qrValue = item.kode_inventory || item.nama_material;
+    const tglBeli = item.purchase_date || '-';
     const w = window.open('', '_blank');
     w.document.write(`<html><head><title>QR - ${qrValue}</title>
     <style>
@@ -1554,9 +1638,9 @@ function printQrGeneral(id) {
         <h2>${item.nama_material || ''}</h2>
         <div class="info">
             <div><span>Kategori:</span><span>${item.kategori || detectKategori(item.nama_material)}</span></div>
-            <div><span>材料名称:</span><span>${item.nama_material_mandarin || '-'}</span></div>
             <div><span>Jumlah:</span><span>${item.jumlah || 1} ${item.satuan || 'Buah'}</span></div>
             <div><span>Department:</span><span>${item.department || '-'}</span></div>
+            <div><span>Tgl Beli:</span><span>${tglBeli}</span></div>
             <div><span>Lokasi:</span><span>${item.lokasi || '-'}</span></div>
         </div>
     </div>
@@ -1574,8 +1658,6 @@ function printQrGeneral(id) {
             var y = (200 - ls) / 2;
             ctx.fillStyle = 'white';
             ctx.fillRect(x - 2, y - 2, ls + 4, ls + 4);
-            ctx.strokeStyle = '#e5e7eb';
-            ctx.strokeRect(x - 2, y - 2, ls + 4, ls + 4);
             ctx.drawImage(logo, x, y, ls, ls);
         };
         setTimeout(function(){ window.print(); }, 800);
@@ -1584,9 +1666,7 @@ function printQrGeneral(id) {
     w.document.close();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PRINT ALL LABELS (3 Columns per Page)
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ PRINT ALL LABELS (3 Columns) ═══ */
 function printAllLabels() {
     const data = applyFilters(rawData);
     if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
@@ -1634,10 +1714,9 @@ function printAllLabels() {
     <div class="grid">${itemsHtml}</div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
     <script>
-        var logoUrl = '${COMPANY_LOGO_URL}';
         var logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
-        logoImg.src = logoUrl;
+        logoImg.src = '${COMPANY_LOGO_URL}';
         
         logoImg.onload = function() { renderAllQr(); };
         logoImg.onerror = function() { renderAllQr(); };
@@ -1667,16 +1746,13 @@ function printAllLabels() {
                 }
             });
         }
-        
         setTimeout(function(){ window.print(); }, 1200);
     <\/script>
     </body></html>`);
     w.document.close();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   DOWNLOAD QR (Single & ZIP)
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ DOWNLOAD QR ═══ */
 function downloadSingleQrIT(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1718,9 +1794,8 @@ async function downloadAllQR() {
         valueKey = 'kode_inventory';
     }
     if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
-    showToast('Generating', `Membuat ${data.length} QR (dengan logo)...`, 'info');
+    showToast('Generating', `Membuat ${data.length} QR...`, 'info');
     
-    // Preload logo
     const logoImg = new Image();
     logoImg.crossOrigin = 'anonymous';
     let logoLoaded = false;
@@ -1734,19 +1809,11 @@ async function downloadAllQR() {
     const zip = new JSZip();
     for (const item of data) {
         const canvas = document.createElement('canvas');
-        canvas.width = 500; 
-        canvas.height = 500;
+        canvas.width = 500; canvas.height = 500;
         const size = 500;
         const qrValue = String(item[valueKey]);
         
-        new QRious({ 
-            element: canvas, 
-            value: qrValue, 
-            size: size, 
-            background: 'white', 
-            foreground: '#111827',
-            level: 'H'
-        });
+        new QRious({ element: canvas, value: qrValue, size: size, background: 'white', foreground: '#111827', level: 'H' });
         
         if (logoLoaded && logoImg.naturalHeight !== 0) {
             try {
@@ -1756,9 +1823,6 @@ async function downloadAllQR() {
                 const y = (size - ls) / 2;
                 ctx.fillStyle = 'white';
                 ctx.fillRect(x - 4, y - 4, ls + 8, ls + 8);
-                ctx.strokeStyle = '#e5e7eb';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x - 4, y - 4, ls + 8, ls + 8);
                 ctx.drawImage(logoImg, x, y, ls, ls);
             } catch(e) {}
         }
@@ -1769,14 +1833,12 @@ async function downloadAllQR() {
     const blob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; 
-    a.download = `QR_Codes_${activeModule}_${Date.now()}.zip`;
-    a.click(); 
+    a.href = url; a.download = `QR_Codes_${activeModule}_${Date.now()}.zip`; a.click();
     URL.revokeObjectURL(url);
-    showToast('Sukses', `${data.length} QR didownload! (dengan logo)`, 'success');
+    showToast('Sukses', `${data.length} QR didownload!`, 'success');
 }
 
-/* ═══ IMPORT EXCEL ═══ */
+/* ═══ IMPORT ═══ */
 function openBulkImport() {
     document.getElementById('bulkImportModal').classList.remove('hidden');
     document.getElementById('importPreview').classList.add('hidden');
@@ -1786,15 +1848,16 @@ function openBulkImport() {
 function closeBulkImport() { document.getElementById('bulkImportModal').classList.add('hidden'); }
 function downloadTemplate() {
     if (activeModule === 'it') {
-        const sample = [{ id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10' }];
+        const sample = [{ id_aset: 'PC-001', user: 'Budi', dept: 'IT', device: 'KOMPUTER', specs: 'Core i5', status: 'Active', ip_address: '192.168.1.10', purchase_date: '2026-05-15' }];
         const ws = XLSX.utils.json_to_sheet(sample); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'IT'); XLSX.writeFile(wb, 'Template_IT.xlsx');
     } else {
         const sample = [{ 
-            kode_inventory: 'MGI.IT.ELV.052026.001', kategori: 'ELV',
+            kode_inventory: '', kategori: 'ELV',
             nama_material: 'Televisi', nama_material_mandarin: '电视', 
             spesifikasi: 'Samsung 32"', jumlah: 2, satuan: 'Buah', 
             jenis_inventaris: 'Fixed Asset', department: 'IT', 
+            purchase_date: '2026-05-15',
             lokasi: 'Ruang Meeting', harga_beli: 3500000, umur_ekonomis: 5 
         }];
         const ws = XLSX.utils.json_to_sheet(sample); const wb = XLSX.utils.book_new();
@@ -1843,35 +1906,82 @@ async function confirmImport() {
     if (!confirm(`Import ${importData.length} data?`)) return;
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
     let success = 0, failed = 0, skipped = 0;
+    
     const pick = (item, ...keys) => { for (const k of keys) { if (item[k] && String(item[k]).trim() !== '') return String(item[k]).trim(); } return ''; };
+    
+    // ✅ Track kode yang udah dipakai
+    const usedKodes = new Set();
+    if (targetTable === 'general_assets') {
+        const { data: existing } = await supabaseClient.from('general_assets').select('kode_inventory');
+        (existing || []).forEach(x => x.kode_inventory && usedKodes.add(x.kode_inventory));
+    }
+    
+    showToast('Processing', `Import ${importData.length} data...`, 'info');
+    
     for (let i = 0; i < importData.length; i++) {
         const item = importData[i];
         let payload = {};
         const harga = parseFloat(pick(item, 'harga_beli', 'harga')) || 0;
         const umur = parseInt(pick(item, 'umur_ekonomis', 'umur')) || 5;
+        
         if (activeModule === 'it') {
-            payload = { id_aset: pick(item, 'id_aset', 'id'), user: pick(item, 'user') || '-', dept: pick(item, 'dept'), device: (pick(item, 'device') || 'KOMPUTER').toUpperCase(), specs: pick(item, 'specs'), status: pick(item, 'status') || 'Active', deleted_at: null };
-            if (!payload.id_aset) { skipped++; continue; }
-        } else {
-            const namaMat = pick(item, 'nama_material', 'nama');
-            const deptVal = pick(item, 'department', 'dept') || 'UMUM';
+            const idAset = pick(item, 'id_aset', 'id');
+            if (!idAset) { skipped++; continue; }
             payload = { 
-                kode_inventory: pick(item, 'kode_inventory', 'kode') || await generateKodeInventoryPreview(deptVal, namaMat),
-                kategori: pick(item, 'kategori') || detectKategori(namaMat),
-                nama_material: namaMat, nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称'),
-                spesifikasi: pick(item, 'spesifikasi'), jumlah: parseInt(pick(item, 'jumlah')) || 1,
-                satuan: pick(item, 'satuan') || 'Buah', keterangan: pick(item, 'keterangan'),
-                jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis') || 'Fixed Asset',
-                department: deptVal, lokasi: pick(item, 'lokasi'),
-                harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+                id_aset: idAset, 
+                user: pick(item, 'user') || '-', 
+                dept: pick(item, 'dept'), 
+                device: (pick(item, 'device') || 'KOMPUTER').toUpperCase(), 
+                specs: pick(item, 'specs'), 
+                status: pick(item, 'status') || 'Active',
+                purchase_date: pick(item, 'purchase_date', 'tanggal_beli') || null,
                 deleted_at: null 
             };
-            if (!payload.nama_material) { skipped++; continue; }
+        } else {
+            const namaMat = pick(item, 'nama_material', 'nama');
+            if (!namaMat) { skipped++; continue; }
+            
+            const deptVal = pick(item, 'department', 'dept') || 'UMUM';
+            const tglBeli = pick(item, 'purchase_date', 'tanggal_beli', 'tgl_beli') || new Date().toISOString().split('T')[0];
+            
+            let kodeInv = pick(item, 'kode_inventory', 'kode');
+            let attempts = 0;
+            while ((!kodeInv || usedKodes.has(kodeInv)) && attempts < 5) {
+                kodeInv = await generateKodeInventoryPreview(deptVal, namaMat, tglBeli);
+                if (usedKodes.has(kodeInv)) kodeInv = kodeInv + '-' + Math.floor(Math.random() * 1000);
+                attempts++;
+            }
+            usedKodes.add(kodeInv);
+            
+            payload = { 
+                kode_inventory: kodeInv,
+                kategori: pick(item, 'kategori') || detectKategori(namaMat),
+                nama_material: namaMat, 
+                nama_material_mandarin: pick(item, 'nama_material_mandarin', '材料名称'),
+                spesifikasi: pick(item, 'spesifikasi'), 
+                jumlah: parseInt(pick(item, 'jumlah')) || 1,
+                satuan: pick(item, 'satuan') || 'Buah', 
+                keterangan: pick(item, 'keterangan'),
+                jenis_inventaris: pick(item, 'jenis_inventaris', 'jenis') || 'Fixed Asset',
+                department: deptVal, 
+                purchase_date: tglBeli,
+                lokasi: pick(item, 'lokasi'),
+                harga_beli: harga, 
+                umur_ekonomis: umur, 
+                nilai_sekarang: calcDepreciation(harga, umur),
+                deleted_at: null 
+            };
         }
+        
         const { error } = await supabaseClient.from(targetTable).insert([payload]);
-        if (!error) success++; else failed++;
+        if (!error) success++;
+        else { failed++; console.warn(`Baris ${i+2} gagal:`, error.message); }
     }
-    showToast('Selesai', `✅ ${success}, ❌ ${failed}, ⏭️ ${skipped}`, failed > 0 ? 'error' : 'success');
+    
+    let msg = `✅ ${success} sukses`;
+    if (failed > 0) msg += `, ❌ ${failed} gagal`;
+    if (skipped > 0) msg += `, ⏭️ ${skipped} skip`;
+    showToast('Selesai', msg, failed > 0 ? 'error' : 'success');
     if (success > 0) showConfetti();
     closeBulkImport();
     await refreshAll(true);
@@ -1927,9 +2037,7 @@ function initScanner() {
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 
-/* ═══════════════════════════════════════════════════════════
-   MAINTENANCE LOG
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ MAINTENANCE ═══ */
 async function showMaintenanceModal() {
     const { data } = await supabaseClient.from('maintenance_log').select('*').order('maintenance_date', { ascending: false }).limit(100);
     const modal = document.createElement('div');
@@ -1939,7 +2047,7 @@ async function showMaintenanceModal() {
     modal.innerHTML = `
         <div class="glass-card p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <div><h2 class="text-xl font-bold text-white">🔧 Maintenance Log</h2></div>
+                <h2 class="text-xl font-bold text-white">🔧 Maintenance Log</h2>
                 <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button>
             </div>
             <div class="grid grid-cols-2 gap-3 mb-4">
@@ -2006,7 +2114,7 @@ async function showWebhooks() {
         <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-white">🔗 Webhooks</h2><button onclick="this.closest('.modal-overlay').remove()" class="text-gray-400 hover:text-white text-xl">✕</button></div>
         <button onclick="addWebhookForm()" class="btn bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm mb-4 border-none">+ Tambah</button>
         <div id="webhookFormContainer"></div>
-        ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada webhook.</p>' : `<div class="space-y-2">${data.map(w => `<div class="glass-card p-4 flex justify-between items-center flex-wrap gap-2"><div class="flex-1 min-w-[200px]"><div class="flex items-center gap-2"><span class="text-white font-semibold text-sm">${w.name}</span><span class="text-[10px] px-2 py-0.5 rounded ${w.is_active !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'}">${w.is_active !== false ? 'ACTIVE' : 'OFF'}</span></div><div class="text-gray-400 text-xs mt-1">Event: ${w.event_type}</div><div class="text-gray-500 text-[10px] font-mono truncate">${w.url}</div></div><div class="flex gap-2"><button onclick="testWebhook(${w.id})" class="text-cyan-400 text-xs bg-cyan-500/10 px-2 py-1 rounded">🧪 Test</button><button onclick="deleteWebhook(${w.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">🗑️</button></div></div>`).join('')}</div>`}
+        ${(!data || data.length === 0) ? '<p class="text-center py-8 text-gray-400">Belum ada webhook.</p>' : `<div class="space-y-2">${data.map(w => `<div class="glass-card p-4 flex justify-between items-center flex-wrap gap-2"><div class="flex-1 min-w-[200px]"><div class="flex items-center gap-2"><span class="text-white font-semibold text-sm">${w.name}</span><span class="text-[10px] px-2 py-0.5 rounded ${w.is_active !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'}">${w.is_active !== false ? 'ACTIVE' : 'OFF'}</span></div><div class="text-gray-400 text-xs mt-1">Event: ${w.event_type}</div><div class="text-gray-500 text-[10px] font-mono truncate">${w.url}</div></div><div class="flex gap-2"><button onclick="testWebhook(${w.id})" class="text-cyan-400 text-xs bg-cyan-500/10 px-2 py-1 rounded">🧪</button><button onclick="deleteWebhook(${w.id})" class="text-rose-400 text-xs bg-rose-500/10 px-2 py-1 rounded">🗑️</button></div></div>`).join('')}</div>`}
     </div>`;
     document.body.appendChild(modal);
 }
@@ -2141,7 +2249,7 @@ async function saveNewUserProfile() {
     await loadUserList();
 }
 
-/* ═══ AUTO OPEN DETAIL SAAT SCAN URL ═══ */
+/* ═══ AUTO OPEN DETAIL DARI SCAN URL ═══ */
 window.addEventListener('load', () => {
     const params = new URLSearchParams(window.location.search);
     const scanModule = params.get('scan');
@@ -2163,7 +2271,7 @@ window.addEventListener('load', () => {
     setTimeout(() => clearInterval(checkInterval), 15000);
 });
 
-console.log('🚀 Enterprise Asset Manager v10.0 LOADED — QR + Logo Magicase');
+console.log('🚀 Enterprise Asset Manager v11.0 LOADED — Purchase Date Edition');
 </script>
 </body>
 </html>
