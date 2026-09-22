@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v11</title>
+<title>Enterprise Asset Manager Pro v12</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -111,7 +111,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v11.0 • Purchase Date Edition</p>
+<p class="text-gray-500 text-xs mt-6">v12.0 • Counter per Kategori</p>
 </div>
 </div>
 
@@ -338,8 +338,6 @@ const SUPABASE_URL = 'https://xsqabypdhudqwyeegfci.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcWFieXBkaHVkcXd5ZWVnZmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDExNTksImV4cCI6MjA5MTkxNzE1OX0.mv_XCnfHsmC5ve9rm-J0e0U_AxQ-GS6B5sxf_4a-NWM';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const STORAGE_BUCKET_URL = 'https://xsqabypdhudqwyeegfci.supabase.co/storage/v1/object/public/aset-images/';
-
-/* ═══ LOGO MAGICASE (dari GitHub) ═══ */
 const COMPANY_LOGO_URL = 'https://cdn.jsdelivr.net/gh/andrisetiawan-it/INV.PRV1@main/logo-magicase.png';
 
 let currentPTTable = '';
@@ -395,7 +393,10 @@ function detectKategori(namaMaterial) {
     return 'GEN';
 }
 
-/* ═══ GENERATE KODE DARI TANGGAL PEMBELIAN ═══ */
+/* ═══════════════════════════════════════════════════════════
+   GENERATE KODE: MGI.DEPT.KAT.BULANTAHUN.NNN
+   Counter HANYA naik untuk kombinasi DEPT+KAT+BULAN+TAHUN yang SAMA
+   ═══════════════════════════════════════════════════════════ */
 async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tglPembelian = null) {
     try {
         const tglValue = tglPembelian 
@@ -415,24 +416,30 @@ async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tg
         const namaValue = namaMaterial || document.getElementById('gen_nama')?.value || '';
         const kategori = detectKategori(namaValue);
         
+        // ✅ Prefix UNIK per DEPT + KATEGORI + BULAN + TAHUN
         const prefix = `MGI.${deptUpper}.${kategori}.${periode}.`;
         
+        // ✅ Query kode yang punya prefix ini (hanya counter yang sama)
         const { data } = await supabaseClient
             .from('general_assets')
             .select('kode_inventory')
             .like('kode_inventory', `${prefix}%`);
         
+        // ✅ Cari nomor urut TERTINGGI dari hasil filter
         let maxNum = 0;
+        const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`^MGI\\.${escapeRegex(deptUpper)}\\.${escapeRegex(kategori)}\\.${escapeRegex(periode)}\\.(\\d+)$`);
+        
         (data || []).forEach(item => {
-            const match = String(item.kode_inventory).match(
-                new RegExp(`MGI\\.${deptUpper}\\.${kategori}\\.${periode}\\.(\\d+)`)
-            );
+            const kode = String(item.kode_inventory || '');
+            const match = kode.match(regex);
             if (match) {
                 const num = parseInt(match[1]);
                 if (num > maxNum) maxNum = num;
             }
         });
         
+        // ✅ Return: prefix + (maxNum + 1) dengan 3 digit
         return `${prefix}${String(maxNum + 1).padStart(3, '0')}`;
         
     } catch (err) {
@@ -490,10 +497,7 @@ function renderQrWithLogo(canvas, value, size = 200, callback = null) {
             ctx.drawImage(logo, x, y, logoSize, logoSize);
             if (callback) callback();
         };
-        logo.onerror = () => {
-            console.log('Logo gagal load');
-            if (callback) callback();
-        };
+        logo.onerror = () => { if (callback) callback(); };
     } catch (err) {
         console.error('QR render error:', err);
         try {
@@ -1141,7 +1145,7 @@ async function toggleForm() {
             <div>
                 <label>Kode Inventory *</label>
                 <input type="text" id="gen_kode" value="${previewKode}" placeholder="MGI.IT.ELV.052026.001" />
-                <p class="text-[10px] text-gray-500 mt-1">Auto-generate dari Dept + Nama + Tanggal Beli</p>
+                <p class="text-[10px] text-gray-500 mt-1">Auto-generate dari Dept + Nama + Tanggal Beli. Counter per kategori.</p>
             </div>
             <div>
                 <label>Nama Material *</label>
@@ -1161,7 +1165,7 @@ async function toggleForm() {
             <div>
                 <label>📅 Tanggal Pembelian *</label>
                 <input type="date" id="gen_pdate" value="${today}" onchange="autoUpdateKode()" required />
-                <p class="text-[10px] text-gray-500 mt-1">Isi tanggal beli → kode auto-update</p>
+                <p class="text-[10px] text-gray-500 mt-1">Kode auto-update saat tanggal berubah</p>
             </div>
             <div><label>Lokasi</label><input type="text" id="gen_lokasi" /></div>
             <div><label>Harga Beli</label><input type="number" id="gen_harga" /></div>
@@ -1249,7 +1253,7 @@ async function saveGeneralAsset() {
     while (attempts < maxAttempts && !success) {
         attempts++;
         
-        // Generate kode baru setiap attempt (dapat counter terbaru)
+        // ✅ Generate kode baru setiap attempt (counter per kategori)
         const kodeInv = await generateKodeInventoryPreview(deptVal, namaMat, tglPembelian);
         
         const payload = {
@@ -1273,7 +1277,7 @@ async function saveGeneralAsset() {
             deleted_at: null
         };
         
-        console.log(`🔧 Attempt ${attempts}: ${kodeInv}`);
+        console.log(`🔧 Attempt ${attempts}: ${kodeInv} | Dept:${deptVal} Kat:${kategori} Tgl:${tglPembelian}`);
         
         const needsApproval = !hasPermission('approve');
         
@@ -1312,7 +1316,7 @@ async function saveGeneralAsset() {
         }
     }
     
-    if (!success) showToast('Gagal', `Gagal setelah ${maxAttempts} percobaan. Cek data duplikat.`, 'error');
+    if (!success) showToast('Gagal', `Gagal setelah ${maxAttempts} percobaan`, 'error');
 }
 
 /* ═══ EDIT & UPDATE ═══ */
@@ -1564,9 +1568,7 @@ function showDetailGeneral(id) {
     }, 100);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PRINT QR
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ PRINT QR ═══ */
 function printQR(id_aset) {
     const item = rawData.find(x => String(x.id_aset) === String(id_aset));
     if (!item) return;
@@ -1666,14 +1668,11 @@ function printQrGeneral(id) {
     w.document.close();
 }
 
-/* ═══ PRINT ALL LABELS (3 Columns) ═══ */
 function printAllLabels() {
     const data = applyFilters(rawData);
     if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
-    
     const isIT = activeModule === 'it';
     const w = window.open('', '_blank');
-    
     let itemsHtml = '';
     if (isIT) {
         itemsHtml = data.filter(i => i.id_aset).map(i => `
@@ -1696,8 +1695,7 @@ function printAllLabels() {
             </div>
         `).join('');
     }
-    
-    w.document.write(`<html><head><title>Label ${isIT ? 'IT' : 'General'} - ${currentPTName}</title>
+    w.document.write(`<html><head><title>Label ${isIT ? 'IT' : 'General'}</title>
     <style>
         body{font-family:Arial;padding:10px;margin:0}
         h2{text-align:center;margin:10px 0 20px;font-size:16px}
@@ -1710,29 +1708,19 @@ function printAllLabels() {
         canvas{width:110px!important;height:110px!important;display:block;margin:0 auto}
         @media print { @page { size: A4 portrait; margin: 8mm; } }
     </style></head><body>
-    <h2>🏷️ Label QR Code - ${currentPTName} (${isIT ? 'IT Assets' : 'General Assets'})</h2>
+    <h2>🏷️ Label QR Code - ${currentPTName}</h2>
     <div class="grid">${itemsHtml}</div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"><\/script>
     <script>
         var logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
         logoImg.src = '${COMPANY_LOGO_URL}';
-        
         logoImg.onload = function() { renderAllQr(); };
         logoImg.onerror = function() { renderAllQr(); };
-        
         function renderAllQr() {
             document.querySelectorAll('canvas[data-id]').forEach(function(c) {
                 var size = 110;
-                new QRious({
-                    element: c,
-                    value: c.dataset.id,
-                    size: size,
-                    background: 'white',
-                    foreground: '#111827',
-                    level: 'H'
-                });
-                
+                new QRious({ element: c, value: c.dataset.id, size: size, background: 'white', foreground: '#111827', level: 'H' });
                 if (logoImg.complete && logoImg.naturalHeight !== 0) {
                     try {
                         var ctx = c.getContext('2d');
@@ -1761,13 +1749,10 @@ function downloadSingleQrIT(id_aset) {
     renderQrWithLogo(canvas, item.id_aset, 500, () => {
         const url = canvas.toDataURL('image/png');
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `QR_${item.id_aset}.png`;
-        a.click();
+        a.href = url; a.download = `QR_${item.id_aset}.png`; a.click();
         showToast('Sukses', `QR ${item.id_aset} didownload!`, 'success');
     });
 }
-
 function downloadSingleQrGeneral(id) {
     const item = rawData.find(x => String(x.id) === String(id));
     if (!item) return;
@@ -1777,25 +1762,16 @@ function downloadSingleQrGeneral(id) {
     renderQrWithLogo(canvas, qrValue, 500, () => {
         const url = canvas.toDataURL('image/png');
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `QR_${qrValue}.png`;
-        a.click();
+        a.href = url; a.download = `QR_${qrValue}.png`; a.click();
         showToast('Sukses', `QR ${qrValue} didownload!`, 'success');
     });
 }
-
 async function downloadAllQR() {
     let data, valueKey;
-    if (activeModule === 'it') {
-        data = applyFilters(rawData).filter(i => i.id_aset);
-        valueKey = 'id_aset';
-    } else {
-        data = applyFilters(rawData).filter(i => i.kode_inventory);
-        valueKey = 'kode_inventory';
-    }
+    if (activeModule === 'it') { data = applyFilters(rawData).filter(i => i.id_aset); valueKey = 'id_aset'; }
+    else { data = applyFilters(rawData).filter(i => i.kode_inventory); valueKey = 'kode_inventory'; }
     if (data.length === 0) { showToast('Info', 'Tidak ada data', 'info'); return; }
     showToast('Generating', `Membuat ${data.length} QR...`, 'info');
-    
     const logoImg = new Image();
     logoImg.crossOrigin = 'anonymous';
     let logoLoaded = false;
@@ -1805,16 +1781,13 @@ async function downloadAllQR() {
         logoImg.src = COMPANY_LOGO_URL;
         setTimeout(resolve, 3000);
     });
-    
     const zip = new JSZip();
     for (const item of data) {
         const canvas = document.createElement('canvas');
         canvas.width = 500; canvas.height = 500;
         const size = 500;
         const qrValue = String(item[valueKey]);
-        
         new QRious({ element: canvas, value: qrValue, size: size, background: 'white', foreground: '#111827', level: 'H' });
-        
         if (logoLoaded && logoImg.naturalHeight !== 0) {
             try {
                 const ctx = canvas.getContext('2d');
@@ -1826,10 +1799,8 @@ async function downloadAllQR() {
                 ctx.drawImage(logoImg, x, y, ls, ls);
             } catch(e) {}
         }
-        
         zip.file(`QR_${qrValue}.png`, canvas.toDataURL('image/png').split(',')[1], { base64: true });
     }
-    
     const blob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1853,7 +1824,7 @@ function downloadTemplate() {
         XLSX.utils.book_append_sheet(wb, ws, 'IT'); XLSX.writeFile(wb, 'Template_IT.xlsx');
     } else {
         const sample = [{ 
-            kode_inventory: '', kategori: 'ELV',
+            kode_inventory: '', kategori: '',
             nama_material: 'Televisi', nama_material_mandarin: '电视', 
             spesifikasi: 'Samsung 32"', jumlah: 2, satuan: 'Buah', 
             jenis_inventaris: 'Fixed Asset', department: 'IT', 
@@ -1906,10 +1877,9 @@ async function confirmImport() {
     if (!confirm(`Import ${importData.length} data?`)) return;
     const targetTable = activeModule === 'it' ? currentPTTable : 'general_assets';
     let success = 0, failed = 0, skipped = 0;
-    
     const pick = (item, ...keys) => { for (const k of keys) { if (item[k] && String(item[k]).trim() !== '') return String(item[k]).trim(); } return ''; };
     
-    // ✅ Track kode yang udah dipakai
+    // Track kode untuk cegah duplikat dalam 1 batch
     const usedKodes = new Set();
     if (targetTable === 'general_assets') {
         const { data: existing } = await supabaseClient.from('general_assets').select('kode_inventory');
@@ -1944,11 +1914,17 @@ async function confirmImport() {
             const deptVal = pick(item, 'department', 'dept') || 'UMUM';
             const tglBeli = pick(item, 'purchase_date', 'tanggal_beli', 'tgl_beli') || new Date().toISOString().split('T')[0];
             
+            // Kalau Excel punya kolom kode_inventory & terisi, pakai itu
             let kodeInv = pick(item, 'kode_inventory', 'kode');
+            
+            // Kalau kosong / duplikat, auto-generate
             let attempts = 0;
             while ((!kodeInv || usedKodes.has(kodeInv)) && attempts < 5) {
                 kodeInv = await generateKodeInventoryPreview(deptVal, namaMat, tglBeli);
-                if (usedKodes.has(kodeInv)) kodeInv = kodeInv + '-' + Math.floor(Math.random() * 1000);
+                if (usedKodes.has(kodeInv)) {
+                    // Kalau masih duplikat, tambah suffix unik
+                    kodeInv = kodeInv + '-' + Math.floor(Math.random() * 1000);
+                }
                 attempts++;
             }
             usedKodes.add(kodeInv);
@@ -2271,7 +2247,7 @@ window.addEventListener('load', () => {
     setTimeout(() => clearInterval(checkInterval), 15000);
 });
 
-console.log('🚀 Enterprise Asset Manager v11.0 LOADED — Purchase Date Edition');
+console.log('🚀 Enterprise Asset Manager v12.0 LOADED — Counter per Kategori');
 </script>
 </body>
 </html>
