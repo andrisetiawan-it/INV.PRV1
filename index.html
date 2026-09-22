@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Asset Manager Pro v12</title>
+<title>Enterprise Asset Manager Pro v13</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" />
@@ -111,7 +111,7 @@ body { background: #0a0e1a; min-height: 100vh; transition: background 0.3s; }
 <button onclick="handleLogin()" class="w-full btn bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 rounded-xl border-none">Masuk Sistem</button>
 </div>
 <p id="loginError" class="text-red-400 text-sm mt-4 hidden font-semibold"></p>
-<p class="text-gray-500 text-xs mt-6">v12.0 • Counter per Kategori</p>
+<p class="text-gray-500 text-xs mt-6">v13.0 • Fixed Kategori Edition</p>
 </div>
 </div>
 
@@ -363,39 +363,59 @@ document.documentElement.setAttribute('data-theme', currentTheme);
 const themeBtnEl = document.getElementById('themeBtn');
 if (themeBtnEl) themeBtnEl.innerText = currentTheme === 'dark' ? '🌙' : '☀️';
 
-/* ═══ KATEGORI AUTO-DETECT ═══ */
+/* ═══════════════════════════════════════════════════════════
+   KATEGORI AUTO-DETECT (LENGKAP)
+   ═══════════════════════════════════════════════════════════ */
 const KATEGORI_MAP = [
-    { keywords: ['televisi', 'tv', 'led', 'display', 'screen', 'proyektor', 'projector'], kat: 'ELV' },
-    { keywords: ['air conditioner', ' ac ', 'pendingin', 'kulkas', 'refrigerator', 'freezer', 'dispenser', 'ups', 'stabilizer', 'inverter', 'genset'], kat: 'ELV' },
-    { keywords: ['komputer', 'pc', 'laptop', 'notebook', 'netbook', 'macbook', 'chromebook'], kat: 'COM' },
-    { keywords: ['printer', 'scanner', 'fotocopy', 'copier', 'plotter'], kat: 'PRN' },
-    { keywords: ['radio', 'speaker', 'sound', 'audio', 'microphone', 'kamera', 'camera', 'cctv', 'webcam'], kat: 'ELV' },
-    { keywords: ['hp', 'handphone', 'smartphone', 'telepon', 'phone', 'iphone', 'router', 'switch', 'modem', 'wifi', 'server', 'nas'], kat: 'TEL' },
-    { keywords: ['meja', 'table', 'desk', 'workstation', 'counter', 'kursi', 'chair', 'stool', 'sofa', 'bangku', 'lemari', 'cabinet', 'locker', 'rak', 'shelf', 'almari', 'laci', 'drawer', 'filing', 'arsip', 'papan tulis', 'whiteboard', 'partisi', 'sekat'], kat: 'FUR' },
+    // Elektronik (ELV)
+    { keywords: ['televisi', 'tv', 'led', 'display', 'screen', 'proyektor', 'projector', 'monitor', 'cctv', 'kamera', 'camera', 'radio', 'speaker', 'sound', 'audio', 'microphone', 'mic', 'ups', 'stabilizer', 'inverter', 'genset', 'charger', 'power bank'], kat: 'ELV' },
+    // Air Conditioner (AC)
+    { keywords: ['air conditioner', 'ac ', ' ac', 'pendingin', 'kulkas', 'refrigerator', 'freezer'], kat: 'AC' },
+    // Komputer (COM)
+    { keywords: ['komputer', 'computer', 'pc ', ' pc', 'laptop', 'notebook', 'netbook', 'macbook', 'chromebook', 'cpu', 'keyboard', 'mouse', 'monitor pc'], kat: 'COM' },
+    // Printer (PRN)
+    { keywords: ['printer', 'scanner', 'fotocopy', 'copier', 'plotter', 'tinta', 'toner', 'cartridge'], kat: 'PRN' },
+    // Telekomunikasi (TEL)
+    { keywords: ['hp ', ' hp', 'handphone', 'smartphone', 'telepon', 'phone', 'iphone', 'android', 'router', 'switch', 'hub', 'modem', 'wifi', 'access point', 'server', 'nas', 'pemanas air', 'water heater', 'pemanas', 'heater'], kat: 'TEL' },
+    // Furniture (FUR)
+    { keywords: ['meja', 'table', 'desk', 'workstation', 'counter', 'kursi', 'chair', 'stool', 'sofa', 'bangku', 'lemari', 'cabinet', 'locker', 'rak', 'shelf', 'almari', 'laci', 'drawer', 'filing', 'arsip', 'papan tulis', 'whiteboard', 'partisi', 'sekat', 'kasur', 'bed', 'tempat tidur'], kat: 'FUR' },
+    // Kendaraan (VEH)
     { keywords: ['motor', 'mobil', 'truk', 'truck', 'van', 'pickup', 'kendaraan', 'vehicle', 'car', 'sepeda', 'bicycle', 'forklift', 'troli', 'trolley'], kat: 'VEH' },
-    { keywords: ['mesin', 'machine', 'pompa', 'pump', 'compressor', 'kompresor', 'conveyor', 'las', 'welding', 'bor', 'drill', 'gerinda', 'grinder'], kat: 'MAC' },
-    { keywords: ['tang', 'kunci', 'obeng', 'palu', 'gunting', 'cutter', 'pisau', 'tool', 'perkakas', 'tangga', 'ladder'], kat: 'TOO' },
-    { keywords: ['microwave', 'oven', 'kompor', 'stove', 'rice cooker', 'magic com', 'water heater', 'piring', 'gelas', 'sendok'], kat: 'KIT' },
-    { keywords: ['apar', 'fire extinguisher', 'pemadam', 'alarm', 'smoke detector', 'helm', 'sarung tangan', 'masker', 'safety', 'p3k', 'first aid'], kat: 'SAF' },
+    // Mesin (MAC)
+    { keywords: ['mesin', 'machine', 'pompa', 'pump', 'compressor', 'kompresor', 'conveyor', 'las', 'welding', 'bor', 'drill', 'gerinda', 'grinder', 'mixer', 'blender', 'sealer', 'press'], kat: 'MAC' },
+    // Tools (TOO)
+    { keywords: ['tang', 'kunci', 'obeng', 'palu', 'gunting', 'cutter', 'pisau', 'tool', 'perkakas', 'peralatan', 'tangga', 'ladder', 'scaffolding'], kat: 'TOO' },
+    // Kitchen (KIT)
+    { keywords: ['microwave', 'oven', 'kompor', 'stove', 'rice cooker', 'magic com', 'piring', 'gelas', 'sendok', 'garpu', 'mangkok', 'kitchen', 'dapur', 'kulkas kecil', 'tandon'], kat: 'KIT' },
+    // Safety (SAF)
+    { keywords: ['apar', 'fire extinguisher', 'pemadam', 'alarm', 'smoke detector', 'helm', 'sarung tangan', 'masker', 'safety', 'p3k', 'first aid', 'kotak obat'], kat: 'SAF' },
+    // Lighting (LGT)
     { keywords: ['lampu', 'light', 'lamp', 'neon', 'downlight'], kat: 'LGT' },
-    { keywords: ['tandon', 'tank', 'keran', 'water'], kat: 'WTR' },
-    { keywords: ['atk', 'stationery', 'tinta', 'kertas', 'paper', 'pena', 'pensil', 'bulpen', 'stampel', 'binder', 'clip'], kat: 'OFF' }
+    // Water (WTR)
+    { keywords: ['tank', 'keran', 'water', 'dispenser air'], kat: 'WTR' },
+    // Office (OFF)
+    { keywords: ['atk', 'stationery', 'kertas', 'paper', 'pena', 'pensil', 'bulpen', 'stampel', 'stempel', 'binder', 'clip', 'buku'], kat: 'OFF' }
 ];
 
 function detectKategori(namaMaterial) {
     if (!namaMaterial) return 'GEN';
     const nama = String(namaMaterial).toLowerCase().trim();
+    if (!nama) return 'GEN';
+    
     for (const item of KATEGORI_MAP) {
         for (const kw of item.keywords) {
-            if (nama.includes(kw)) return item.kat;
+            if (nama.includes(kw.toLowerCase())) {
+                console.log(`🎯 Kategori terdeteksi: "${namaMaterial}" → ${item.kat} (match keyword "${kw}")`);
+                return item.kat;
+            }
         }
     }
+    console.log(`⚠️ Kategori tidak terdeteksi: "${namaMaterial}" → GEN`);
     return 'GEN';
 }
 
 /* ═══════════════════════════════════════════════════════════
    GENERATE KODE: MGI.DEPT.KAT.BULANTAHUN.NNN
-   Counter HANYA naik untuk kombinasi DEPT+KAT+BULAN+TAHUN yang SAMA
    ═══════════════════════════════════════════════════════════ */
 async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tglPembelian = null) {
     try {
@@ -416,16 +436,13 @@ async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tg
         const namaValue = namaMaterial || document.getElementById('gen_nama')?.value || '';
         const kategori = detectKategori(namaValue);
         
-        // ✅ Prefix UNIK per DEPT + KATEGORI + BULAN + TAHUN
         const prefix = `MGI.${deptUpper}.${kategori}.${periode}.`;
         
-        // ✅ Query kode yang punya prefix ini (hanya counter yang sama)
         const { data } = await supabaseClient
             .from('general_assets')
             .select('kode_inventory')
             .like('kode_inventory', `${prefix}%`);
         
-        // ✅ Cari nomor urut TERTINGGI dari hasil filter
         let maxNum = 0;
         const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(`^MGI\\.${escapeRegex(deptUpper)}\\.${escapeRegex(kategori)}\\.${escapeRegex(periode)}\\.(\\d+)$`);
@@ -439,7 +456,6 @@ async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tg
             }
         });
         
-        // ✅ Return: prefix + (maxNum + 1) dengan 3 digit
         return `${prefix}${String(maxNum + 1).padStart(3, '0')}`;
         
     } catch (err) {
@@ -450,23 +466,38 @@ async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tg
     }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   AUTO UPDATE KODE (FIXED)
+   ═══════════════════════════════════════════════════════════ */
 async function autoUpdateKode() {
     const kodeInput = document.getElementById('gen_kode');
     if (!kodeInput) return;
-    if (kodeInput.dataset.manualEdited === 'true') return;
+    
     clearTimeout(window.__autoKodeTimer);
     window.__autoKodeTimer = setTimeout(async () => {
         try {
             const dept = document.getElementById('gen_dept')?.value || '';
             const nama = document.getElementById('gen_nama')?.value || '';
             const tgl = document.getElementById('gen_pdate')?.value || '';
+            
+            // ✅ Skip kalau nama kosong
+            if (!nama || !nama.trim()) return;
+            
             const newKode = await generateKodeInventoryPreview(dept, nama, tgl);
-            if (kodeInput.dataset.manualEdited !== 'true') kodeInput.value = newKode;
-        } catch (err) {}
-    }, 500);
+            kodeInput.value = newKode;
+            console.log(`✅ Kode auto-update: ${newKode}`);
+        } catch (err) {
+            console.warn('autoUpdateKode err:', err);
+        }
+    }, 400);
 }
+
+// ✅ Set flag manual HANYA kalau user ketik langsung di field kode
 document.addEventListener('input', function(e) {
-    if (e.target && e.target.id === 'gen_kode') e.target.dataset.manualEdited = 'true';
+    if (e.target && e.target.id === 'gen_kode' && e.isTrusted) {
+        e.target.dataset.manualEdited = 'true';
+        console.log('🔒 User edit kode manual');
+    }
 }, true);
 
 /* ═══ QR WITH LOGO ═══ */
@@ -763,6 +794,7 @@ function renderTable(data) {
                 <td><div class="flex gap-1 justify-center flex-wrap">
                     <button onclick="editITAsset('${item.id_aset}')" class="btn-action edit">✏️</button>
                     <button onclick="printQR('${item.id_aset}')" class="btn-action label">🏷️</button>
+                    <button onclick="showDetailIT('${item.id_aset}')" class="btn-action transfer">👁️</button>
                     <button onclick="deleteItem('${item.id_aset}')" class="btn-action delete">🗑️</button>
                 </div></td>
             </tr>`;
@@ -1140,16 +1172,16 @@ async function toggleForm() {
     } else {
         document.getElementById('formTitle').innerText = "➕ Input Aset General Baru";
         const today = new Date().toISOString().split('T')[0];
-        const previewKode = await generateKodeInventoryPreview(null, null, today);
+        const previewKode = await generateKodeInventoryPreview('', '', today);
         form.innerHTML = `
             <div>
                 <label>Kode Inventory *</label>
                 <input type="text" id="gen_kode" value="${previewKode}" placeholder="MGI.IT.ELV.052026.001" />
-                <p class="text-[10px] text-gray-500 mt-1">Auto-generate dari Dept + Nama + Tanggal Beli. Counter per kategori.</p>
+                <p class="text-[10px] text-gray-500 mt-1">Auto-update saat isi Nama Material + Dept + Tgl Beli</p>
             </div>
             <div>
                 <label>Nama Material *</label>
-                <input type="text" id="gen_nama" required oninput="autoUpdateKode()" onchange="autoUpdateKode()" placeholder="Contoh: Televisi, Meja, Komputer..." />
+                <input type="text" id="gen_nama" required oninput="autoUpdateKode()" onchange="autoUpdateKode()" placeholder="Contoh: Televisi, Meja, Sofa..." />
             </div>
             <div><label>材料名称</label><input type="text" id="gen_mandarin" /></div>
             <div><label>Spesifikasi</label><input type="text" id="gen_specs" /></div>
@@ -1240,12 +1272,14 @@ async function saveGeneralAsset() {
     const namaMat = v('gen_nama');
     const deptVal = v('gen_dept');
     const tglPembelian = v('gen_pdate');
-    const kategori = detectKategori(namaMat);
     
     if (!namaMat) { showToast('Error', 'Nama Material wajib!', 'error'); return; }
     if (!tglPembelian) { showToast('Error', 'Tanggal Pembelian wajib!', 'error'); return; }
     
-    // ✅ RETRY LOGIC anti-duplikat
+    // ✅ HITUNG KATEGORI DARI NAMA MATERIAL (bukan dari kode)
+    const kategori = detectKategori(namaMat);
+    console.log(`💾 Save: nama="${namaMat}", kategori=${kategori}`);
+    
     let attempts = 0;
     const maxAttempts = 5;
     let success = false;
@@ -1253,7 +1287,7 @@ async function saveGeneralAsset() {
     while (attempts < maxAttempts && !success) {
         attempts++;
         
-        // ✅ Generate kode baru setiap attempt (counter per kategori)
+        // ✅ Generate kode baru SETIAP attempt (pakai kategori yang bener)
         const kodeInv = await generateKodeInventoryPreview(deptVal, namaMat, tglPembelian);
         
         const payload = {
@@ -1277,7 +1311,7 @@ async function saveGeneralAsset() {
             deleted_at: null
         };
         
-        console.log(`🔧 Attempt ${attempts}: ${kodeInv} | Dept:${deptVal} Kat:${kategori} Tgl:${tglPembelian}`);
+        console.log(`🔧 Attempt ${attempts}: kode=${kodeInv}, kategori=${kategori}`);
         
         const needsApproval = !hasPermission('approve');
         
@@ -1299,9 +1333,9 @@ async function saveGeneralAsset() {
         
         if (!error) {
             success = true;
-            await logActivity('create', 'general_assets', kodeInv, `Tambah: ${namaMat}`);
+            await logActivity('create', 'general_assets', kodeInv, `Tambah: ${namaMat} (${kategori})`);
             await triggerWebhooks('asset.created', payload);
-            showToast('Sukses', `${kodeInv} disimpan!`, 'success');
+            showToast('Sukses', `${kodeInv} (${kategori}) disimpan!`, 'success');
             showConfetti();
             toggleForm();
             await refreshAll(true);
@@ -1879,7 +1913,6 @@ async function confirmImport() {
     let success = 0, failed = 0, skipped = 0;
     const pick = (item, ...keys) => { for (const k of keys) { if (item[k] && String(item[k]).trim() !== '') return String(item[k]).trim(); } return ''; };
     
-    // Track kode untuk cegah duplikat dalam 1 batch
     const usedKodes = new Set();
     if (targetTable === 'general_assets') {
         const { data: existing } = await supabaseClient.from('general_assets').select('kode_inventory');
@@ -1914,17 +1947,11 @@ async function confirmImport() {
             const deptVal = pick(item, 'department', 'dept') || 'UMUM';
             const tglBeli = pick(item, 'purchase_date', 'tanggal_beli', 'tgl_beli') || new Date().toISOString().split('T')[0];
             
-            // Kalau Excel punya kolom kode_inventory & terisi, pakai itu
             let kodeInv = pick(item, 'kode_inventory', 'kode');
-            
-            // Kalau kosong / duplikat, auto-generate
             let attempts = 0;
             while ((!kodeInv || usedKodes.has(kodeInv)) && attempts < 5) {
                 kodeInv = await generateKodeInventoryPreview(deptVal, namaMat, tglBeli);
-                if (usedKodes.has(kodeInv)) {
-                    // Kalau masih duplikat, tambah suffix unik
-                    kodeInv = kodeInv + '-' + Math.floor(Math.random() * 1000);
-                }
+                if (usedKodes.has(kodeInv)) kodeInv = kodeInv + '-' + Math.floor(Math.random() * 1000);
                 attempts++;
             }
             usedKodes.add(kodeInv);
@@ -2247,7 +2274,7 @@ window.addEventListener('load', () => {
     setTimeout(() => clearInterval(checkInterval), 15000);
 });
 
-console.log('🚀 Enterprise Asset Manager v12.0 LOADED — Counter per Kategori');
+console.log('🚀 Enterprise Asset Manager v13.0 LOADED — Fixed Kategori & Semua Menu');
 </script>
 </body>
 </html>
