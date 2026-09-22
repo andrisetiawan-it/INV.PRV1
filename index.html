@@ -480,9 +480,6 @@ async function autoUpdateKode() {
             const nama = document.getElementById('gen_nama')?.value || '';
             const tgl = document.getElementById('gen_pdate')?.value || '';
             
-            // ✅ Skip kalau nama kosong
-            if (!nama || !nama.trim()) return;
-            
             const newKode = await generateKodeInventoryPreview(dept, nama, tgl);
             kodeInput.value = newKode;
             console.log(`✅ Kode auto-update: ${newKode}`);
@@ -491,14 +488,6 @@ async function autoUpdateKode() {
         }
     }, 400);
 }
-
-// ✅ Set flag manual HANYA kalau user ketik langsung di field kode
-document.addEventListener('input', function(e) {
-    if (e.target && e.target.id === 'gen_kode' && e.isTrusted) {
-        e.target.dataset.manualEdited = 'true';
-        console.log('🔒 User edit kode manual');
-    }
-}, true);
 
 /* ═══ QR WITH LOGO ═══ */
 function renderQrWithLogo(canvas, value, size = 200, callback = null) {
@@ -1190,9 +1179,9 @@ async function toggleForm() {
         const previewKode = await generateKodeInventoryPreview('', '', today);
         form.innerHTML = `
             <div>
-                <label>Kode Inventory *</label>
-                <input type="text" id="gen_kode" value="${previewKode}" placeholder="MGI.IT.ELV.052026.001" />
-                <p class="text-[10px] text-gray-500 mt-1">Auto-update saat isi Nama Material + Dept + Tgl Beli</p>
+                <label>Kode Inventory (Otomatis 🔒)</label>
+                <input type="text" id="gen_kode" value="${previewKode}" placeholder="MGI.IT.ELV.052026.001" readonly style="opacity:0.75;cursor:not-allowed;" />
+                <p class="text-[10px] text-gray-500 mt-1">🔒 Otomatis: Dept + Kategori (dari Nama Material) + Bulan/Tahun Tgl Beli. Ikut update live saat isi form.</p>
             </div>
             <div>
                 <label>Nama Material *</label>
@@ -1443,7 +1432,7 @@ function editGeneralAsset(id) {
     const currentImg = item.gambar ? (item.gambar.startsWith('http') ? item.gambar : STORAGE_BUCKET_URL + encodeURIComponent(item.gambar)) : null;
     const purchaseDate = item.purchase_date || item.created_at?.split('T')[0] || '';
     form.innerHTML = `
-        <div><label>Kode Inventory *</label><input type="text" id="gen_kode" value="${item.kode_inventory || ''}" /></div>
+        <div><label>Kode Inventory</label><input type="text" id="gen_kode" value="${item.kode_inventory || ''}" readonly style="opacity:0.75;cursor:not-allowed;" /><p class="text-[10px] text-gray-500 mt-1">🔒 Kode tidak berubah otomatis saat edit, supaya label/QR yang sudah dicetak tetap valid.</p></div>
         <div><label>Nama Material *</label><input type="text" id="gen_nama" value="${item.nama_material || ''}" /></div>
         <div><label>材料名称</label><input type="text" id="gen_mandarin" value="${item.nama_material_mandarin || ''}" /></div>
         <div><label>Spesifikasi</label><input type="text" id="gen_specs" value="${item.spesifikasi || ''}" /></div>
