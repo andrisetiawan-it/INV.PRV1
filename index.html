@@ -380,7 +380,7 @@ const KATEGORI_MAP = [
     // Furniture (FUR)
     { keywords: ['meja', 'table', 'desk', 'workstation', 'counter', 'kursi', 'chair', 'stool', 'sofa', 'bangku', 'lemari', 'cabinet', 'locker', 'rak', 'shelf', 'almari', 'laci', 'drawer', 'filing', 'arsip', 'papan tulis', 'whiteboard', 'partisi', 'sekat', 'kasur', 'bed', 'tempat tidur'], kat: 'FUR' },
     // Kendaraan (VEH)
-    { keywords: ['motor', 'mobil', 'truk', 'truck', 'van', 'pickup', 'kendaraan', 'vehicle', 'car', 'sepeda', 'bicycle', 'forklift', 'troli', 'trolley'], kat: 'VEH' },
+    { keywords: ['motor', 'mobil', 'truk', 'truck', 'van ', ' van', 'pickup', 'kendaraan', 'vehicle', 'car ', ' car', 'sepeda', 'bicycle', 'forklift', 'troli', 'trolley'], kat: 'VEH' },
     // Mesin (MAC)
     { keywords: ['mesin', 'machine', 'pompa', 'pump', 'compressor', 'kompresor', 'conveyor', 'las', 'welding', 'bor', 'drill', 'gerinda', 'grinder', 'mixer', 'blender', 'sealer', 'press'], kat: 'MAC' },
     // Tools (TOO)
@@ -992,7 +992,22 @@ function renderGeneralCharts(data, commonOpts) {
 
 /* ═══ HELPERS ═══ */
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
-function calcDepreciation(harga, umur) { return harga || 0; }
+function calcDepreciation(harga, umur, tglBeli) {
+    // Penyusutan garis lurus (straight-line depreciation) berdasarkan Umur Ekonomis.
+    // Nilai turun linear dari harga_beli menuju 0 saat umur ekonomis (dalam tahun) tercapai.
+    harga = parseFloat(harga) || 0;
+    umur = parseInt(umur) || 0;
+    if (harga <= 0 || umur <= 0 || !tglBeli) return harga;
+    const beli = new Date(tglBeli);
+    if (isNaN(beli.getTime())) return harga;
+    const now = new Date();
+    const umurHariMs = umur * 365.25 * 86400000;
+    const terpakaiMs = now - beli;
+    if (terpakaiMs <= 0) return harga;
+    if (terpakaiMs >= umurHariMs) return 0;
+    const nilai = harga * (1 - (terpakaiMs / umurHariMs));
+    return Math.round(nilai);
+}
 async function uploadImage(file, prefix = 'img') {
     if (!file) return null;
     const ext = file.name.split('.').pop();
@@ -1228,12 +1243,13 @@ async function saveITAsset() {
     if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], v('it_id') || 'img'); }
     const harga = parseFloat(v('it_harga')) || 0;
     const umur = parseInt(v('it_umur')) || 5;
+    const tglBeliIT = v('it_pdate') || null;
     const payload = {
         id_aset: v('it_id'), user: v('it_user') || '-', dept: v('it_dept'), device: v('it_device'),
         specs: v('it_specs') || '-', status: v('it_status') || 'Active',
         ip_address: v('it_ip'), license_os: v('it_los'), license_expiry: v('it_lexp') || null,
-        purchase_date: v('it_pdate') || null,
-        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+        purchase_date: tglBeliIT,
+        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur, tglBeliIT),
         gambar_url: imgUrl, deleted_at: null
     };
     if (!payload.id_aset) { showToast('Error', 'ID Aset wajib!', 'error'); return; }
@@ -1305,7 +1321,7 @@ async function saveGeneralAsset() {
             purchase_date: tglPembelian,
             harga_beli: harga, 
             umur_ekonomis: umur, 
-            nilai_sekarang: calcDepreciation(harga, umur),
+            nilai_sekarang: calcDepreciation(harga, umur, tglPembelian),
             maintenance_next_date: v('gen_mnext') || null, 
             gambar: imgUrl, 
             deleted_at: null
@@ -1398,12 +1414,13 @@ async function updateITAsset(id_aset) {
     if (imgInput && imgInput.files[0]) { showToast('Upload', 'Mengupload...', 'info'); imgUrl = await uploadImage(imgInput.files[0], 'it_' + id_aset); }
     const harga = parseFloat(v('it_harga')) || 0;
     const umur = parseInt(v('it_umur')) || 5;
+    const tglBeliIT = v('it_pdate') || null;
     const payload = { 
         user: v('it_user'), dept: v('it_dept'), device: v('it_device'), specs: v('it_specs'), 
         status: v('it_status'), ip_address: v('it_ip'), license_os: v('it_los'), 
         license_expiry: v('it_lexp') || null, 
-        purchase_date: v('it_pdate') || null,
-        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur) 
+        purchase_date: tglBeliIT,
+        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur, tglBeliIT) 
     };
     if (imgUrl) payload.gambar_url = imgUrl;
     const { error } = await supabaseClient.from(currentPTTable).update(payload).eq('id_aset', id_aset);
@@ -1470,8 +1487,8 @@ async function updateGeneralAsset(id) {
         spesifikasi: v('gen_specs'), jumlah: parseInt(v('gen_jumlah')) || 1,
         satuan: v('gen_satuan'), keterangan: v('gen_keterangan'),
         jenis_inventaris: v('gen_jenis'), department: v('gen_dept'), lokasi: v('gen_lokasi'),
-        purchase_date: v('gen_pdate') || null,
-        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur),
+        purchase_date: (v('gen_pdate') || null),
+        harga_beli: harga, umur_ekonomis: umur, nilai_sekarang: calcDepreciation(harga, umur, v('gen_pdate') || null),
         maintenance_next_date: v('gen_mnext') || null
     };
     if (imgUrl) payload.gambar = imgUrl;
@@ -1930,6 +1947,7 @@ async function confirmImport() {
         if (activeModule === 'it') {
             const idAset = pick(item, 'id_aset', 'id');
             if (!idAset) { skipped++; continue; }
+            const tglBeliIT = pick(item, 'purchase_date', 'tanggal_beli') || null;
             payload = { 
                 id_aset: idAset, 
                 user: pick(item, 'user') || '-', 
@@ -1937,7 +1955,10 @@ async function confirmImport() {
                 device: (pick(item, 'device') || 'KOMPUTER').toUpperCase(), 
                 specs: pick(item, 'specs'), 
                 status: pick(item, 'status') || 'Active',
-                purchase_date: pick(item, 'purchase_date', 'tanggal_beli') || null,
+                purchase_date: tglBeliIT,
+                harga_beli: harga,
+                umur_ekonomis: umur,
+                nilai_sekarang: calcDepreciation(harga, umur, tglBeliIT),
                 deleted_at: null 
             };
         } else {
@@ -1971,7 +1992,7 @@ async function confirmImport() {
                 lokasi: pick(item, 'lokasi'),
                 harga_beli: harga, 
                 umur_ekonomis: umur, 
-                nilai_sekarang: calcDepreciation(harga, umur),
+                nilai_sekarang: calcDepreciation(harga, umur, tglBeli),
                 deleted_at: null 
             };
         }
@@ -2023,7 +2044,41 @@ function exportToExcel() {
     XLSX.writeFile(wb, `Export_${activeModule}_${new Date().toISOString().slice(0,10)}.xlsx`);
     showToast('Sukses', `${data.length} data diexport`, 'success');
 }
-function exportToPDF() { exportToExcel(); }
+function exportToPDF() {
+    const data = applyFilters(rawData);
+    if (data.length === 0) { showToast('Info', 'Kosong', 'info'); return; }
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        doc.setFontSize(14);
+        doc.text(`Laporan Aset ${activeModule === 'it' ? 'IT' : 'General'} - ${currentPTName || ''}`, 14, 12);
+        doc.setFontSize(9);
+        doc.text(`Dicetak: ${new Date().toLocaleString('id-ID')}`, 14, 18);
+        let head, body;
+        if (activeModule === 'it') {
+            head = [['ID Aset', 'User', 'Dept', 'Device', 'Status', 'IP', 'Specs', 'Nilai (Rp)']];
+            body = data.map(i => [
+                i.id_aset || '-', i.user || '-', i.dept || '-', i.device || '-',
+                i.status || '-', i.ip_address || '-', i.specs || '-',
+                (i.nilai_sekarang || 0).toLocaleString('id-ID')
+            ]);
+        } else {
+            head = [['Kode Inventory', 'Kategori', 'Nama Material', 'Spesifikasi', 'Jumlah', 'Satuan', 'Department', 'Tgl Beli', 'Lokasi', 'Nilai (Rp)']];
+            body = data.map(i => [
+                i.kode_inventory || '-', i.kategori || detectKategori(i.nama_material), i.nama_material || '-',
+                i.spesifikasi || '-', i.jumlah || 1, i.satuan || 'Buah', i.department || '-',
+                i.purchase_date || '-', i.lokasi || '-', (i.nilai_sekarang || 0).toLocaleString('id-ID')
+            ]);
+        }
+        doc.autoTable({ head, body, startY: 22, styles: { fontSize: 7 }, headStyles: { fillColor: [99, 102, 241] } });
+        doc.save(`Export_${activeModule}_${new Date().toISOString().slice(0, 10)}.pdf`);
+        showToast('Sukses', `${data.length} data diexport ke PDF`, 'success');
+    } catch (err) {
+        console.error('Export PDF error:', err);
+        showToast('Gagal', 'Export PDF gagal, fallback ke Excel', 'error');
+        exportToExcel();
+    }
+}
 function initScanner() {
     if (html5QrcodeScanner) return;
     try {
@@ -2208,7 +2263,7 @@ async function showAnalytics() {
     document.body.appendChild(modal);
 }
 async function showExecutiveDashboard() {
-    const { data: itData } = await supabaseClient.from('inventaris_p1').select('*').is('deleted_at', null);
+    const { data: itData } = await supabaseClient.from(currentPTTable).select('*').is('deleted_at', null);
     const { data: genData } = await supabaseClient.from('general_assets').select('*').is('deleted_at', null);
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
