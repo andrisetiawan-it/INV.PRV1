@@ -357,6 +357,7 @@ let userRole = 'staff';
 let userProfile = null;
 let calendarDate = new Date();
 let draggedAssetId = null;
+const deletedInventoryGaps = new Set();
 const charts = { status: null, dept: null, device: null, growth: null, license: null };
 
 document.documentElement.setAttribute('data-theme', currentTheme);
@@ -416,7 +417,106 @@ function detectKategori(namaMaterial) {
 
 /* ═══════════════════════════════════════════════════════════
    GENERATE KODE: MGI.DEPT.KAT.BULANTAHUN.NNN
+   GAP FILLING: pilih nomor kosong terkecil dulu baru max+1
    ═══════════════════════════════════════════════════════════ */
+function buildKodeInventoryRegex(deptUpper, kategori, periode) {
+    const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`^MGI\\.${escapeRegex(deptUpper)}\\.${escapeRegex(kategori)}\\.${escapeRegex(periode)}\\.(\\d+)$`);
+}
+
+function registerDeletedInventoryGap(kodeInventory) {
+    if (!kodeInventory || typeof kodeInventory !== 'string') return;
+    const match = kodeInventory.match(/^MGI\.[A-Z0-9]+\.([A-Z]+)\.[0-9]{6}\.(\d+)$/);
+    if (!match) return;
+    const deletedNumber = parseInt(match[2], 10);
+    if (!Number.isNaN(deletedNumber)) {
+        deletedInventoryGaps.add(`${match[1]}:${deletedNumber}`);
+        console.log(`🧩 Gap recorded: ${kodeInventory}`);
+    }
+}
+
+async function getNextAvailableInventorySequence(deptUpper, kategori, periode) {
+    const prefix = `MGI.${deptUpper}.${kategori}.${periode}.`;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('general_assets')
+            .select('kode_inventory')
+            .like('kode_inventory', `${prefix}%`)
+            .order('kode_inventory', { ascending: true });
+
+        if (error) throw error;
+
+        const regex = buildKodeInventoryRegex(deptUpper, kategori, periode);
+        const usedNumbers = [];
+
+        (data || []).forEach(item => {
+            const kode = String(item.kode_inventory || '');
+            const match = kode.match(regex);
+            if (match) {
+                const num = parseInt(match[1], 10);
+                if (!Number.isNaN(num)) usedNumbers.push(num);
+            }
+        });
+
+        for (const key of deletedInventoryGaps) {
+            const [gapKategori, gapNum] = key.split(':');
+            if (gapKategori === kategori && !Number.isNaN(parseInt(gapNum, 10))) {
+                usedNumbers.push(parseInt(gapNum, 10));
+            }
+        }
+
+        if (usedNumbers.length === 0) return 1;
+
+        const sorted = [...new Set(usedNumbers)].sort((a, b) => a - b);
+        let next = 1;
+
+        for (const num of sorted) {
+            if (num === next) {
+                next += 1;
+                continue;
+            }
+            if (num > next) {
+                return next;
+            }
+        }
+
+        return Math.max(...sorted) + 1;
+    } catch (err) {
+        console.warn('Gap filling kode inventory gagal:', err);
+        const fallback = await supabaseClient
+            .from('general_assets')
+            .select('kode_inventory')
+            .like('kode_inventory', `${prefix}%`)
+            .order('kode_inventory', { ascending: true });
+
+        const regex = buildKodeInventoryRegex(deptUpper, kategori, periode);
+        const numbers = [];
+        (fallback.data || []).forEach(item => {
+            const match = String(item.kode_inventory || '').match(regex);
+            if (match) {
+                const num = parseInt(match[1], 10);
+                if (!Number.isNaN(num)) numbers.push(num);
+            }
+        });
+
+        for (const key of deletedInventoryGaps) {
+            const [gapKategori, gapNum] = key.split(':');
+            if (gapKategori === kategori) {
+                const num = parseInt(gapNum, 10);
+                if (!Number.isNaN(num)) numbers.push(num);
+            }
+        }
+
+        if (numbers.length === 0) return 1;
+        const maxNum = Math.max(...numbers);
+        for (let n = 1; n <= maxNum; n++) {
+            if (!numbers.includes(n)) return n;
+        }
+        return maxNum + 1;
+    }
+}
+
 async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tglPembelian = null) {
     try {
         const tglValue = tglPembelian 
@@ -435,29 +535,10 @@ async function generateKodeInventoryPreview(dept = null, namaMaterial = null, tg
         
         const namaValue = namaMaterial || document.getElementById('gen_nama')?.value || '';
         const kategori = detectKategori(namaValue);
-        
+        const nextSequence = await getNextAvailableInventorySequence(deptUpper, kategori, periode);
         const prefix = `MGI.${deptUpper}.${kategori}.${periode}.`;
-        
-        const { data } = await supabaseClient
-            .from('general_assets')
-            .select('kode_inventory')
-            .like('kode_inventory', `${prefix}%`);
-        
-        let maxNum = 0;
-        const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`^MGI\\.${escapeRegex(deptUpper)}\\.${escapeRegex(kategori)}\\.${escapeRegex(periode)}\\.(\\d+)$`);
-        
-        (data || []).forEach(item => {
-            const kode = String(item.kode_inventory || '');
-            const match = kode.match(regex);
-            if (match) {
-                const num = parseInt(match[1]);
-                if (num > maxNum) maxNum = num;
-            }
-        });
-        
-        return `${prefix}${String(maxNum + 1).padStart(3, '0')}`;
-        
+
+        return `${prefix}${String(nextSequence).padStart(3, '0')}`;
     } catch (err) {
         console.warn('Generate kode err:', err);
         const tgl = new Date();
@@ -1509,6 +1590,9 @@ async function deleteGeneralItem(id) {
     if (!hasPermission('delete')) { showToast('Denied', 'Tidak punya akses', 'error'); return; }
     if (!confirm('Hapus data ini?')) return;
     const item = rawData.find(x => String(x.id) === String(id));
+    if (item?.kode_inventory) {
+        registerDeletedInventoryGap(item.kode_inventory);
+    }
     const { error } = await supabaseClient.from('general_assets').update({ deleted_at: new Date().toISOString() }).eq('id', id);
     if (error) showToast('Gagal', error.message, 'error');
     else {
